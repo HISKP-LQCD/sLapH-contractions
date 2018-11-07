@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright © YEAR Martin Ueding <dev@martin-ueding.de>
-
 import argparse
 
 import h5py

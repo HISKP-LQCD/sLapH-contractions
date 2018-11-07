@@ -1,6 +1,4 @@
 #!/bin/bash
-# Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
-# Licensed under The MIT/Expat License
 
 # Sets up a debug and a release build outside of the source code with the paths
 # that are needed on QBiG. The debug build will automatically set the `-g` flag
