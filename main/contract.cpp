@@ -61,13 +61,14 @@ int main(int ac, char *av[]) {
                                   gd.hyp_parameters);
 
   if (gd.delta_config <= 0) {
-    std::cerr << "The 'delta_config' option has been set to a non-positive value. This makes "
-                 "no sense."
-              << std::endl;
+    std::cerr
+        << "The 'delta_config' option has been set to a non-positive value. This makes "
+           "no sense."
+        << std::endl;
     std::abort();
   }
 
-  // Loop over all configurations stated in the infile -------------------------
+  // Loop over all configurations stated in the infile
   for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
        config_i += gd.delta_config) {
     std::cout << "\nprocessing configuration: " << config_i << "\n\n" << std::endl;
@@ -98,4 +99,3 @@ int main(int ac, char *av[]) {
              gd.filename_ending_correlators);
   }
 }
-
