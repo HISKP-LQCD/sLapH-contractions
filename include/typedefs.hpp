@@ -80,7 +80,6 @@ typedef boost::multi_array<Eigen::MatrixXcd, 10> array_Xcd_d10_eigen;
  */
 using DisplacementDirection = std::vector<std::pair<char,char>>;
 
-/******************************************************************************/
 /*! This is just a workaround for complex numbers to get it running for hdf5
  *
  *  @todo Change namespace into something more specific
@@ -130,7 +129,6 @@ struct ComplexProduct {
   }
 };
 
-/******************************************************************************/
 /*! Struct to uniquely identify a sLapH operator
  *  @f$ V^\dagger exp(i(p + d/2) x) V @f$
  *
@@ -151,7 +149,6 @@ struct VdaggerVQuantumNumbers {
       : id(id), momentum(momentum), displacement(displacement){};
 };
 
-/******************************************************************************/
 /*! Struct that contains all information for a sLapH operator
  *
  *  @todo confusing because rvdaggerv_lookuptable and rvdaggervr_lookuptable
@@ -177,7 +174,6 @@ struct OperatorLookup {
   inline ssize_t size(){ return vdaggerv_lookup.size(); }
 };
 
-/******************************************************************************/
 /*! Struct that holds all information on which VdaggerV must be diluted with
  *  which random vector.
  *
@@ -229,7 +225,7 @@ inline bool operator==(DilutedFactorIndex const &first, DilutedFactorIndex const
   else
     return false;
 }
-/******************************************************************************/
+
 /*! Maps index from CorrelatorLookup to QuarklineQ1Indicies or
  *  QuarklineQ2Indicies, depending on the quarkline needed in Correlator
  *
@@ -246,7 +242,6 @@ struct DilutedFactorIndicesCollection {
 // Q0 formerly called rVdaggerVr
 enum class DilutedFactorType { Q0, Q1, Q2, Q2L, Q2V };
 
-/******************************************************************************/
 /*! All information needed to build and write the correlator given the
  *  quarklines were calculated beforehand
  *
@@ -279,7 +274,6 @@ inline bool operator==(DiagramIndex const &first, DiagramIndex const &second) {
     return false;
 }
 
-/******************************************************************************/
 /*! Contains information on all correlators
  *
  *  @todo modular programming looks different
