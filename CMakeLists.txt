@@ -7,29 +7,29 @@ project(sLapH-contractions CXX C)
 set(CMAKE_CXX_STANDARD 14)
 
 add_library(lcontract
-  modules/Correlators.cpp
-  modules/Diagram.cpp
-  modules/dilution-iterator.cpp
-  modules/EigenVector.cpp
-  modules/Gamma.cpp
-  modules/GaugeField.cpp
-  modules/GlobalData/global_data.cpp
-  modules/GlobalData/global_data_build_IO_names.cpp
-  modules/GlobalData/global_data_input_handling.cpp
-  modules/GlobalData/global_data_input_handling_utils.cpp
-  modules/GlobalData/init_lookup_tables.cpp
-  modules/h5-wrapper.cpp
-  modules/io_utils.cpp
-  modules/OperatorFactory.cpp
-  modules/Perambulator.cpp
-  modules/DilutedFactorY.cpp
-  modules/DilutedTraceFactory.cpp
-  modules/RandomVector.cpp
-  modules/ranlxs.cpp
-  modules/StopWatch.cpp
+  src/Correlators.cpp
+  src/Diagram.cpp
+  src/dilution-iterator.cpp
+  src/EigenVector.cpp
+  src/Gamma.cpp
+  src/GaugeField.cpp
+  src/global_data.cpp
+  src/global_data_build_IO_names.cpp
+  src/global_data_input_handling.cpp
+  src/global_data_input_handling_utils.cpp
+  src/init_lookup_tables.cpp
+  src/h5-wrapper.cpp
+  src/io_utils.cpp
+  src/OperatorFactory.cpp
+  src/Perambulator.cpp
+  src/DilutedFactorY.cpp
+  src/DilutedTraceFactory.cpp
+  src/RandomVector.cpp
+  src/ranlxs.cpp
+  src/StopWatch.cpp
   )
 
-target_include_directories(lcontract PUBLIC "include" "include/GlobalData/")
+target_include_directories(lcontract PUBLIC "include")
 
 ###############################################################################
 #                          Git Revision Information                           #
