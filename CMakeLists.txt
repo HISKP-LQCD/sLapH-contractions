@@ -1,11 +1,10 @@
 # Copyright © 2017-2018 Martin Ueding <dev@martin-ueding.de>
 
-# Enforce a version that is actually available on QBiG.
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.9)
 
 project(sLapH-contractions CXX C)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 add_library(lcontract
   modules/Correlators.cpp
