@@ -4,8 +4,8 @@
 
 #include <omp.h>
 
-#include <utility>
 #include <iostream>
+#include <utility>
 
 namespace {
 std::complex<double> const I(0.0, 1.0);
@@ -28,8 +28,6 @@ DilutedFactorFactory<qlt>::DilutedFactorFactory(
       nev(nev),
       quarkline_indices(_quarkline_indices) {}
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 // rvdaggervr is calculated by multiplying vdaggerv with the same quantum
 // numbers with random vectors from right and left.
 template <>
@@ -49,14 +47,15 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
     // of the daggered and undaggered dilution is the same at the cost
     // of a single explicit transposition
     Eigen::MatrixXcd vdv;
-    if( op.need_vdaggerv_daggering ){
+    if (op.need_vdaggerv_daggering) {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1).adjoint();
-    }else{
+    } else {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1);
     }
     LT_FINE_STOP;
-    LT_FINE_PRINT( (op.need_vdaggerv_daggering ? "[DilutedFactorFactory::Q0] return_VdaggerV^dagger" :
-                                                 "[DilutedFactorFactory::Q0] return_VdaggerV" ) );
+    LT_FINE_PRINT((op.need_vdaggerv_daggering
+                       ? "[DilutedFactorFactory::Q0] return_VdaggerV^dagger"
+                       : "[DilutedFactorFactory::Q0] return_VdaggerV"));
 
     ssize_t rnd_counter = 0;
     int check = -1;
@@ -72,13 +71,14 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
         for (ssize_t vec_i = 0; vec_i < nev; vec_i++) {
           for (ssize_t block = 0; block < 4; block++) {
             ssize_t blk = block + (vec_i + nev * t1) * 4;
-              M.col(vec_i % dilE + dilE * block).noalias() +=
+            M.col(vec_i % dilE + dilE * block).noalias() +=
                 rnd_vec(rnd_id.second, blk) * vdv.col(vec_i);
           }
         }
         LT_FINE_STOP;
-        LT_FINE_PRINT( (op.need_vdaggerv_daggering ? "[DilutedFactorFactory::Q0] VdaggerV^dagger*r Thread " :
-                                                      "[DilutedFactorFactory::Q0] VdaggerV*r Thread ") );
+        LT_FINE_PRINT((op.need_vdaggerv_daggering
+                           ? "[DilutedFactorFactory::Q0] VdaggerV^dagger*r Thread "
+                           : "[DilutedFactorFactory::Q0] VdaggerV*r Thread "));
       }
 
       LT_FINE_START;
@@ -90,9 +90,9 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
         const ssize_t gamma_index = gamma_vec[gamma_id].row[block];
         for (ssize_t vec_i = 0; vec_i < nev; vec_i++) {
           ssize_t blk = gamma_index + (vec_i + nev * t1) * dilD;
-          matrix.block(vec_i % dilE + dilE * gamma_index, block * dilE, 1, dilE).noalias() +=
-              value * M.block(vec_i, block * dilE, 1, dilE) *
-              std::conj(rnd_vec(rnd_id.first, blk));
+          matrix.block(vec_i % dilE + dilE * gamma_index, block * dilE, 1, dilE)
+              .noalias() += value * M.block(vec_i, block * dilE, 1, dilE) *
+                            std::conj(rnd_vec(rnd_id.first, blk));
         }
       }
       LT_FINE_STOP;
@@ -100,15 +100,12 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
 
       check = rnd_id.second;
       rnd_counter++;
-      
+
       Ql[time_key][{operator_key}].push_back(
           {matrix, std::make_pair(rnd_id.first, rnd_id.second), {}});
     }
   }
 }
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 
 template <>
 void DilutedFactorFactory<DilutedFactorType::Q1>::build(Key const &time_key) {
@@ -121,21 +118,21 @@ void DilutedFactorFactory<DilutedFactorType::Q1>::build(Key const &time_key) {
 
   for (int operator_key = 0; operator_key < ssize(quarkline_indices); ++operator_key) {
     auto const &op = quarkline_indices[operator_key];
-    
+
     LT_FINE_START;
     // Using an explicit copy for vdv here makes sense because then performance
     // of the daggered and undaggered dilution is guaranteed to be the same
     // at the cost of a single transposition
     Eigen::MatrixXcd vdv;
-    if( op.need_vdaggerv_daggering ){
+    if (op.need_vdaggerv_daggering) {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1).adjoint();
-    }else{
+    } else {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1);
     }
     LT_FINE_STOP;
-    LT_FINE_PRINT( (op.need_vdaggerv_daggering ? 
-                    "[DilutedFactorFactory::Q1] return_vdaggerv^dagger Thread " :
-                    "[DilutedFactorFactory::Q1] return_vdaggerv Thread ") );
+    LT_FINE_PRINT((op.need_vdaggerv_daggering
+                       ? "[DilutedFactorFactory::Q1] return_vdaggerv^dagger Thread "
+                       : "[DilutedFactorFactory::Q1] return_vdaggerv Thread "));
 
     for (auto const &rnd_id : op.rnd_vec_ids) {
       auto const gamma_id = op.gamma[0];
@@ -145,15 +142,15 @@ void DilutedFactorFactory<DilutedFactorType::Q1>::build(Key const &time_key) {
       for (ssize_t vec_i = 0; vec_i < nev; ++vec_i) {
         for (ssize_t block = 0; block < dilD; block++) {
           ssize_t blk = block + vec_i * dilD + dilD * nev * t1;
-            rvdaggerv.row(vec_i % dilE + dilE * block).noalias() +=
-                std::conj(rnd_vec(rnd_id.first, blk)) * vdv.row(vec_i);
+          rvdaggerv.row(vec_i % dilE + dilE * block).noalias() +=
+              std::conj(rnd_vec(rnd_id.first, blk)) * vdv.row(vec_i);
         }
       }
       LT_FINE_STOP;
-      LT_FINE_PRINT( (op.need_vdaggerv_daggering ?
-                     "[DilutedFactorFactory::Q1] r*VdaggerV^dagger Thread " :
-                     "[DilutedFactorFactory::Q1] r*VdaggerV Thread ") );
-      
+      LT_FINE_PRINT((op.need_vdaggerv_daggering
+                         ? "[DilutedFactorFactory::Q1] r*VdaggerV^dagger Thread "
+                         : "[DilutedFactorFactory::Q1] r*VdaggerV Thread "));
+
       LT_FINE_START;
       Eigen::MatrixXcd matrix =
           Eigen::MatrixXcd::Zero(eigenspace_dirac_size, eigenspace_dirac_size);
@@ -176,8 +173,6 @@ void DilutedFactorFactory<DilutedFactorType::Q1>::build(Key const &time_key) {
   }
 }
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 template <>
 void DilutedFactorFactory<DilutedFactorType::Q2>::build(Key const &time_key) {
   int const eigenspace_dirac_size = dilD * dilE;
@@ -187,26 +182,26 @@ void DilutedFactorFactory<DilutedFactorType::Q2>::build(Key const &time_key) {
   auto const b2 = time_key[2];
 
   LT_FINE_DECLARE;
-  
+
   for (int operator_key = 0; operator_key < ssize(quarkline_indices); ++operator_key) {
     auto const &op = quarkline_indices[operator_key];
     ssize_t rnd_counter = 0;
     int check = -1;
-    
+
     LT_FINE_START;
     // Using an explicit copy for vdv here makes sense because then performance
-    // of the daggered and undaggered dilution is the same at the cost of a 
+    // of the daggered and undaggered dilution is the same at the cost of a
     // single explicit transposition
     Eigen::MatrixXcd vdv;
-    if( op.need_vdaggerv_daggering ){
+    if (op.need_vdaggerv_daggering) {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1).adjoint();
-    }else{
+    } else {
       vdv = meson_operator.return_vdaggerv(op.id_vdaggerv, t1);
     }
     LT_FINE_STOP;
-    LT_FINE_PRINT( (op.need_vdaggerv_daggering ? 
-                    "[DilutedFactorFactory::Q2] return_vdaggerv^dagger Thread " :
-                    "[DilutedFactorFactory::Q2] return_vdaggerv Thread ") );
+    LT_FINE_PRINT((op.need_vdaggerv_daggering
+                       ? "[DilutedFactorFactory::Q2] return_vdaggerv^dagger Thread "
+                       : "[DilutedFactorFactory::Q2] return_vdaggerv Thread "));
     Eigen::MatrixXcd M = Eigen::MatrixXcd::Zero(dilD * dilE, 4 * nev);
 
     for (const auto &rnd_id : op.rnd_vec_ids) {
@@ -216,28 +211,29 @@ void DilutedFactorFactory<DilutedFactorType::Q2>::build(Key const &time_key) {
         // but should never be computed twice because it is quite expensive
         for (int row = 0; row < dilD; row++) {
           for (int col = 0; col < 4; col++) {
-              M.block(col * dilE, row * nev, dilE, nev).noalias() =
-                  peram[rnd_id.first]
-                      .block((t1 * 4 + row) * nev, (b1 * dilD + col) * dilE, nev, dilE)
-                      .adjoint() *
-                      vdv;
+            M.block(col * dilE, row * nev, dilE, nev).noalias() =
+                peram[rnd_id.first]
+                    .block((t1 * 4 + row) * nev, (b1 * dilD + col) * dilE, nev, dilE)
+                    .adjoint() *
+                vdv;
             // gamma_5 trick
             if (((row + col) == 3) || (abs(row - col) > 1))
               M.block(col * dilE, row * nev, dilE, nev) *= -1.;
           }
         }
         LT_FINE_STOP;
-        LT_FINE_PRINT( (op.need_vdaggerv_daggering ?
-                       "[DilutedFactorFactory::Q2] Peram_dagger*VdaggerV^dagger Thread " :
-                       "[DilutedFactorFactory::Q2] Peram_dagger*VdaggerV Thread ") );
+        LT_FINE_PRINT(
+            (op.need_vdaggerv_daggering
+                 ? "[DilutedFactorFactory::Q2] Peram_dagger*VdaggerV^dagger Thread "
+                 : "[DilutedFactorFactory::Q2] Peram_dagger*VdaggerV Thread "));
       }
-      
+
       LT_FINE_START;
       Eigen::MatrixXcd matrix =
           Eigen::MatrixXcd::Zero(eigenspace_dirac_size, eigenspace_dirac_size);
 
       const ssize_t gamma_id = op.gamma[0];
-      
+
       // this is reasonably fast (~15 Gflop/s) but should not be redone
       for (ssize_t block_dil = 0; block_dil < dilD; block_dil++) {
         const Complex value = gamma_vec[gamma_id].value[block_dil];
@@ -245,8 +241,7 @@ void DilutedFactorFactory<DilutedFactorType::Q2>::build(Key const &time_key) {
         for (int row = 0; row < dilD; row++) {
           for (int col = 0; col < dilD; col++) {
             matrix.block(row * dilE, col * dilE, dilE, dilE).noalias() +=
-                value *
-                M.block(row * dilE, block_dil * nev, dilE, nev) *
+                value * M.block(row * dilE, block_dil * nev, dilE, nev) *
                 peram[rnd_id.second].block(
                     (t1 * 4 + gamma_index) * nev, (b2 * dilD + col) * dilE, nev, dilE);
           }

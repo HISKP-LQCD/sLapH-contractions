@@ -4,20 +4,20 @@
 
 void EigenVector::write_eigen_vector(const std::string &filename,
                                      const ssize_t t,
-                                     const ssize_t verbose){
+                                     const ssize_t verbose) {
   // setting up file
   std::ofstream outfile(filename, std::ofstream::binary);
   if (outfile) {
-      std::streamsize  begin = outfile.tellp();
-      std::streamsize eigsys_bytes =2*V[t].rows()*V[t].cols()*sizeof(double); 
-      outfile.write(reinterpret_cast<char*> (V[t].data()), eigsys_bytes);
-      std::streamsize end = outfile.tellp();
-      if ( (end - begin)/eigsys_bytes != 1 ){
-        std::ostringstream oss;
-        oss << "Timeslice:  " << t << ". Error: write incomplete, exiting. "
-            << (end - begin) << " bytes instead of expected " << eigsys_bytes << " bytes";
-        throw std::runtime_error(oss.str());
-      } 
+    std::streamsize begin = outfile.tellp();
+    std::streamsize eigsys_bytes = 2 * V[t].rows() * V[t].cols() * sizeof(double);
+    outfile.write(reinterpret_cast<char *>(V[t].data()), eigsys_bytes);
+    std::streamsize end = outfile.tellp();
+    if ((end - begin) / eigsys_bytes != 1) {
+      std::ostringstream oss;
+      oss << "Timeslice:  " << t << ". Error: write incomplete, exiting. "
+          << (end - begin) << " bytes instead of expected " << eigsys_bytes << " bytes";
+      throw std::runtime_error(oss.str());
+    }
   } else {
     throw std::runtime_error("Eigenvector file does not exist!");
   }
@@ -31,13 +31,12 @@ void EigenVector::write_eigen_vector(const std::string &filename,
               << ":\t" << (V[t].adjoint() * V[t]).sum() << std::endl;
   }
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void EigenVector::read_eigen_vector(const std::string &filename,
                                     const ssize_t t,
                                     const ssize_t verbose,
                                     const bool mock) {
-  if(!mock){
+  if (!mock) {
     // buffer for read in
     std::vector<Complex> eigen_vec(V[t].rows());
     std::cout << "\tReading eigenvectors from files:" << filename << std::endl;
@@ -74,10 +73,8 @@ void EigenVector::read_eigen_vector(const std::string &filename,
     std::cout << "Randomizing eigenvectors ts: " << t << std::endl;
     V[t].setRandom();
   }
-
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void EigenVector::read_eigen_vector(const std::string &filename, const ssize_t verbose) {
   for (int t = 0; t < ssize(V); t++) {
     std::string path = (boost::format("%s%03d") % filename % t).str();

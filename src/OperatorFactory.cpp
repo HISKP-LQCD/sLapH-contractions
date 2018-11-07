@@ -16,18 +16,19 @@ static ssize_t map_char_to_dir(const char dir) {
   return integer_dir;
 }
 
-//! \brief Displace Matrix of eigenvectors by looping over displacement
-//! vectors
-//!
-//! v is the Eigensystem at a specific timeslice
-//! t is the timeslice to take into account
-//! disp is a vector of displacement pairs
-//! verbose is an integer controlling the debug level
-//! The eigenvectors of timeslice t are displaced using the vector of
-//! displacement pairs. The First entry of each pair specifies the direction
-//! of the right acting derivative, ">" meaning forward and "<" meaning backward
-//!
-//! @todo Swap order of loops?
+/*! \brief Displace Matrix of eigenvectors by looping over displacement
+ vectors
+
+ v is the Eigensystem at a specific timeslice
+ t is the timeslice to take into account
+ disp is a vector of displacement pairs
+ verbose is an integer controlling the debug level
+ The eigenvectors of timeslice t are displaced using the vector of
+ displacement pairs. The First entry of each pair specifies the direction
+ of the right acting derivative, ">" meaning forward and "<" meaning backward
+
+ @todo Swap order of loops?
+ */
 Eigen::MatrixXcd displace_eigenvectors(Eigen::MatrixXcd const &v,
                                        GaugeField const &gauge,
                                        ssize_t const t,
@@ -39,11 +40,12 @@ Eigen::MatrixXcd displace_eigenvectors(Eigen::MatrixXcd const &v,
     // Loop over all eigenvectors in v
     for (int ev = 0; ev < v.cols(); ++ev) {
       // Multiply eigenvector with according gauge matrix
-      for (int spatial_ind = 0; spatial_ind < v.rows()/3; ++spatial_ind) {
+      for (int spatial_ind = 0; spatial_ind < v.rows() / 3; ++spatial_ind) {
         res.col(ev).segment(3 * spatial_ind, 3) =
             (d.first == '>')
                 ? gauge.forward_uv(res.col(ev), t, spatial_ind, map_char_to_dir(d.second))
-                : gauge.backward_uv(res.col(ev), t, spatial_ind, map_char_to_dir(d.second));
+                : gauge.backward_uv(
+                      res.col(ev), t, spatial_ind, map_char_to_dir(d.second));
       }  // End spatial loop
 
     }  // end eigenvector loop
@@ -138,7 +140,6 @@ void create_momenta_new(ssize_t const Lx,
 
 namespace {
 
-/******************************************************************************/
 void write_vdaggerv(const std::string &pathname,
                     const std::string &filename,
                     const Eigen::MatrixXcd &Vt) {
@@ -167,7 +168,6 @@ void write_vdaggerv(const std::string &pathname,
 
 }  // namespace
 
-/******************************************************************************/
 /*!
  * @param Lt, Lx, Ly, Lz  Temporal and spatial lattice extent
  * @param nb_ev           Number of eigenvectors
@@ -216,8 +216,6 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
   std::cout << "\tMeson operators initialised" << std::endl;
 }
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 void OperatorFactory::build_vdaggerv(const std::string &filename, const int config) {
   const ssize_t dim_row = 3 * Lx * Ly * Lz;
   const int id_unity = operator_lookuptable.index_of_unity;
@@ -325,8 +323,6 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   is_vdaggerv_set = true;
 }
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 void OperatorFactory::read_vdaggerv(const int config) {
   const int id_unity = operator_lookuptable.index_of_unity;
 
@@ -395,8 +391,6 @@ void OperatorFactory::read_vdaggerv(const int config) {
   is_vdaggerv_set = true;
 }
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 void OperatorFactory::read_vdaggerv_liuming(const int config) {
   const int id_unity = operator_lookuptable.index_of_unity;
 
@@ -496,9 +490,6 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
   is_vdaggerv_set = true;
 }
 
-// ------------------------ INTERFACE ------------------------------------------
-// -----------------------------------------------------------------------------
-
 /*!
  *  @param filename The name to write to / read from the V^\dagger V operators
  *  @param rnd_vec  The random vector
@@ -526,7 +517,6 @@ void OperatorFactory::create_operators(const std::string &filename,
   }
 }
 
-/******************************************************************************/
 /*!
  *  E.g. after building Quarkline Q2, vdaggerv is no longer needed and can be
  *  deleted to free up space

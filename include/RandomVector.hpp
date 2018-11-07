@@ -2,8 +2,6 @@
 
 #include "typedefs.hpp"
 
-#include "ranlxs.h"
-
 #include <complex>
 #include <fstream>
 #include <iostream>

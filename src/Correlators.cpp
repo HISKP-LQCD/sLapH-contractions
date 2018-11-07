@@ -7,8 +7,8 @@
 #include "DilutedFactorY.hpp"
 #include "StopWatch.hpp"
 #include "dilution-iterator.hpp"
-#include "typedefs.hpp"
 #include "local_timer.hpp"
+#include "typedefs.hpp"
 
 #include <omp.h>
 
@@ -18,7 +18,6 @@ int get_time_delta(BlockIterator const &slice_pair, int const Lt) {
   return abs((slice_pair.sink() - slice_pair.source() - Lt) % Lt);
 }
 
-/******************************************************************************/
 /*!
  *  @param quarklines       Instance of Quarklines. Contains prebuilt
  *                          combinations of operators and perambulators
@@ -58,14 +57,14 @@ void contract(const ssize_t Lt,
     diagrams.emplace_back(new C20(corr_lookup.C20, output_path, output_filename, Lt));
   if (!corr_lookup.C20V.empty())
     diagrams.emplace_back(new C20V(corr_lookup.C20V, output_path, output_filename, Lt));
-  
+
   if (!corr_lookup.C3c.empty())
     diagrams.emplace_back(new C3c(corr_lookup.C3c, output_path, output_filename, Lt));
   if (!corr_lookup.C30.empty())
     diagrams.emplace_back(new C30(corr_lookup.C30, output_path, output_filename, Lt));
   if (!corr_lookup.C30V.empty())
     diagrams.emplace_back(new C30V(corr_lookup.C30V, output_path, output_filename, Lt));
-  
+
   if (!corr_lookup.C4cB.empty())
     diagrams.emplace_back(new C4cB(corr_lookup.C4cB, output_path, output_filename, Lt));
   if (!corr_lookup.C4cC.empty())
@@ -74,7 +73,7 @@ void contract(const ssize_t Lt,
     diagrams.emplace_back(new C40B(corr_lookup.C40B, output_path, output_filename, Lt));
   if (!corr_lookup.C40C.empty())
     diagrams.emplace_back(new C40C(corr_lookup.C40C, output_path, output_filename, Lt));
-  
+
   if (!corr_lookup.C4cD.empty())
     diagrams.emplace_back(new C4cD(corr_lookup.C4cD, output_path, output_filename, Lt));
   if (!corr_lookup.C4cV.empty())
@@ -130,8 +129,8 @@ void contract(const ssize_t Lt,
           diagram->assemble(t, slice_pair, q);
         }  // End of slice pair loop.
         LT_CORRELATOR_STOP;
-        LT_CORRELATOR_PRINT( std::string("[contract] ") + diagram->name() );
-      }    // End of diagram loop.
+        LT_CORRELATOR_PRINT(std::string("[contract] ") + diagram->name());
+      }  // End of diagram loop.
 
       q.clear();
     }  // End of block pair loop.

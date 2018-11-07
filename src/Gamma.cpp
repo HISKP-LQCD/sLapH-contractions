@@ -7,7 +7,10 @@ std::complex<double> const I(0.0, 1.0);
 /*! Look-up table for gamma matrices.
 
   For every Gamma structure (currently 0-15) the four non-zero values are specified.
-  The index i in row[i] specifies the column of the gamma matrix, the value of row[i] is the row number with a non zero value. Thus gamma[j].row[k] = l means that in the j-th matrix there is a non-zero value at column k and row l. the next line specifies the value of the column -> gamma[j].value[k] = n with n \in {-1;1;-i;i}.
+  The index i in row[i] specifies the column of the gamma matrix, the value of row[i] is
+  the row number with a non zero value. Thus gamma[j].row[k] = l means that in the j-th
+  matrix there is a non-zero value at column k and row l. the next line specifies the
+  value of the column -> gamma[j].value[k] = n with n \in {-1;1;-i;i}.
   @todo Refactor that into physical quantum number class along with momentum
   */
 std::vector<gamma_lookup> make_gamma() {

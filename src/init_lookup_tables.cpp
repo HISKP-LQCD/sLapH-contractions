@@ -20,8 +20,6 @@ namespace {
 
 using Vector = QuantumNumbers::VectorData;
 
-/******************************************************************************/
-
 /*!
  *  Check whether a momentum is within the set of desired momenta specified
  *  in the correlator_list
@@ -81,7 +79,6 @@ static bool momenta_below_cutoff(Vector const &p1,
 
 }  // end of unnamed namespace
 
-/******************************************************************************/
 /*! Build an array with all the quantum numbers needed for a particular
  *  correlation function respecting physical conservation laws
  *
@@ -353,7 +350,7 @@ static std::string vector_to_string(const std::vector<std::pair<char, char>> &in
   }
   return out;
 }
-/******************************************************************************/
+
 /*! Create the names for output files and hdf5 datasets.
  *
  *  @param[in]  corr_type {C1,C2c,C20,C20V,C3c,C30,C4cD,C4cV,C4cC,C4cB,C40D,
@@ -468,7 +465,6 @@ void build_VdaggerV_lookup(
   }
 }
 
-/******************************************************************************/
 /*! @brief  Obtain index combinations of random vectors for charged correlator
  *          i.e. correlator utilizing @f$ \gamma_5 @f$-trick
  *
@@ -602,9 +598,7 @@ static ssize_t build_corrC_lookup(std::vector<ssize_t> const ql_ids,
   } else
     return (it - trQ0Q2_lookup.begin());
 }
-/******************************************************************************/
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -671,7 +665,6 @@ static void build_C1_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -741,7 +734,6 @@ static void build_C20V_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C2c.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -813,7 +805,7 @@ static void build_C2c_lookup(
     }
   }
 }
-/******************************************************************************/
+
 /*! Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -882,7 +874,6 @@ static void build_C20_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C30V.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -959,7 +950,6 @@ static void build_C30V_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C3c.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1028,7 +1018,6 @@ static void build_C3c_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C30.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1092,7 +1081,6 @@ static void build_C30_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C4cD. Also sets
  *  trQ0Q2.
  *
@@ -1179,7 +1167,6 @@ static void build_C4cD_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C40D.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1258,7 +1245,6 @@ static void build_C40D_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C4cV. Also sets
  *  trQ0Q2.
  *
@@ -1345,7 +1331,6 @@ static void build_C4cV_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C40V.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1424,7 +1409,6 @@ static void build_C40V_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C4cC.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1491,7 +1475,6 @@ static void build_C4cC_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C40C.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1558,7 +1541,6 @@ static void build_C40C_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C4cB.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1625,7 +1607,6 @@ static void build_C4cB_lookup(
   }
 }
 
-/******************************************************************************/
 /*! Create lookuptable where to find the quarklines to build C40B.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1692,8 +1673,6 @@ static void build_C40B_lookup(
   }
 }
 
-/******************************************************************************/
-/******************************************************************************/
 /*!
  *  from GlobalData::correlators_list, GlobalData::operator::list and
  *  GlobalData::quarks
@@ -1919,5 +1898,4 @@ void init_lookup_tables(GlobalData &gd) {
       gd.operator_lookuptable.need_gaugefield = true;
       break;
     }
-
 }

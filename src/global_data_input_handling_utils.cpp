@@ -7,19 +7,17 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
-
 namespace {
 
 using Vector = QuantumNumbers::VectorData;
 
-// *****************************************************************************
 // A helper function to simplify the main part.
 template <class T>
 inline std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
   std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
   return os;
 }
-// *****************************************************************************
+
 /// @brief Stream insertion operator for slave.
 ///
 /// @param stream The stream into which quark is being inserted.
@@ -39,7 +37,6 @@ inline std::ostream &operator<<(std::ostream &stream, const quark &quark) {
                 << "\n";
 }
 
-// *****************************************************************************
 inline Vector create_3darray_from_string(std::string in) {
   Vector out;
   std::vector<std::string> tokens;
@@ -53,7 +50,7 @@ inline Vector create_3darray_from_string(std::string in) {
           boost::lexical_cast<int>(tokens[1]),
           boost::lexical_cast<int>(tokens[2])};
 }
-// *****************************************************************************
+
 inline void create_all_momentum_combinations(const int p, std::vector<Vector> &out) {
   // creating all momentum combinations possible and needed
   int max_p = p;
@@ -67,7 +64,7 @@ inline void create_all_momentum_combinations(const int p, std::vector<Vector> &o
     if (p == all[0] * all[0] + all[1] * all[1] + all[2] * all[2])
       out.push_back(all);
 }
-// *****************************************************************************
+
 inline void create_mom_array_from_string(std::string in,
                                          std::vector<std::vector<Vector>> &out) {
   // erase the p (first entry)
@@ -93,7 +90,6 @@ DisplacementDirection make_displacement_direction(std::vector<std::string> token
   return result;
 }
 
-// *****************************************************************************
 inline void create_displacement_direction_from_string(
     std::string in, std::vector<DisplacementDirection> &out) {
   // erase the d (first entry)
@@ -109,8 +105,6 @@ inline void create_displacement_direction_from_string(
 }
 
 }  // end of unnamed namespace
-/******************************************************************************/
-/******************************************************************************/
 
 namespace global_data_utils {
 
@@ -197,7 +191,6 @@ void quark_check(quark quarks) {
   }
 }
 
-/*****************************************************************************/
 /*!
  *  @param operator_string  Operator as specified in the infile:
  *                          A ';'-sperated list with individual operators. The
@@ -249,7 +242,8 @@ Operators make_operator_list(const std::string &operator_string) {
         } else if ((str.compare(1, 1, "<") == 0) || (str.compare(1, 1, ">") == 0))
           create_displacement_direction_from_string(str, disp_dirs);
         else {
-          throw std::runtime_error("Something wrong with the displacement in the operator definition!");
+          throw std::runtime_error(
+              "Something wrong with the displacement in the operator definition!");
         }
       }
       // getting the momenta
@@ -344,7 +338,8 @@ Correlators_2 make_correlator(const std::string &correlator_string) {
 
     // catching wrong entries
     else {
-      throw std::runtime_error("There is something wrong with the correlators in the input file!");
+      throw std::runtime_error(
+          "There is something wrong with the correlators in the input file!");
     }
   }
 

@@ -4,8 +4,6 @@
 
 namespace {
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 static std::vector<std::string> create_rnd_vector_file_names(
     const int config, const int nb_of_eigen_vec, const std::vector<quark> quarks) {
   std::vector<std::string> filename_list;  // the return vector of file names
@@ -25,8 +23,7 @@ static std::vector<std::string> create_rnd_vector_file_names(
 
   return filename_list;
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 static std::vector<std::string> create_perambulator_file_names(
     const int config,
     const int Lt,
@@ -57,8 +54,7 @@ static std::vector<std::string> create_perambulator_file_names(
   }
   return filename_list;
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 static std::string create_eigenvector_file_name(const ssize_t config,
                                                 const std::string &path_eigenvectors,
                                                 const std::string &name_eigenvectors) {
@@ -67,16 +63,12 @@ static std::string create_eigenvector_file_name(const ssize_t config,
       .str();
 }
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 static std::string create_correlator_file_name(const ssize_t config) {
   return (boost::format("_cnfg%04d.h5") % static_cast<int>(config)).str();
 }
 
 }  // end anonymous namespace
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 /*!
  * @param config Configuration number for which paths and file names shall be
  *               constructed

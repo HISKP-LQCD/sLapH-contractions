@@ -67,8 +67,8 @@ void lattice_input_data_handling(const std::string path_output,
     std::cout << "\tConfigurations will be read from:\n\t\t" << path_config << "/"
               << std::endl;
     std::cout << "\tConfigurations will be hyp smeared with parameter set "
-              << "(alpha1, alpha2, N):\n\t\t"
-              << alpha1 << ", " << alpha2 << ", " << iterations << std::endl;
+              << "(alpha1, alpha2, N):\n\t\t" << alpha1 << ", " << alpha2 << ", "
+              << iterations << std::endl;
   } catch (std::exception &e) {
     std::cout << e.what() << "\n";
     exit(1);
@@ -235,7 +235,6 @@ void correlator_input_data_handling(const std::vector<std::string> &correlator_s
 
 }  // end of unnamed namespace
 
-/******************************************************************************/
 /*!
  *  @param quark_configs            Quarks as read from the infile
  *  @param operator_list_configs    Operators as read from the infile
@@ -255,9 +254,16 @@ void input_handling(GlobalData &gd,
                     const std::vector<std::string> &operator_list_configs,
                     const std::vector<std::string> &correlator_list_configs) {
   // Checks and terminal output for lattice, config and paths
-  lattice_input_data_handling(
-      gd.path_output, gd.name_lattice, gd.path_config, gd.hyp_parameters.alpha1,
-      gd.hyp_parameters.alpha2, gd.hyp_parameters.iterations, gd.Lt, gd.Lx, gd.Ly, gd.Lz);
+  lattice_input_data_handling(gd.path_output,
+                              gd.name_lattice,
+                              gd.path_config,
+                              gd.hyp_parameters.alpha1,
+                              gd.hyp_parameters.alpha2,
+                              gd.hyp_parameters.iterations,
+                              gd.Lt,
+                              gd.Lx,
+                              gd.Ly,
+                              gd.Lz);
   config_input_data_handling(gd.start_config, gd.end_config, gd.delta_config);
   eigenvec_perambulator_input_data_handling(gd.number_of_eigen_vec,
                                             gd.path_eigenvectors,

@@ -2,14 +2,14 @@
 
 #include "git.hpp"
 
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <Eigen/Core>
-#include <Eigen/Dense>
-#include <Eigen/SparseCore>
 
 #include <algorithm>
 #include <cmath>
@@ -21,7 +21,6 @@
 
 namespace po = boost::program_options;
 
-/*****************************************************************************/
 /*! Convenience function for when a @em store_to value is being provided
  *  to typed_value.
  *
@@ -34,8 +33,6 @@ boost::program_options::typed_value<T> *make_value(T *store_to) {
   return boost::program_options::value<T>(store_to);
 }
 
-/******************************************************************************/
-/******************************************************************************/
 /*! Reading of infile is delegated to boost::program_options.
  *
  *  @see GlobalData::input_handling()
@@ -103,9 +100,10 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   config.add_options()("alpha2",
                        po::value<double>(&gd.hyp_parameters.alpha2)->default_value(0),
                        "alpha2: Outer level strength of Hyp-smearing");
-  config.add_options()("iterations",
-                       po::value<ssize_t>(&gd.hyp_parameters.iterations)->default_value(0),
-                       "iterations: Number of Hyp-smearing applications");
+  config.add_options()(
+      "iterations",
+      po::value<ssize_t>(&gd.hyp_parameters.iterations)->default_value(0),
+      "iterations: Number of Hyp-smearing applications");
 
   // eigenvector options
   config.add_options()("number_of_eigen_vec",
@@ -328,36 +326,33 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   int total_number_of_random_combinations_in_trQ1Q1 = 0;
   for (auto const &q : gd.correlator_lookuptable.trQ1Q1) {
-    total_number_of_random_combinations_in_trQ1Q1 += 
-      gd.quarkline_lookuptable.Q1[q.lookup[0]].rnd_vec_ids.size() *
-      gd.quarkline_lookuptable.Q1[q.lookup[1]].rnd_vec_ids.size();
+    total_number_of_random_combinations_in_trQ1Q1 +=
+        gd.quarkline_lookuptable.Q1[q.lookup[0]].rnd_vec_ids.size() *
+        gd.quarkline_lookuptable.Q1[q.lookup[1]].rnd_vec_ids.size();
   }
   std::cout << "\ttrQ1Q1:\t" << std::fixed << std::setprecision(2)
-            <<  gd.Lt * gd.Lt *
-                   total_number_of_random_combinations_in_trQ1Q1 * sizeof(Complex) /
-                   std::pow(2, 30)
+            << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ1Q1 *
+                   sizeof(Complex) / std::pow(2, 30)
             << " Gb" << std::endl;
 
   int total_number_of_random_combinations_in_trQ0Q2 = 0;
   for (auto const &q : gd.correlator_lookuptable.trQ0Q2) {
-    total_number_of_random_combinations_in_trQ0Q2 += 
-      gd.quarkline_lookuptable.Q0[q.lookup[0]].rnd_vec_ids.size() *
-      gd.quarkline_lookuptable.Q2V[q.lookup[1]].rnd_vec_ids.size();
+    total_number_of_random_combinations_in_trQ0Q2 +=
+        gd.quarkline_lookuptable.Q0[q.lookup[0]].rnd_vec_ids.size() *
+        gd.quarkline_lookuptable.Q2V[q.lookup[1]].rnd_vec_ids.size();
   }
   std::cout << "\ttrQ0Q2:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt * gd.Lt *
-                   total_number_of_random_combinations_in_trQ0Q2 * sizeof(Complex) /
-                   std::pow(2, 30)
+            << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ0Q2 *
+                   sizeof(Complex) / std::pow(2, 30)
             << " Gb" << std::endl;
 
   int total_number_of_random_combinations_in_trQ1 = 0;
   for (auto const &q : gd.correlator_lookuptable.trQ1) {
-    total_number_of_random_combinations_in_trQ1 += 
-      gd.quarkline_lookuptable.Q1[q.lookup[0]].rnd_vec_ids.size();
+    total_number_of_random_combinations_in_trQ1 +=
+        gd.quarkline_lookuptable.Q1[q.lookup[0]].rnd_vec_ids.size();
   }
   std::cout << "\ttrQ1:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt *
-                   total_number_of_random_combinations_in_trQ1 * sizeof(Complex) /
+            << gd.Lt * total_number_of_random_combinations_in_trQ1 * sizeof(Complex) /
                    std::pow(2, 30)
             << " Gb" << std::endl;
 
@@ -367,48 +362,48 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 #define GLOBAL_DATA_PRINT(x) (std::cout << "    " << #x << ": " << x << "\n")
 
 std::ostream &operator<<(std::ostream &os, std::map<int, int> const &map) {
-    for (auto const &elem : map) {
-        os << elem.first << "->" << elem.second << " ";
-    }
-    return os;
+  for (auto const &elem : map) {
+    os << elem.first << "->" << elem.second << " ";
+  }
+  return os;
 }
 
 std::ostream &operator<<(std::ostream &os, GlobalData const &gd) {
-    std::cout << "\nGlobal Data:\n";
+  std::cout << "\nGlobal Data:\n";
 
-    std::cout << "  Lattice size:\n";
-    GLOBAL_DATA_PRINT(gd.Lx);
-    GLOBAL_DATA_PRINT(gd.Ly);
-    GLOBAL_DATA_PRINT(gd.Lz);
-    GLOBAL_DATA_PRINT(gd.Lt);
+  std::cout << "  Lattice size:\n";
+  GLOBAL_DATA_PRINT(gd.Lx);
+  GLOBAL_DATA_PRINT(gd.Ly);
+  GLOBAL_DATA_PRINT(gd.Lz);
+  GLOBAL_DATA_PRINT(gd.Lt);
 
-    std::cout << "  Other stuff:\n";
-    GLOBAL_DATA_PRINT(gd.dim_row);
-    GLOBAL_DATA_PRINT(gd.V_TS);
-    GLOBAL_DATA_PRINT(gd.V_for_lime);
-    GLOBAL_DATA_PRINT(gd.number_of_eigen_vec);
-    GLOBAL_DATA_PRINT(gd.number_of_inversions);
-    GLOBAL_DATA_PRINT(gd.start_config);
-    GLOBAL_DATA_PRINT(gd.end_config);
-    GLOBAL_DATA_PRINT(gd.delta_config);
-    GLOBAL_DATA_PRINT(gd.verbose);
-    GLOBAL_DATA_PRINT(gd.nb_eigen_threads);
-    GLOBAL_DATA_PRINT(gd.path_eigenvectors);
-    GLOBAL_DATA_PRINT(gd.name_eigenvectors);
-    GLOBAL_DATA_PRINT(gd.filename_eigenvectors);
-    GLOBAL_DATA_PRINT(gd.path_perambulators);
-    GLOBAL_DATA_PRINT(gd.name_perambulators);
-    GLOBAL_DATA_PRINT(gd.name_lattice);
-    GLOBAL_DATA_PRINT(gd.filename_ending_correlators);
-    GLOBAL_DATA_PRINT(gd.path_output);
-    GLOBAL_DATA_PRINT(gd.path_config);
-    GLOBAL_DATA_PRINT(gd.handling_vdaggerv);
-    GLOBAL_DATA_PRINT(gd.path_vdaggerv);
+  std::cout << "  Other stuff:\n";
+  GLOBAL_DATA_PRINT(gd.dim_row);
+  GLOBAL_DATA_PRINT(gd.V_TS);
+  GLOBAL_DATA_PRINT(gd.V_for_lime);
+  GLOBAL_DATA_PRINT(gd.number_of_eigen_vec);
+  GLOBAL_DATA_PRINT(gd.number_of_inversions);
+  GLOBAL_DATA_PRINT(gd.start_config);
+  GLOBAL_DATA_PRINT(gd.end_config);
+  GLOBAL_DATA_PRINT(gd.delta_config);
+  GLOBAL_DATA_PRINT(gd.verbose);
+  GLOBAL_DATA_PRINT(gd.nb_eigen_threads);
+  GLOBAL_DATA_PRINT(gd.path_eigenvectors);
+  GLOBAL_DATA_PRINT(gd.name_eigenvectors);
+  GLOBAL_DATA_PRINT(gd.filename_eigenvectors);
+  GLOBAL_DATA_PRINT(gd.path_perambulators);
+  GLOBAL_DATA_PRINT(gd.name_perambulators);
+  GLOBAL_DATA_PRINT(gd.name_lattice);
+  GLOBAL_DATA_PRINT(gd.filename_ending_correlators);
+  GLOBAL_DATA_PRINT(gd.path_output);
+  GLOBAL_DATA_PRINT(gd.path_config);
+  GLOBAL_DATA_PRINT(gd.handling_vdaggerv);
+  GLOBAL_DATA_PRINT(gd.path_vdaggerv);
 
-    std::cout << "  Momentum Cutoff: ";
-    std::cout << gd.momentum_cutoff << "\n";
+  std::cout << "  Momentum Cutoff: ";
+  std::cout << gd.momentum_cutoff << "\n";
 
-    //! @TODO Print more stuff here.
+  //! @TODO Print more stuff here.
 
-    return os;
+  return os;
 }

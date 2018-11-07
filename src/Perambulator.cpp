@@ -2,7 +2,6 @@
 
 #include "StopWatch.hpp"
 
-/******************************************************************************/
 /*!
  *  @param entity       The entry where this peram will be stored
  *  @param Lt           Total number of timeslices - for each peram the same
@@ -18,7 +17,7 @@ void Perambulator::read_perambulator(const ssize_t entity,
                                      const bool mock) {
   StopWatch swatch("Perambulator I/O");
   swatch.start();
-  if(!mock){
+  if (!mock) {
     FILE *fp = NULL;
     std::cout << "\tReading perambulator from file:\n\t\t" << filename << "\n";
 
@@ -34,8 +33,9 @@ void Perambulator::read_perambulator(const ssize_t entity,
     fclose(fp);
     // check if all data were read in
     if (check_read != peram[entity].size()) {
-      std::cout << "\n\nFailed to read perambulator. Expected size " << peram[entity].size()
-                << " and got " << check_read << " B." << std::endl;
+      std::cout << "\n\nFailed to read perambulator. Expected size "
+                << peram[entity].size() << " and got " << check_read << " B."
+                << std::endl;
       exit(1);
     }
 
@@ -70,7 +70,6 @@ void Perambulator::read_perambulator(const ssize_t entity,
   swatch.print();
 }
 
-/******************************************************************************/
 /*!
  *  @param Lt            Total number of timeslices - for each peram the same
  *  @param nb_eigen_vec  Total number of eigen vecs - for each peram the same
@@ -96,5 +95,3 @@ void Perambulator::read_perambulators_from_separate_files(
     }
   }
 }
-
-/******************************************************************************/

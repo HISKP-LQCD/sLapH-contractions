@@ -2,8 +2,8 @@
 
 #include "typedefs.hpp"
 
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+#include "ranlxs.h"
+
 void RandomVector::set(const ssize_t entity, const int seed) {
   // initialisation of the rando vector to create Z2 random vector
   rlxs_init(0, seed);
@@ -25,14 +25,14 @@ void RandomVector::set(const ssize_t entity, const int seed) {
     vec[entity * length + i] = Complex(re, im);
   }
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-void RandomVector::set(const ssize_t entity, const int seed, const std::string &filename) {
+
+void RandomVector::set(const ssize_t entity,
+                       const int seed,
+                       const std::string &filename) {
   set(entity, seed);
   write_random_vector(filename);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void RandomVector::write_random_vector(const std::string &filename) const {
   // writing random vector to file
   FILE *fp = NULL;
@@ -48,8 +48,7 @@ void RandomVector::write_random_vector(const std::string &filename) const {
               << std::endl;
   fclose(fp);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void RandomVector::write_random_vector(const ssize_t entity,
                                        const std::string &filename) const {
   // writing random vector to file
@@ -66,8 +65,7 @@ void RandomVector::write_random_vector(const ssize_t entity,
               << std::endl;
   fclose(fp);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void RandomVector::read_random_vector(const std::string &filename) {
   // open file for reading
   FILE *fp = NULL;
@@ -85,8 +83,7 @@ void RandomVector::read_random_vector(const std::string &filename) {
               << std::endl;
   fclose(fp);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void RandomVector::read_random_vector(const ssize_t entity, const std::string &filename) {
   // open file for reading
   std::cout << "\tReading random vector from file:\n\t\t" << filename << std::endl;
@@ -103,8 +100,7 @@ void RandomVector::read_random_vector(const ssize_t entity, const std::string &f
               << std::endl;
   fclose(fp);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
+
 void RandomVector::read_random_vectors_from_separate_files(
     const std::vector<std::string> &filename_list) {
   if (ssize(filename_list) != nb_entities)
@@ -115,5 +111,3 @@ void RandomVector::read_random_vectors_from_separate_files(
   for (ssize_t i = 0; i < ssize(filename_list); i++)
     read_random_vector(i, filename_list[i]);
 }
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
