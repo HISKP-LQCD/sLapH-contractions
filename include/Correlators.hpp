@@ -18,8 +18,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-/******************************************************************************/
-
 /*! Calculates correlation functions according to the stochastic Laplacian
  *  Heaviside (sLapH) method.
  *
@@ -45,7 +43,6 @@
  *  @todo make other correlators call one_t quarklines as well
  *
  */
-
 void contract(const ssize_t Lt,
               const ssize_t dilT,
               const ssize_t dilE,

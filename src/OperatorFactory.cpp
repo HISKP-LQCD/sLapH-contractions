@@ -16,7 +16,7 @@ static ssize_t map_char_to_dir(const char dir) {
   return integer_dir;
 }
 
-/*! \brief Displace Matrix of eigenvectors by looping over displacement
+/*! Displace Matrix of eigenvectors by looping over displacement
  vectors
 
  v is the Eigensystem at a specific timeslice

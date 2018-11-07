@@ -24,7 +24,7 @@ typedef boost::multi_array<int, 2> look;
 typedef boost::multi_array<Eigen::Matrix3cd, 2> array_3cd_d2_eigen;
 
 //! \class GaugeField
-//! \brief Class for handling the Gaugefield, displacement routines and Smearing
+//! Class for handling the Gaugefield, displacement routines and Smearing
 //! methods.
 //!                                                                             
 //! This Class reads in timeslices from Gaugefields in lime format into a
@@ -37,14 +37,14 @@ typedef boost::multi_array<Eigen::Matrix3cd, 2> array_3cd_d2_eigen;
 
 class GaugeField {
   public:
-    //! \brief Constructor
+    //! Constructor.
 
     //!t0 is first, tf is last timeslice to be read in
     GaugeField(const int Lt, const int Lx, const int Ly, const int Lz, 
                const std::string config_path, const ssize_t t0, 
                const ssize_t tf, const ssize_t ndir);
     ~GaugeField() {};
-    //! \brief overloaded access operator
+    //! Overloaded access operator.
     //!
     //! returns the complex 3x3 link variable of timeslice t at volumeindex v in
     //! direction dir
@@ -53,7 +53,7 @@ class GaugeField {
                                               const ssize_t dir) const {
         return (tslices.at(t))[v][dir];
     };
-    //! \brief read in gauge field
+    //! read in gauge field
     //! 
     //! slice_i is the initial, slice_f the final timeindex of the lattice.
     //! The read in lime gaugefield is internally splitted into slice_f -
@@ -62,25 +62,25 @@ class GaugeField {
     void read_gauge_field(const ssize_t config_i, const ssize_t slice_i,
                           const ssize_t slice_f);
 
-    //! \brief Hypercubic Blocking in 3 dimensions
+    //! Hypercubic Blocking in 3 dimensions
     //! 
     //! t is the timeslice index, alpha_1 the inner weight, alpha_2 the outer
     //! weight and iter the number of iterations the smearing is applied
     void smearing_hyp(const ssize_t t, const double alpha_1,
                       const double alpha_2, const ssize_t iter);
-    //! \brief Stout Smearing of Gaugelinks
+    //! Stout Smearing of Gaugelinks
     //!
     //! t is the timeslice index, rho is the staple weight and iter the number
     //! of applications of the smearing
     void smearing_stout(const ssize_t t, const double rho, const ssize_t iter);
 
-    //! \brief APE Smearing of one timeslice of Gaugelinks
+    //! APE Smearing of one timeslice of Gaugelinks
     //! 
     //! t is the timeslice index, alpha_1 is the staple weight, iter is the
     //! number of applications
     void smearing_ape(const ssize_t t, const double alpha_1, const ssize_t iter);
 
-    //! \brief Initialize lookup tables for 3d navigation through timeslices 
+    //! Initialize lookup tables for 3d navigation through timeslices 
     //! 
     //! LX: Lattice extent in X direction, LY: Lattice extent in Y direction,
     //! LZ: Lattice extent in Z direction 
@@ -95,7 +95,7 @@ class GaugeField {
     //!
     Eigen::Vector3f summed_displacement(const DisplacementDirection);
 
-    //! \brief Forward displacement acting to the right once in direction dir
+    //! Forward displacement acting to the right once in direction dir
     //! 
     //! v is the eigensystem at timeslice t
     //! t is the timeslice index
@@ -104,7 +104,7 @@ class GaugeField {
                                                   const int spatial_ind,
                                                   const int direction) const;
 
-    //! \brief Backward displacement acting to the right once in direction dir
+    //! Backward displacement acting to the right once in direction dir
     //! 
     //! v is the eigensystem at timeslice t
     //! t is the timeslice index
@@ -114,7 +114,7 @@ class GaugeField {
                                                   const int direction) const;
 
  
-    //! \brief Returns displaced vector or matrix
+    //! Returns displaced vector or matrix
     //! 
     //! v is the address of the Object to be displaced, t is the timeslice
     //! index, dir is one of 0,1 or 2 meaning x-,y- or z-direction respectively
@@ -152,38 +152,38 @@ class GaugeField {
     //                                              const ssize_t dir,
     //                                              const ssize_t verbose);
 
-    //! \brief Returns symmetric 2 times displaced vector or matrix
+    //! Returns symmetric 2 times displaced vector or matrix
     //! 
     //! v is the address of the Object to be displaced, t is the timeslice
     //! index, dir is one of 0,1 or 2 meaning x-,y- or z-direction respectively
     //Eigen::MatrixXcd disp_2(const Eigen::MatrixXcd& v, const ssize_t t,
     //                      const ssize_t dir);
-    //! \brief Gauge Transformation of timeslices
+    //! Gauge Transformation of timeslices
     //!
     //! For generating the transformation fields indices of the initial
     //! timeslice t0 and the final timeslice tf need to be passed
     void trafo(const ssize_t t0, const ssize_t tf);
 
-    //! \brief Returns a gaugetransformed transformed Eigenvector or LapH-Matrix
+    //! Returns a gaugetransformed transformed Eigenvector or LapH-Matrix
     //!
     //! If no transformation fields are generated, one is generated, otherwise
     //! first one is used
     Eigen::MatrixXcd trafo_ev(const Eigen::MatrixXcd& eig_sys);
 
-    //! \brief Returns plaquette for one timeslice
+    //! Returns plaquette for one timeslice
     //!
     //! t is the timeslice index of the gaugefield
     double plaque_ts(const ssize_t t);
 
   private:
   
-    //! \brief project one timeslice of lime Gaugefield to 3d timeslice
+    //! project one timeslice of lime Gaugefield to 3d timeslice
     //!
     //! t is the timeslice to be mapped timeslice points to the array of the
     //! lime Gaugefield.
     void map_timeslice_to_eigen(const ssize_t t, const double* timeslice);
 
-    //! \brief tmlQCD function to read in gaugefields to array of doubles
+    //! tmlQCD function to read in gaugefields to array of doubles
     //!
     //! gaugefield is a pointer to the storage for the gaugefield
     //! filename indicates the path to the configuration
@@ -193,30 +193,30 @@ class GaugeField {
                                                      const ssize_t slice_i,
                                                      const ssize_t slice_f);
 
-    //! \brief Build gauge array
+    //! Build gauge array
     //!
     //! Constructs trange gaugefields, stored internally
     void build_gauge_array(const ssize_t trange);
 
-    //! \brief Returns palquette at one space-time point
+    //! Returns palquette at one space-time point
     //! 
     //! mu and nu are plaquette directions, vol is the volume index, t is the
     //! timeslice index
     //! Used internally by plaque_ts
     double plaque_pnt(const ssize_t mu, const ssize_t nu, const ssize_t vol, const ssize_t t);
 
-  //! \brief Parameters specifying size of the Lattice
+  //! Parameters specifying size of the Lattice
   const int Lt, Lx, Ly, Lz, V3, dim_row, V_TS, V_for_lime;
-  //! \brief Path to gauge configurations
+  //! Path to gauge configurations
   const std::string config_path;
-  //! \brief Vector holding boost multi_arrays for range of timeslices
+  //! Vector holding boost multi_arrays for range of timeslices
   std::vector<array_3cd_d2_eigen> tslices;
-  //! \brief One 3d timeslice of Gaugelinks as 2d boost multi_array of 3x3
+  //! One 3d timeslice of Gaugelinks as 2d boost multi_array of 3x3
   //! Matrices
   array_3cd_d2_eigen omega;
-  //! \brief 2d boost_multiarray for indices in up direction
+  //! 2d boost_multiarray for indices in up direction
   look iup;
   
-  //! \brief 2d boost_multiarray for indices in down direction
+  //! 2d boost_multiarray for indices in down direction
   look idown;
 };
