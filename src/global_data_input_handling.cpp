@@ -11,9 +11,10 @@ using gdu::make_operator_list;
 using gdu::make_quark;
 using gdu::quark_check;
 
-/** Simplifies and cleans GlobalData::read_parameters()
+/**
+ * Simplifies and cleans GlobalData::read_parameters().
  *
- *  @todo Does this actually make it easier?
+ * @todo Does this actually make it easier?
  */
 void lattice_input_data_handling(const std::string path_output,
                                  const std::string name_lattice,
@@ -237,23 +238,18 @@ void correlator_input_data_handling(const std::vector<std::string> &correlator_s
 }  // end of unnamed namespace
 
 /**
- *  @param quark_configs            Quarks as read from the infile
- *  @param operator_list_configs    Operators as read from the infile
- *  @param correlator_list_configs  Correlators as read from the infile
+ *  @param[out] gd Global program state.
+ *  @param[in] quark_configs Quarks as read from the infile.
+ *  @param[in] operator_list_configs Operators as read from the infile.
+ *  @param[in] correlator_list_configs Correlators as read from the infile.
  *
- *  @param[out] GlobalData::quarks           Quarks munged into a quark struct
- *  @param[out] GlobalData::operator_list    Operators munged into a Operator
- *                                          struct
- *  @param[out] GlobalData::correlator_list  Correlators munged into a
- *                                          Correlators struct
- *
- *  @todo Split that into multiple functions for checks, output and munging
- *        to improve readability
+ *  @todo Split that into multiple functions for checks, output and munging to
+ *  improve readability
  */
 void input_handling(GlobalData &gd,
-                    const std::vector<std::string> &quark_configs,
-                    const std::vector<std::string> &operator_list_configs,
-                    const std::vector<std::string> &correlator_list_configs) {
+                    std::vector<std::string> const &quark_configs,
+                    std::vector<std::string> const &operator_list_configs,
+                    std::vector<std::string> const &correlator_list_configs) {
   // Checks and terminal output for lattice, config and paths
   lattice_input_data_handling(gd.path_output,
                               gd.name_lattice,
