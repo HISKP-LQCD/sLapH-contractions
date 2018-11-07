@@ -83,19 +83,4 @@ struct GlobalData {
  */
 void read_parameters(GlobalData &gd, int ac, char *av[]);
 
-/**
- * Fills the random vector and perambulator structs with the paths and file
- * names to read the data.
- */
-void build_IO_names(GlobalData &gd, ssize_t const config);
-  
-
-void input_handling(GlobalData &gd,
-                    std::vector<std::string> const &quark_configs,
-                    std::vector<std::string> const &operator_list_configs,
-                    std::vector<std::string> const &correlator_list_configs);
-
-void init_lookup_tables(GlobalData &gd);
-
-
 std::ostream &operator<<(std::ostream &os, GlobalData const &gd);

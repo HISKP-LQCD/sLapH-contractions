@@ -1,4 +1,4 @@
-#include "global_data.hpp"
+#include "global_data_build_IO_names.hpp"
 
 #include <boost/format.hpp>
 

@@ -1,4 +1,5 @@
-#include "global_data.hpp"
+#include "global_data_input_handling.hpp"
+
 #include "global_data_utils.hpp"
 
 namespace gdu = ::global_data_utils;

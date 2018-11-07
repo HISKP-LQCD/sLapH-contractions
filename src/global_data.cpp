@@ -1,6 +1,9 @@
 #include "global_data.hpp"
 
 #include "git.hpp"
+#include "global_data_build_IO_names.hpp"
+#include "global_data_input_handling.hpp"
+#include "init_lookup_tables.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -21,23 +24,19 @@
 
 namespace po = boost::program_options;
 
-/** Convenience function for when a @em store_to value is being provided
- *  to typed_value.
+/**
+ * Convenience function for when a \ref store_to value is being provided to
+ * typed_value.
  *
- *  @param store_to The variable that will hold the parsed value upon notify.
+ * @param store_to The variable that will hold the parsed value upon notify.
  *
- *  @return Pointer to a type_value.
+ * @return Pointer to a type_value.
  */
 template <typename T>
 boost::program_options::typed_value<T> *make_value(T *store_to) {
   return boost::program_options::value<T>(store_to);
 }
 
-/** Reading of infile is delegated to boost::program_options.
- *
- *  @see GlobalData::input_handling()
- *  @see GlobalData::init_lookup_tables()
- */
 void read_parameters(GlobalData &gd, int ac, char *av[]) {
   std::string input_file;
   std::string output_file;
@@ -230,8 +229,9 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   init_lookup_tables(gd);
 
   // setting the sizes and numbers of random vectors and perambulators
-  /** @todo: setting the sizes and numbers of rnd_vecs and perams should be
-   *          put in a separate function
+  /**
+   * @todo: setting the sizes and numbers of rnd_vecs and perams should be put
+   * in a separate function
    */
   gd.rnd_vec_construct.nb_entities = 0;
   for (const auto &q : gd.quarks)
