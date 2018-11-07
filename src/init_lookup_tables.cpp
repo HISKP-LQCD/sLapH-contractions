@@ -1681,9 +1681,8 @@ static void build_C40B_lookup(
  */
 void init_lookup_tables(GlobalData &gd) {
   for (const auto &correlator : gd.correlator_list) {
-    /** 1. Build an array (quantum_numbers) with all the quantum numbers needed
-     *      for this particular correlation function.
-     */
+    // Build an array (quantum_numbers) with all the quantum numbers needed for
+    // this particular correlation function.
     std::vector<std::vector<QuantumNumbers>> quantum_numbers;
     build_quantum_numbers_from_correlator_list(
         correlator, gd.operator_list, quantum_numbers, gd.momentum_cutoff);
@@ -1700,11 +1699,10 @@ void init_lookup_tables(GlobalData &gd) {
                            quantum_numbers,
                            hdf5_dataset_name);
 
-    /** 2. Build the lookuptable for VdaggerV and return an array of indices
-     *      corresponding to @em quantum_numbers computed in step 1. In
-     *      @em vdv_indices the first entry is the id of vdv, the second tells
-     *      us if vdv must be daggered to get the correct quantum numbers.
-     */
+    // Build the lookuptable for VdaggerV and return an array of indices
+    // corresponding to @em quantum_numbers computed in step 1. In @em
+    // vdv_indices the first entry is the id of vdv, the second tells us if vdv
+    // must be daggered to get the correct quantum numbers.
     std::vector<std::vector<std::pair<ssize_t, bool>>> vdv_indices;
     build_VdaggerV_lookup(
         quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
@@ -1720,12 +1718,13 @@ void init_lookup_tables(GlobalData &gd) {
                       gd.correlator_lookuptable.trQ1,
                       gd.correlator_lookuptable.C1);
     } else if (correlator.type == "C2c" || correlator.type == "Check") {
-      /** 3. Build the lookuptable for rVdaggerVr and return an array of indices
-       *      corresponding to the 'quantum_numbers' computed in step 1.
-       *  4. Build the lookuptable for Q2 and return an array of indices
-       *      corresponding to the 'quantum_numbers' computed in step 1.
-       *  5. Build the lookuptable for the correlation functions
-       */
+      // Build the lookuptable for rVdaggerVr and return an array of indices
+      // corresponding to the 'quantum_numbers' computed in step 1.
+      //
+      // Build the lookuptable for Q2 and return an array of indices
+      // corresponding to the 'quantum_numbers' computed in step 1.
+      //
+      // Build the lookuptable for the correlation functions
       build_C2c_lookup(gd.quarks,
                        correlator.quark_numbers,
                        gd.start_config,
@@ -1737,10 +1736,6 @@ void init_lookup_tables(GlobalData &gd) {
                        gd.correlator_lookuptable.trQ0Q2,
                        gd.correlator_lookuptable.C2c);
     }
-    /** 6. Repeat steps 1.-5. for all correlators in correlator_list. Where
-     *      applicable rVdaggerVr must be replaced by rVdaggerV in step 3. and
-     *      Q2 by Q1 in step 4.
-     */
     else if (correlator.type == "C3c") {
       build_C3c_lookup(gd.quarks,
                        correlator.quark_numbers,
