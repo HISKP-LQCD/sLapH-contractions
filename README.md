@@ -8,7 +8,7 @@ This is the new version of the contraction code.
 [Doxygen Documentation](https://hiskp-lqcd.github.io/sLapH-contractions/)
 
 [![Build
-Status](https://travis-ci.org/maowerner/sLapH-contractions.svg?branch=master)](https://travis-ci.org/maowerner/sLapH-contractions)
+Status](https://travis-ci.org/HISKP-LQCD/sLapH-contractions.svg?branch=master)](https://travis-ci.org/maowerner/sLapH-contractions)
 
 
 A Wick contraction in this context means the analytic result obtained when
