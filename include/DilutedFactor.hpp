@@ -1,10 +1,3 @@
-/*! @file Operator.h
- *  Declaration of Operator multiplication
- *
- *  @author Markus Werner
- *
- */
-
 #pragma once
 
 #include "global_data.hpp"

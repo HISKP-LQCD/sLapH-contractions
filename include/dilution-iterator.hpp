@@ -1,5 +1,3 @@
-// Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
-
 #pragma once
 
 #include <cassert>

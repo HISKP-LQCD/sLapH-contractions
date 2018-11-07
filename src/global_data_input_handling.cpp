@@ -1,14 +1,3 @@
-/*! @file
- *
- *  Functions for checking and printing data read from infile as well as
- *  processing the strings to more manageable structs
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- *
- *  @date Mar 28, 2013
- */
-
 #include "global_data.hpp"
 #include "global_data_utils.hpp"
 

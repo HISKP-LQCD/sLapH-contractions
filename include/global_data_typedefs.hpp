@@ -1,10 +1,3 @@
-/*! @file global_data_typedefs.h
- *  Miscallaneous structs needed in GlobalData
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #pragma once
 
 #include "typedefs.hpp"

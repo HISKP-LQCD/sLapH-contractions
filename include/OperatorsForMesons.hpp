@@ -1,10 +1,3 @@
-/*! @file OperatorsForMesons.h
- *  Class declaration of OperatorsForMesons
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #pragma once
 
 #include "EigenVector.hpp"

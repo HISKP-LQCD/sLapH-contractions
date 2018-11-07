@@ -1,6 +1,3 @@
-/*! @file
- */
-
 #include "global_data.hpp"
 
 #include "git.hpp"

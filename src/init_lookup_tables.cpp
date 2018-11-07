@@ -2,9 +2,6 @@
  *
  *  Functions translating lists build from the infile into lookup_tables.
  *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- *
  *  The lookup tables only contain unique quantum number combinations and
  *  from the lists and latter are replaced by indexlists referring to those
  *  lookup tables.

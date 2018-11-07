@@ -1,10 +1,3 @@
-/*! @file global_data_utils.h
- *  Functions for input handling
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #pragma once
 
 #include "global_data_typedefs.hpp"

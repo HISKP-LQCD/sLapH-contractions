@@ -1,13 +1,3 @@
-/*! @file typedefs.h
- *  Custom file definitions and abbreviations
- *
- *  @author Christian Jost
- *
- *  @date Aug 28, 2014
- *
- *  @TODO {seems like a lot of data types are deprecated. Comment these out?}
- */
-
 #pragma once
 
 #include <boost/container/static_vector.hpp>

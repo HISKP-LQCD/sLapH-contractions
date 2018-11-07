@@ -1,12 +1,3 @@
-/*! @file Correlators.h
- *  Class declaration of Correlators
- *
- *  @author Bastian Knippschild
- *  @author Martin Ueding
- *  @author Markus Werner
- *
- */
-
 #pragma once
 
 #include "Diagram.hpp"

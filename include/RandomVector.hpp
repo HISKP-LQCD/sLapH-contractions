@@ -1,10 +1,3 @@
-/*! @file Randomvector.h
- *  Class decleration of LapH::Randomvector
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #pragma once
 
 #include "typedefs.hpp"

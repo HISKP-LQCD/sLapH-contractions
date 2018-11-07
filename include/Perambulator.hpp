@@ -1,10 +1,3 @@
-/*! @file Perambulator.h
- *  Class decleration of LapH::Perambulator
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #pragma once
 
 #include "global_data_typedefs.hpp"

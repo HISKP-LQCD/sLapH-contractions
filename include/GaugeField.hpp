@@ -1,18 +1,7 @@
-/*! \file Gaugefield.h
-    \brief Contains the class for gaugefield handling
-
-    The Gauge fields of a range of timeslices are read into a vector of
-    Multiarrays. Functions: - 
- */
-
 #pragma once
 
-//#include "lime.h"
-//#include "config_utils.h"
 #include "EigenVector.hpp"
 #include "io_utils.hpp"
-//#include "propagator_io.h"
-//#include "quark.h"
 #include "RandomVector.hpp"
 #include "typedefs.hpp"
 

@@ -1,10 +1,3 @@
-/*! @file OperatorsForMesons.cpp
- *  Class definition of OperatorsForMesons
- *
- *  @author Bastian Knippschild
- *  @author Markus Werner
- */
-
 #include "OperatorsForMesons.hpp"
 #include "StopWatch.hpp"
 

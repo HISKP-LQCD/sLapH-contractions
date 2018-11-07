@@ -1,6 +1,3 @@
-/*! @file global_data.h
- */
-
 #pragma once
 
 #include "global_data_typedefs.hpp"
