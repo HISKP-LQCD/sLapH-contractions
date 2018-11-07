@@ -599,26 +599,23 @@ static ssize_t build_corrC_lookup(std::vector<ssize_t> const ql_ids,
     return (it - trQ0Q2_lookup.begin());
 }
 
-/** Create lookuptable where to find the quarklines to build C20.
+/**
+ * Create lookuptable where to find the quarklines to build C20.
  *
- *  @param[in]  quarks            Quarks as read from the infile and processed
- *                                into quark struct
- *  @param[in]  quark_numbers     List which quarks are specified in the infile
- *  @param[in]  start_config      Number of first gauge configuration
- *  @param[in]  path_output       Output path from the infile.
- *  @param[in]  quantum_numbers   A list of all physical quantum numbers
- *                                quantum field operators for all correlators
- *                                with Dirac structure factored out that are
- *                                possible for @em correlator
- *  @param[in]  vdv_indices       Indices identifying VdaggerV operators
- *  @param[out] Q1_lookup         Lookuptable containing unique combinations of
- *                                peram-, vdv-, and ric-indices needed to built
- *                                Q1
- *  @param[out] trQ1_lookup       Lookuptable containign unique combinations of
- *                                parts tr(Q1Q1).
- *                                Also known as trQ1Q1
- *  @param[out] c_look            Lookup table for C20
- *
+ * @param[in] quarks Quarks as read from the infile and processed into quark
+ * struct.
+ * @param[in] quark_numbers List which quarks are specified in the infile.
+ * @param[in] start_config Number of first gauge configuration.
+ * @param[in] path_output Output path from the infile.
+ * @param[in] quantum_numbers A list of all physical quantum numbers quantum
+ * field operators for all correlators with Dirac structure factored out that
+ * are possible for @em correlator.
+ * @param[in] vdv_indices Indices identifying VdaggerV operators.
+ * @param[out] Q1_lookup Lookuptable containing unique combinations of peram-,
+ * vdv-, and ric-indices needed to built Q1.
+ * @param[out] trQ1_lookup Lookuptable containign unique combinations of parts
+ * tr(Q1Q1). Also known as trQ1Q1.
+ * @param[out] c_look Lookup table for C20.
  */
 static void build_C1_lookup(
     std::vector<quark> const &quarks,
