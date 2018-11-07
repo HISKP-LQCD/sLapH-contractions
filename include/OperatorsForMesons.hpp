@@ -17,7 +17,7 @@
 #include <string>
 #include <Eigen/Dense>
 
-/*! Calculates operators as they emerge in correlation functions using the
+/** Calculates operators as they emerge in correlation functions using the
  *  stochastic estimates from the stochastic Laplacian Heaviside method
  *
  *  Basically this calculates every operator of the form
@@ -34,7 +34,7 @@
  */
 class OperatorFactory {
  public:
-  /*! Constructor which allocates memory for all operators */
+  /** Constructor which allocates memory for all operators */
   OperatorFactory(const ssize_t Lt,
                   const ssize_t Lx,
                   const ssize_t Ly,
@@ -46,7 +46,7 @@ class OperatorFactory {
                   const std::string &path_vdaggerv,
                   const std::string &path_config,
                   const HypPars &hyp_parameters);
-  /*! Standard Destructor
+  /** Standard Destructor
    *
    *  Everything should be handled by Eigen, std::vector, and boost::multi_array
    */
@@ -58,10 +58,10 @@ class OperatorFactory {
   void create_operators(const std::string &filename,
                         const RandomVector &rnd_vec,
                         const int config);
-  /*! Free memory of vdaggerv */
+  /** Free memory of vdaggerv */
   void free_memory_vdaggerv();
 
-  /*! @todo check of vdaggerv is already build */
+  /** @todo check of vdaggerv is already build */
   inline const Eigen::MatrixXcd &return_vdaggerv(const ssize_t index,
                                                  const ssize_t t) const {
     return vdaggerv[index][t];
@@ -70,14 +70,14 @@ class OperatorFactory {
 private:
   // Containers for operators which are accessible from outside
   array_Xcd_d2_eigen vdaggerv;
-  /*! @cond
+  /** @cond
    *  internal indices etc.
    */
   array_cd_d2 momentum;
-  /*! @endcond */
+  /** @endcond */
 
   /****************************************************************************/
-  /*! @TODO comment private members */
+  /** @TODO comment private members */
   const OperatorLookup operator_lookuptable;
   const ssize_t Lt, Lx, Ly, Lz;
   const ssize_t nb_ev, dilE;

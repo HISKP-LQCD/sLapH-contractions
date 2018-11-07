@@ -108,7 +108,7 @@ inline void create_displacement_direction_from_string(
 
 namespace global_data_utils {
 
-/*!
+/**
  *  @param quark_string Quark as specified in the infile
  *                      quark = @em flavor : @em nb_rnd_vec : T @em diltT_type :
  *                              @em dilT : E @em dilE_type : @em dilE :
@@ -161,7 +161,7 @@ void quark_check(quark quarks) {
       quarks.type != "c") {
     throw std::runtime_error("quarks.quark.type must be u, d, s or c");
   }
-  /*! @todo Check that the number of random vectors is greater than the
+  /** @todo Check that the number of random vectors is greater than the
    *  largest required diagram
    */
   else if (quarks.number_of_rnd_vec < 1) {
@@ -191,7 +191,7 @@ void quark_check(quark quarks) {
   }
 }
 
-/*!
+/**
  *  @param operator_string  Operator as specified in the infile:
  *                          A ';'-sperated list with individual operators. The
  *                          individual operators are composed of '.'-seperated
@@ -274,7 +274,7 @@ Operators make_operator_list(const std::string &operator_string) {
   return op_list;
 }
 
-/*!
+/**
  *  @param          correlator_string @parblock
  *    Correlators as read from the infile
  *

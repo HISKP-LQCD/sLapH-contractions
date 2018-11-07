@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-/*! Memory allocation and IO routines for random vectors */
+/** Memory allocation and IO routines for random vectors */
 class RandomVector {
  private:
   // the random vector
@@ -17,7 +17,7 @@ class RandomVector {
   const ssize_t length;
 
  public:
-  /*! Constructor which delegates memory allocation to std::vector
+  /** Constructor which delegates memory allocation to std::vector
    *
    *  @param nb_entities  Number of random vectors
    *  @param length       Number of complex entries in each random vector
@@ -31,10 +31,10 @@ class RandomVector {
     std::cout << "\tRandom vectors initialised" << std::endl;
   };
 
-  /*! Default deconstructor */
+  /** Default deconstructor */
   ~RandomVector(){};
 
-  /*! Overloading () operator to directly access the elements of vec */
+  /** Overloading () operator to directly access the elements of vec */
   inline Complex operator()(const ssize_t entity, const ssize_t entry) const {
     return vec.at(entity * length + entry);
   }
@@ -43,7 +43,7 @@ class RandomVector {
     return vec;
   }
 
-  /*! Computes the random vectors for the sources
+  /** Computes the random vectors for the sources
    *
    *  @param entity The random vector you want to set
    *  @param seed   Seed for the random vector
@@ -51,7 +51,7 @@ class RandomVector {
    */
   void set(const ssize_t entity, const int seed);
 
-  /*! Computes the random vectors for the sources and stores them to file
+  /** Computes the random vectors for the sources and stores them to file
    *
    *  @param entity   The random vector you want to set
    *  @param seed     Seed for the random vector
@@ -60,27 +60,27 @@ class RandomVector {
    */
   void set(const ssize_t entity, const int seed, const std::string &filename);
 
-  /*! Write all random vectors to some file */
+  /** Write all random vectors to some file */
   void write_random_vector(const std::string &filename) const;
 
-  /*! Write one random vector to some file
+  /** Write one random vector to some file
    *
    *  @param entity   The random vector to be stored on disk
    *  @param filename The filename
    */
   void write_random_vector(const ssize_t entity, const std::string &filename) const;
 
-  /*! Read all random vectors from some file */
+  /** Read all random vectors from some file */
   void read_random_vector(const std::string &filename);
 
-  /*! Read one random vector from some file
+  /** Read one random vector from some file
    *
    *  @param entity   The random vector to be read from disk
    *  @param filename The filename
    */
   void read_random_vector(const ssize_t entity, const std::string &filename);
 
-  /*! Read random vectors where each vector is stored in a different file
+  /** Read random vectors where each vector is stored in a different file
    *
    *  @param filename_list Vector which contains all file names
    */

@@ -18,7 +18,7 @@ int get_time_delta(BlockIterator const &slice_pair, int const Lt) {
   return abs((slice_pair.sink() - slice_pair.source() - Lt) % Lt);
 }
 
-/*!
+/**
  *  @param quarklines       Instance of Quarklines. Contains prebuilt
  *                          combinations of operators and perambulators
  *  @param meson_operator   Instance of OperatorsForMesons. Contains

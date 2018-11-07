@@ -9,7 +9,7 @@
 
 #include <mutex>
 
-/*! Locally replaces QuarklineLookup extended by lookuptable for rVdaggerVr */
+/** Locally replaces QuarklineLookup extended by lookuptable for rVdaggerVr */
 struct DilutedFactorLookup {
   std::vector<DilutedFactorIndex> const Q0;
   std::vector<DilutedFactorIndex> const Q1;
@@ -170,10 +170,10 @@ class DiagramNumeric : public Diagram {
 
   int const Lt_;
 
-  /*! OpenMP-shared correlators, indices are (1) time and (2) correlator id. */
+  /** OpenMP-shared correlators, indices are (1) time and (2) correlator id. */
   std::vector<std::vector<Numeric>> correlator_;
 
-  /*! OpenMP-shared correlators, indices are (1) thread id and (2) correlator id. */
+  /** OpenMP-shared correlators, indices are (1) thread id and (2) correlator id. */
   std::vector<std::vector<Numeric>> c_;
 
   std::vector<std::mutex> mutexes_;
@@ -183,7 +183,7 @@ class DiagramNumeric : public Diagram {
 /*                                    C2                                     */
 /*****************************************************************************/
 
-/*! Build charged 2pt correlation function
+/** Build charged 2pt correlation function
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t')^\dagger \gamma_5  \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1} \rangle
@@ -201,7 +201,7 @@ class C2c : public DiagramNumeric<Complex> {
                      DiagramParts &q) override;
 };
 
-/*! Build neutral 2pt correlation function
+/** Build neutral 2pt correlation function
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t'|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1} \rangle
@@ -219,7 +219,7 @@ class C20 : public DiagramNumeric<Complex> {
                      DiagramParts &q) override;
 };
 
-/*! Build neutral 2pt correlation function
+/** Build neutral 2pt correlation function
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t|t) \Gamma_\mathtt{Op0} \rangle \cdot
  *        \langle D_\mathtt{Q1}^{-1}(t'|t') \Gamma_\mathtt{Op1} \rangle
@@ -241,7 +241,7 @@ class C20V : public DiagramNumeric<ComplexProduct> {
 /*                                    C3                                     */
 /*****************************************************************************/
 
-/*! Build neutral 3pt correlation function
+/** Build neutral 3pt correlation function
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t)^\dagger \gamma_5 \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}
@@ -265,7 +265,7 @@ class C3c : public DiagramNumeric<Complex> {
   std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>> quantum_num_ids_;
 };
 
-/*! Build neutral 3pt correlation function
+/** Build neutral 3pt correlation function
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}
@@ -305,7 +305,7 @@ class C30V : public DiagramNumeric<ComplexProduct> {
 /*                                   C4                                     */
 /*****************************************************************************/
 
-/*! Build charged 4pt correlation function: Direct diagram
+/** Build charged 4pt correlation function: Direct diagram
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t')^\dagger \gamma_5 \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1} \rangle \cdot
@@ -325,7 +325,7 @@ class C4cD : public DiagramNumeric<ComplexProduct> {
                      DiagramParts &q) override;
 };
 
-/*! Build neutral 4pt correlation function: Direct diagram
+/** Build neutral 4pt correlation function: Direct diagram
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t'|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1} \rangle \cdot
@@ -345,7 +345,7 @@ class C40D : public DiagramNumeric<ComplexProduct> {
                      DiagramParts &q) override;
 };
 
-/*! Build charged 4pt correlation function: Vacuum diagram
+/** Build charged 4pt correlation function: Vacuum diagram
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t)^\dagger \gamma_5 \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t) \Gamma_\mathtt{Op1} \rangle \cdot
@@ -365,7 +365,7 @@ class C4cV : public DiagramNumeric<ComplexProduct> {
                      DiagramParts &q) override;
 };
 
-/*! Build neutral 4pt correlation function: Vacuum diagram
+/** Build neutral 4pt correlation function: Vacuum diagram
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t) \Gamma_\mathtt{Op1} \rangle \cdot
@@ -385,7 +385,7 @@ class C40V : public DiagramNumeric<ComplexProduct> {
                      DiagramParts &q) override;
 };
 
-/*! Build charged 4pt correlation function: Box diagram
+/** Build charged 4pt correlation function: Box diagram
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t)^\dagger \gamma_5 \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}
@@ -410,7 +410,7 @@ class C4cB : public DiagramNumeric<Complex> {
   std::vector<std::array<std::array<ssize_t, 2>, 2>> quantum_num_ids_;
 };
 
-/*! Build neutral 4pt correlation function: Box diagram
+/** Build neutral 4pt correlation function: Box diagram
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}
@@ -435,7 +435,7 @@ class C40B : public DiagramNumeric<Complex> {
   std::vector<std::array<std::array<ssize_t, 2>, 2>> quantum_num_ids_;
 };
 
-/*! Build charged 4pt correlation function: Cross diagram
+/** Build charged 4pt correlation function: Cross diagram
  *  @f{align}{
  *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t')^\dagger \gamma_5 \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}
@@ -460,7 +460,7 @@ class C4cC : public DiagramNumeric<Complex> {
   std::vector<std::array<std::array<ssize_t, 2>, 2>> quantum_num_ids_;
 };
 
-/*! Build neutral 4pt correlation function: Cross diagram
+/** Build neutral 4pt correlation function: Cross diagram
  *  @f{align}{
  *    C = \langle D_\mathtt{Q0}^{-1}(t'|t) \Gamma_\mathtt{Op0}
  *                D_\mathtt{Q1}^{-1}(t|t') \Gamma_\mathtt{Op1}

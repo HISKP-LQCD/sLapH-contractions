@@ -1,4 +1,4 @@
-/*! @file
+/** @file
  *
  *  Functions translating lists build from the infile into lookup_tables.
  *
@@ -20,7 +20,7 @@ namespace {
 
 using Vector = QuantumNumbers::VectorData;
 
-/*!
+/**
  *  Check whether a momentum is within the set of desired momenta specified
  *  in the correlator_list
  *
@@ -31,7 +31,7 @@ using Vector = QuantumNumbers::VectorData;
  *otherwise
  */
 bool desired_total_momentum(Vector const &p_tot, std::vector<Vector> const &P) {
-  /*! If no total momentum is specified, there is no selection.
+  /** If no total momentum is specified, there is no selection.
    *  @todo It is better to force the user to specify P. Catch that in
    *        global_data_input_handling
    */
@@ -46,7 +46,7 @@ bool desired_total_momentum(Vector const &p_tot, std::vector<Vector> const &P) {
   }
 }
 
-/*!
+/**
  *  For multi-meson operators check whether the sum of momenta at the same
  *  time slice is above a given cutoff
  *
@@ -79,7 +79,7 @@ static bool momenta_below_cutoff(Vector const &p1,
 
 }  // end of unnamed namespace
 
-/*! Build an array with all the quantum numbers needed for a particular
+/** Build an array with all the quantum numbers needed for a particular
  *  correlation function respecting physical conservation laws
  *
  *  @param[in]  correlator      A single correlator specified in the infile
@@ -115,7 +115,7 @@ void build_quantum_numbers_from_correlator_list(
 
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
-  /*! Restriction to what shall actually be computed is done in if statements
+  /** Restriction to what shall actually be computed is done in if statements
    *  for each diagram because it depends on the number of quarks.
    *
    *  @todo Think about a way to avoid these if conditions.
@@ -145,7 +145,7 @@ void build_quantum_numbers_from_correlator_list(
   }
 
   else if (correlator.type == "C3c" || correlator.type == "C30") {
-    std::map<int, int> counter; /*! initialized with zero */
+    std::map<int, int> counter; /** initialized with zero */
 
     for (const auto &op0 : qn_op[0]) {
       for (const auto &op2 : qn_op[2]) {
@@ -179,7 +179,7 @@ void build_quantum_numbers_from_correlator_list(
     std::cout << "\tTest finished - Combinations: " << total_number_of_combinations
               << std::endl;
   } else if (correlator.type == "C30V") {
-    std::map<int, int> counter; /*! initialized with zero */
+    std::map<int, int> counter; /** initialized with zero */
 
     for (const auto &op0 : qn_op[0]) {
       for (const auto &op1 : qn_op[1]) {
@@ -216,7 +216,7 @@ void build_quantum_numbers_from_correlator_list(
 
   else if (correlator.type == "C4cD" || correlator.type == "C40D" ||
            correlator.type == "C4cC" || correlator.type == "C40C") {
-    std::map<int, int> counter; /*! initialized with zero */
+    std::map<int, int> counter; /** initialized with zero */
 
     for (const auto &op0 : qn_op[0]) {
       for (const auto &op2 : qn_op[2]) {
@@ -259,7 +259,7 @@ void build_quantum_numbers_from_correlator_list(
   }
 
   else if (correlator.type == "C4cB" || correlator.type == "C40B") {
-    std::map<int, int> counter; /*! initialized with zero */
+    std::map<int, int> counter; /** initialized with zero */
 
     for (const auto &op0 : qn_op[0]) {
       for (const auto &op3 : qn_op[3]) {
@@ -302,7 +302,7 @@ void build_quantum_numbers_from_correlator_list(
   }
 
   else if (correlator.type == "C40V" || correlator.type == "C4cV") {
-    std::map<int, int> counter; /*! initialized with zero */
+    std::map<int, int> counter; /** initialized with zero */
     for (const auto &op0 : qn_op[0]) {
       for (const auto &op1 : qn_op[1]) {
         Vector p_so_1 = op0.momentum;
@@ -339,7 +339,7 @@ void build_quantum_numbers_from_correlator_list(
 }
 
 // TODO: Not the right place, not sure where to place it otherwise
-/*! Makes a string object of a displacement vector */
+/** Makes a string object of a displacement vector */
 static std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
   std::string out;
   if (in.empty())
@@ -351,7 +351,7 @@ static std::string vector_to_string(const std::vector<std::pair<char, char>> &in
   return out;
 }
 
-/*! Create the names for output files and hdf5 datasets.
+/** Create the names for output files and hdf5 datasets.
  *
  *  @param[in]  corr_type {C1,C2c,C20,C20V,C3c,C30,C4cD,C4cV,C4cC,C4cB,C40D,
  *                         C40V,C40C,C40B} :
@@ -406,7 +406,7 @@ static std::string const build_hdf5_dataset_name(
   return filename;
 }
 /******************************************************************************/
-/*! Translate list of QuantumNumbers into lookuptable for VdaggerV
+/** Translate list of QuantumNumbers into lookuptable for VdaggerV
  *
  *  @param[in]  quantum_numbers List of all quantum numbers operators are needed
  *                              for
@@ -438,7 +438,7 @@ void build_VdaggerV_lookup(
                                // also negative momentum is checked
                                auto c3 =
                                    (Vector(vdv_qn.momentum.data()) == (-1) * qn.momentum);
-                               /*! @TODO: Think about the daggering!! */
+                               /** @TODO: Think about the daggering!! */
                                const Vector zero(0, 0, 0);
                                if (c1 and c2) {
                                  dagger = false;
@@ -465,7 +465,7 @@ void build_VdaggerV_lookup(
   }
 }
 
-/*! @brief  Obtain index combinations of random vectors for charged correlator
+/** @brief  Obtain index combinations of random vectors for charged correlator
  *          i.e. correlator utilizing @f$ \gamma_5 @f$-trick
  *
  *  @param[in]  quarks      Quarks as read from the infile and processed into
@@ -574,7 +574,7 @@ static ssize_t build_trQ1_lookup(std::vector<ssize_t> const ql_ids,
     return (it - trQ1_lookup.begin());
 }
 
-/*! @BUG If push_back moves the vector somewhere else, it-begin() might not
+/** @BUG If push_back moves the vector somewhere else, it-begin() might not
  *       give the correct id.
  */
 static ssize_t build_corr0_lookup(std::vector<ssize_t> const ql_ids,
@@ -599,7 +599,7 @@ static ssize_t build_corrC_lookup(std::vector<ssize_t> const ql_ids,
     return (it - trQ0Q2_lookup.begin());
 }
 
-/*! Create lookuptable where to find the quarklines to build C20.
+/** Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -639,14 +639,14 @@ static void build_C1_lookup(
     quark_types.emplace_back(quarks[id].type);
 
   for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    /*! Here the outgoing and incoming quarkline are identical. Thus ric_ids
+    /** Here the outgoing and incoming quarkline are identical. Thus ric_ids
      *  must get true
      */
     ric_ids = create_rnd_vec_id(quarks, quark_numbers[0], quark_numbers[0], true);
     build_Quarkline_lookup_one_qn(
         0, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, Q1_indices);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0
      */
     auto id1 = build_trQ1_lookup({Q1_indices[0]}, trQ1_lookup);
@@ -656,7 +656,7 @@ static void build_C1_lookup(
 
     DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1}};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -665,7 +665,7 @@ static void build_C1_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C20.
+/** Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -714,7 +714,7 @@ static void build_C20V_lookup(
     build_Quarkline_lookup_one_qn(
         1, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1
      */
     auto id1 = build_trQ1_lookup({ql_ids[0]}, trQ1_lookup);
@@ -725,7 +725,7 @@ static void build_C20V_lookup(
 
     DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1, id2}};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -734,7 +734,7 @@ static void build_C20V_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C2c.
+/** Create lookuptable where to find the quarklines to build C2c.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -787,7 +787,7 @@ static void build_C2c_lookup(
     build_Quarkline_lookup_one_qn(
         1, quantum_numbers[d], vdv_indices[d], ric_ids, Q0_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1
      */
     auto id1 = build_corrC_lookup({ql_ids[0], ql_ids[1]}, trQ0Q2_lookup);
@@ -797,7 +797,7 @@ static void build_C2c_lookup(
 
     DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1}};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -806,7 +806,7 @@ static void build_C2c_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C20.
+/** Create lookuptable where to find the quarklines to build C20.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -855,7 +855,7 @@ static void build_C20_lookup(
     build_Quarkline_lookup_one_qn(
         1, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1
      */
     auto id1 = build_corr0_lookup({ql_ids[0], ql_ids[1]}, trQ1Q1_lookup);
@@ -865,7 +865,7 @@ static void build_C20_lookup(
 
     DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1}};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -874,7 +874,7 @@ static void build_C20_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C30V.
+/** Create lookuptable where to find the quarklines to build C30V.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -941,7 +941,7 @@ static void build_C30V_lookup(
     DiagramIndex const candidate{
         ssize(c_look), hdf5_dataset_name, {id0, id1}, std::vector<int>{}};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto const it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -950,7 +950,7 @@ static void build_C30V_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C3c.
+/** Create lookuptable where to find the quarklines to build C3c.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1009,7 +1009,7 @@ static void build_C3c_lookup(
     DiagramIndex candidate{
         ssize(c_look), hdf5_dataset_name, ql_ids, std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1018,7 +1018,7 @@ static void build_C3c_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C30.
+/** Create lookuptable where to find the quarklines to build C30.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1072,7 +1072,7 @@ static void build_C30_lookup(
     DiagramIndex candidate{
         ssize(c_look), hdf5_dataset_name, ql_ids, std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1081,7 +1081,7 @@ static void build_C30_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C4cD. Also sets
+/** Create lookuptable where to find the quarklines to build C4cD. Also sets
  *  trQ0Q2.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1144,7 +1144,7 @@ static void build_C4cD_lookup(
     build_Quarkline_lookup_one_qn(
         3, quantum_numbers[d], vdv_indices[d], ric_ids, Q0_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1 / 2,3
      */
     auto id1 = build_corrC_lookup({ql_ids[0], ql_ids[1]}, trQ0Q2_lookup);
@@ -1158,7 +1158,7 @@ static void build_C4cD_lookup(
                            std::vector<ssize_t>({id1, id2}),
                            std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1167,7 +1167,7 @@ static void build_C4cD_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C40D.
+/** Create lookuptable where to find the quarklines to build C40D.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1222,7 +1222,7 @@ static void build_C40D_lookup(
     build_Quarkline_lookup_one_qn(
         3, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1 / 2,3
      */
     auto id1 = build_corr0_lookup({ql_ids[0], ql_ids[1]}, trQ1Q1_lookup);
@@ -1236,7 +1236,7 @@ static void build_C40D_lookup(
                            std::vector<ssize_t>({id1, id2}),
                            std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1245,7 +1245,7 @@ static void build_C40D_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C4cV. Also sets
+/** Create lookuptable where to find the quarklines to build C4cV. Also sets
  *  trQ0Q2.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -1308,7 +1308,7 @@ static void build_C4cV_lookup(
     build_Quarkline_lookup_one_qn(
         3, quantum_numbers[d], vdv_indices[d], ric_ids, Q0_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1 / 2,3
      */
     auto id1 = build_corrC_lookup({ql_ids[0], ql_ids[1]}, trQ0Q2_lookup);
@@ -1322,7 +1322,7 @@ static void build_C4cV_lookup(
                            std::vector<ssize_t>({id1, id2}),
                            std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1331,7 +1331,7 @@ static void build_C4cV_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C40V.
+/** Create lookuptable where to find the quarklines to build C40V.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1386,7 +1386,7 @@ static void build_C40V_lookup(
     build_Quarkline_lookup_one_qn(
         3, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
 
-    /*! @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
+    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1 / 2,3
      */
     auto id1 = build_corr0_lookup({ql_ids[0], ql_ids[1]}, trQ1Q1_lookup);
@@ -1400,7 +1400,7 @@ static void build_C40V_lookup(
                            std::vector<ssize_t>({id1, id2}),
                            std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1409,7 +1409,7 @@ static void build_C40V_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C4cC.
+/** Create lookuptable where to find the quarklines to build C4cC.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1466,7 +1466,7 @@ static void build_C4cC_lookup(
 
     DiagramIndex candidate(ssize(c_look), hdf5_dataset_name, ql_ids);
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1475,7 +1475,7 @@ static void build_C4cC_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C40C.
+/** Create lookuptable where to find the quarklines to build C40C.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1532,7 +1532,7 @@ static void build_C40C_lookup(
     DiagramIndex candidate{
         ssize(c_look), hdf5_dataset_name, ql_ids, std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1541,7 +1541,7 @@ static void build_C40C_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C4cB.
+/** Create lookuptable where to find the quarklines to build C4cB.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1598,7 +1598,7 @@ static void build_C4cB_lookup(
 
     DiagramIndex candidate(ssize(c_look), hdf5_dataset_name, ql_ids);
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1607,7 +1607,7 @@ static void build_C4cB_lookup(
   }
 }
 
-/*! Create lookuptable where to find the quarklines to build C40B.
+/** Create lookuptable where to find the quarklines to build C40B.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
  *                                into quark struct
@@ -1664,7 +1664,7 @@ static void build_C40B_lookup(
     DiagramIndex candidate{
         ssize(c_look), hdf5_dataset_name, ql_ids, std::vector<int>({})};
 
-    /*! XXX Better with std::set */
+    /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
     if (it == c_look.end()) {
@@ -1673,7 +1673,7 @@ static void build_C40B_lookup(
   }
 }
 
-/*!
+/**
  *  from GlobalData::correlators_list, GlobalData::operator::list and
  *  GlobalData::quarks
  *
@@ -1681,7 +1681,7 @@ static void build_C40B_lookup(
  */
 void init_lookup_tables(GlobalData &gd) {
   for (const auto &correlator : gd.correlator_list) {
-    /*! 1. Build an array (quantum_numbers) with all the quantum numbers needed
+    /** 1. Build an array (quantum_numbers) with all the quantum numbers needed
      *      for this particular correlation function.
      */
     std::vector<std::vector<QuantumNumbers>> quantum_numbers;
@@ -1700,7 +1700,7 @@ void init_lookup_tables(GlobalData &gd) {
                            quantum_numbers,
                            hdf5_dataset_name);
 
-    /*! 2. Build the lookuptable for VdaggerV and return an array of indices
+    /** 2. Build the lookuptable for VdaggerV and return an array of indices
      *      corresponding to @em quantum_numbers computed in step 1. In
      *      @em vdv_indices the first entry is the id of vdv, the second tells
      *      us if vdv must be daggered to get the correct quantum numbers.
@@ -1720,7 +1720,7 @@ void init_lookup_tables(GlobalData &gd) {
                       gd.correlator_lookuptable.trQ1,
                       gd.correlator_lookuptable.C1);
     } else if (correlator.type == "C2c" || correlator.type == "Check") {
-      /*! 3. Build the lookuptable for rVdaggerVr and return an array of indices
+      /** 3. Build the lookuptable for rVdaggerVr and return an array of indices
        *      corresponding to the 'quantum_numbers' computed in step 1.
        *  4. Build the lookuptable for Q2 and return an array of indices
        *      corresponding to the 'quantum_numbers' computed in step 1.
@@ -1737,7 +1737,7 @@ void init_lookup_tables(GlobalData &gd) {
                        gd.correlator_lookuptable.trQ0Q2,
                        gd.correlator_lookuptable.C2c);
     }
-    /*! 6. Repeat steps 1.-5. for all correlators in correlator_list. Where
+    /** 6. Repeat steps 1.-5. for all correlators in correlator_list. Where
      *      applicable rVdaggerVr must be replaced by rVdaggerV in step 3. and
      *      Q2 by Q1 in step 4.
      */
@@ -1879,7 +1879,7 @@ void init_lookup_tables(GlobalData &gd) {
     }
   }
 
-  /*! Sets index_of_unity to the index of operator_lookuptable.vdaggerv_lookup
+  /** Sets index_of_unity to the index of operator_lookuptable.vdaggerv_lookup
    *  where momentum and displacement are both zero, or to -1 if no such entry
    *  is found.
    */

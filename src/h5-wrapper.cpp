@@ -66,7 +66,7 @@ void write_homogenious(H5::DataSet &data_set,
   data_set.write(payload.data(), make_comp_type<ComplexProduct>());
 }
 
-/*! Creates compound datatype to write complex numbers from complex_t
+/** Creates compound datatype to write complex numbers from complex_t
  *  vectors to HDF5 file
  *
  *  @Returns cmplx_w   HDF5 compound datatype for complex numbers
@@ -81,7 +81,7 @@ H5::CompType comp_type_factory<Complex>() {
   return cmplx_w;
 }
 
-/*! Creates compound datatype to write complex numbers from compcomp_t
+/** Creates compound datatype to write complex numbers from compcomp_t
  *  vectors to HDF5 file
  *
  *  @Returns cmplx_w   HDF5 compound datatype for structs of four doubles

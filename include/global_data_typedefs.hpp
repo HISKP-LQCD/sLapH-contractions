@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-/*! Small struct which contains all information to build and read random
+/** Small struct which contains all information to build and read random
  *  vectors.
  *
  *  How many are needed, their length, and what the input paths are.
@@ -14,7 +14,7 @@ struct RandomVectorConstruction {
   std::vector<std::string> filename_list;
 };
 
-/*! Small struct which contains all information to build and read
+/** Small struct which contains all information to build and read
  *  Perambulators.
  *
  *  How many are needed, their size, and what the input paths are.
@@ -26,12 +26,12 @@ struct PerambulatorConstruction {
   std::vector<std::string> filename_list;
 };
 
-/*! Quark type that contains all quark propagator informations:
+/** Quark type that contains all quark propagator informations:
  *
  *  Flavor, number of random vectors, dilution scheme, path and a unique id.
  */
 struct quark {
-  std::string type; /*!< Flavor */
+  std::string type; /**< Flavor */
   int number_of_rnd_vec;
 
   std::string dilution_T;
@@ -46,7 +46,7 @@ struct quark {
   ssize_t id;
   std::string path;
 
-  /*! Constructor */
+  /** Constructor */
   quark(std::string type,
         int number_of_rnd_vec,
         std::string dilution_T,
@@ -69,7 +69,7 @@ struct quark {
         path(path) {}
 };
 
-/*! Struct that contains all physical information specifying a quantum field
+/** Struct that contains all physical information specifying a quantum field
  *  operator in the infile:
  *
  *  Dirac structure, displacement and momentum vector as 3-vectors
@@ -102,7 +102,7 @@ inline std::string to_string(Eigen::Vector3i const &vec) {
   return result;
 }
 
-/*! Makes a string object of a displacement vector */
+/** Makes a string object of a displacement vector */
 inline std::string to_string(DisplacementDirection const &vec){
   std::string out;
   if (vec.empty()) out = "000";
@@ -126,7 +126,7 @@ inline std::ostream &operator<<(std::ostream &os, QuantumNumbers const &qn) {
   return os;
 }
 
-/*! Struct that contains all information specifying the correlator in the
+/** Struct that contains all information specifying the correlator in the
  *  infile:
  *
  *  Internal name of the diagram (@ref LapH::Correlators), and which quark from

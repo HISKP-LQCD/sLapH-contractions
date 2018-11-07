@@ -61,11 +61,11 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
     int check = -1;
     Eigen::MatrixXcd M;  // Intermediate memory
 
-    /*! Dilution of columns */
+    /** Dilution of columns */
     for (const auto &rnd_id : op.rnd_vec_ids) {
       if (check != rnd_id.second) {  // this avoids recomputation
         LT_FINE_START;
-        /*! Should be 4*nev rows, but there is always just one entry not zero */
+        /** Should be 4*nev rows, but there is always just one entry not zero */
         M = Eigen::MatrixXcd::Zero(nev, 4 * dilE);
 
         for (ssize_t vec_i = 0; vec_i < nev; vec_i++) {
@@ -82,7 +82,7 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
       }
 
       LT_FINE_START;
-      /*! Dilution of rows and creating a sparse matrix from smaller blocks */
+      /** Dilution of rows and creating a sparse matrix from smaller blocks */
       Eigen::MatrixXcd matrix =
           Eigen::MatrixXcd::Zero(eigenspace_dirac_size, eigenspace_dirac_size);
       for (ssize_t block = 0; block < 4; block++) {

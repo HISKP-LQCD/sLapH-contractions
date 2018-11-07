@@ -37,7 +37,7 @@ struct DilutedTrace {
   boost::container::static_vector<RndId, rvecs> used_rnd_ids;
 };
 
-/*! Data type for momentum */
+/** Data type for momentum */
 typedef boost::multi_array<Complex, 2> array_cd_d2;
 typedef boost::multi_array<Complex, 3> array_cd_d3;
 typedef boost::multi_array<Complex, 4> array_cd_d4;
@@ -48,18 +48,18 @@ typedef boost::multi_array<Complex, 8> array_cd_d8;
 typedef boost::multi_array<Complex, 9> array_cd_d9;
 typedef boost::multi_array<Complex, 10> array_cd_d10;
 
-/*! Special type for Quarklines */
+/** Special type for Quarklines */
 typedef boost::multi_array<std::vector<Eigen::MatrixXcd>, 3> array_quarkline;
 
 // typedef boost::multi_array<std::vector<std::vector<cmplx> >, 4> array_corr;
-/*! @TODO {Is that deprecated?} */
+/** @TODO {Is that deprecated?} */
 typedef boost::multi_array<std::vector<Complex>, 2> array_C1;
 
 // Eigen typedefs
 typedef std::vector<Eigen::MatrixXcd> vec_Xcd_eigen;
-/*! Data type for rvdaggerv and rvdaggervr */
+/** Data type for rvdaggerv and rvdaggervr */
 typedef std::vector<std::vector<std::vector<Eigen::MatrixXcd>>> Xcd_d3_eigen;
-/*! Data type for vdaggerv */
+/** Data type for vdaggerv */
 typedef boost::multi_array<Eigen::MatrixXcd, 2> array_Xcd_d2_eigen;
 typedef boost::multi_array<Eigen::MatrixXcd, 3> array_Xcd_d3_eigen;
 typedef boost::multi_array<Eigen::MatrixXcd, 4> array_Xcd_d4_eigen;
@@ -70,7 +70,7 @@ typedef boost::multi_array<Eigen::MatrixXcd, 8> array_Xcd_d8_eigen;
 typedef boost::multi_array<Eigen::MatrixXcd, 9> array_Xcd_d9_eigen;
 typedef boost::multi_array<Eigen::MatrixXcd, 10> array_Xcd_d10_eigen;
 
-/*! Vector for displacing eigenvectors
+/** Vector for displacing eigenvectors
  * the entries are pairs of the form (">";"x") where the first entry specifies
  * the directions forward (">") ore backward ("<") of the derivative the second
  * entry of each pair specifies the spatial direction of the derivative. One can
@@ -80,7 +80,7 @@ typedef boost::multi_array<Eigen::MatrixXcd, 10> array_Xcd_d10_eigen;
  */
 using DisplacementDirection = std::vector<std::pair<char,char>>;
 
-/*! This is just a workaround for complex numbers to get it running for hdf5
+/** This is just a workaround for complex numbers to get it running for hdf5
  *
  *  @todo Change namespace into something more specific
  */
@@ -129,7 +129,7 @@ struct ComplexProduct {
   }
 };
 
-/*! Struct to uniquely identify a sLapH operator
+/** Struct to uniquely identify a sLapH operator
  *  @f$ V^\dagger exp(i(p + d/2) x) V @f$
  *
  *  In contrast to the field operator the Dirac structure is factored out
@@ -139,17 +139,17 @@ struct ComplexProduct {
  */
 struct VdaggerVQuantumNumbers {
   ssize_t id;
-  std::array<int, 3> momentum;     /*!< The -momentum as 3-vector */
-  DisplacementDirection displacement; /*!< The displacement as 3-vector */
+  std::array<int, 3> momentum;     /**< The -momentum as 3-vector */
+  DisplacementDirection displacement; /**< The displacement as 3-vector */
 
-  /*! Constructor */
+  /** Constructor */
   VdaggerVQuantumNumbers(const ssize_t id,
                          std::array<int, 3> const &momentum,
                          DisplacementDirection const &displacement)
       : id(id), momentum(momentum), displacement(displacement){};
 };
 
-/*! Struct that contains all information for a sLapH operator
+/** Struct that contains all information for a sLapH operator
  *
  *  @todo confusing because rvdaggerv_lookuptable and rvdaggervr_lookuptable
  *        contain indices of vdaggerv_lookup and ric_lookup. Multiple
@@ -158,12 +158,12 @@ struct VdaggerVQuantumNumbers {
  *        used, but in both cases half the members are spurious
  */
 struct OperatorLookup {
-  /*! Specifies physical content of quark field operator (with Dirac structure
+  /** Specifies physical content of quark field operator (with Dirac structure
    *  factored out)
    */
   std::vector<VdaggerVQuantumNumbers> vdaggerv_lookup;
 
-  /*! For @f$ \vec{p} = 0 @f$, @f$ V^\dagger exp(ipx) V = \mathbb{1} @f$. If
+  /** For @f$ \vec{p} = 0 @f$, @f$ V^\dagger exp(ipx) V = \mathbb{1} @f$. If
    *  applicable This contains the index of @em vdaggerv_lookup where it can
    *  be replaced by a unit matrix. If @f$ \vec{p} = 0 @f$ is not needed,
    *  @em index_of_unity is set to -1
@@ -174,7 +174,7 @@ struct OperatorLookup {
   inline ssize_t size(){ return vdaggerv_lookup.size(); }
 };
 
-/*! Struct that holds all information on which VdaggerV must be diluted with
+/** Struct that holds all information on which VdaggerV must be diluted with
  *  which random vector.
  *
  *  For rVdaggerV and rVdaggerVr the VdaggerV-operators are additionaly
@@ -182,14 +182,14 @@ struct OperatorLookup {
  *  combinations there are lookuptables in OperatorLookup. This struct contains
  *  the id's of vdaggerv and ric which belong together.
  */
-/*! Indices needed to uniquely identify Q1 objects
+/** Indices needed to uniquely identify Q1 objects
  *
  *  Because vdaggerv is diagonal in dirac space, gamma may be factored out and
  *  it proves useful to calculate and reuse
  *
  *    Q1 = rvdaggerv * gamma * peram
  */
-/*! Indices needed to uniquely identify Q2 objects
+/** Indices needed to uniquely identify Q2 objects
  *
  *  Because vdaggerv is diagonal in dirac space, gamma may be factored out.
  *
@@ -200,17 +200,17 @@ struct OperatorLookup {
  *          gamma * peram2
  */
 struct DilutedFactorIndex {
-  /*! Identifies physical content of @f$ V^dagger V @f$ */
+  /** Identifies physical content of @f$ V^dagger V @f$ */
   ssize_t id_vdaggerv;
-  /*! Flag that indicates whether VdaggerV must be daggered (prior to
+  /** Flag that indicates whether VdaggerV must be daggered (prior to
    *  multiplication with random vectors) to get the correct quantum numbers
    */
   bool need_vdaggerv_daggering;
 
-  /*! List of necessarry gamma combinations */
+  /** List of necessarry gamma combinations */
   std::vector<int> gamma;
 
-  /*! The entries of the pair correspond to the first and second random index.
+  /** The entries of the pair correspond to the first and second random index.
    *  List of all possible combinations of random vector indices for quarks
    *  specified by @em id_q1 and @em id_q2
    */
@@ -226,7 +226,7 @@ inline bool operator==(DilutedFactorIndex const &first, DilutedFactorIndex const
     return false;
 }
 
-/*! Maps index from CorrelatorLookup to QuarklineQ1Indicies or
+/** Maps index from CorrelatorLookup to QuarklineQ1Indicies or
  *  QuarklineQ2Indicies, depending on the quarkline needed in Correlator
  *
  *  @deprecated No longer necessary in memory_optimised branch as the quarklines
@@ -242,7 +242,7 @@ struct DilutedFactorIndicesCollection {
 // Q0 formerly called rVdaggerVr
 enum class DilutedFactorType { Q0, Q1, Q2, Q2L, Q2V };
 
-/*! All information needed to build and write the correlator given the
+/** All information needed to build and write the correlator given the
  *  quarklines were calculated beforehand
  *
  *  - id
@@ -254,7 +254,7 @@ struct DiagramIndex {
   std::string hdf5_dataset_name;
   std::vector<ssize_t> lookup;
   std::vector<int> gamma;
-  /*! Just a small constructor to ensure easy filling of its vector form */
+  /** Just a small constructor to ensure easy filling of its vector form */
   DiagramIndex(const ssize_t id,
                const std::string &hdf5_dataset_name,
                const std::vector<ssize_t> &lookup,
@@ -274,7 +274,7 @@ inline bool operator==(DiagramIndex const &first, DiagramIndex const &second) {
     return false;
 }
 
-/*! Contains information on all correlators
+/** Contains information on all correlators
  *
  *  @todo modular programming looks different
  */
@@ -338,7 +338,7 @@ struct DilutedFactorTypeTraits<DilutedFactorType::Q2V> {
 
 #define MU_DEBUG(x) std::cout << std::setw(30) << #x << ": " << (x) << std::endl;
 
-/*! Special type for Correlators */
+/** Special type for Correlators */
 typedef boost::multi_array<std::vector<Complex>, 3> array_corr;
 
 template <typename T>

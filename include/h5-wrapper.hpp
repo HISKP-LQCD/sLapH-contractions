@@ -99,7 +99,7 @@ void write_heterogenious(
 template <typename Numeric>
 H5::CompType comp_type_factory();
 
-/*! Class to write correlations function to files in hdf5 format
+/** Class to write correlations function to files in hdf5 format
  *
  *  @Warning  Dependency inversion principle is violated: Class depends on the
  *            concrete implementation of hdf5
@@ -117,7 +117,7 @@ class WriteHDF5Correlator {
     open_or_create_hdf5_file(file_name);
   }
 
-  /*! Writes data to file
+  /** Writes data to file
    *
    *  @Param corr       The data to write
    *  @Param corr_info  Contains the hdf5_dataset_name
@@ -162,7 +162,7 @@ class WriteHDF5Correlator {
   }
 
  private:
-  /*! Checks whether output path exists and if not creates it
+  /** Checks whether output path exists and if not creates it
    *
    *  @param[in] path Path where hdf5 file shall be written
    */
@@ -177,7 +177,7 @@ class WriteHDF5Correlator {
     }
   }
 
-  /*! Opens correlator file, preserving existing data.
+  /** Opens correlator file, preserving existing data.
    *
    *  @param[in] name String containing path+filename of the desired file
    */
@@ -191,9 +191,9 @@ class WriteHDF5Correlator {
     }
   }
 
-  /*! The hdf5 file pointer */
+  /** The hdf5 file pointer */
   H5::H5File file;
-  /*! The hdf5 compound datatype.
+  /** The hdf5 compound datatype.
    *
    *  @see  H5::CompType comp_type_factory_tr()
    *  @see  H5::CompType comp_type_factory<compcomp_t>()

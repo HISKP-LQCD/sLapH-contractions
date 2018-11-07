@@ -10,7 +10,7 @@ using gdu::make_operator_list;
 using gdu::make_quark;
 using gdu::quark_check;
 
-/*! Simplifies and cleans GlobalData::read_parameters()
+/** Simplifies and cleans GlobalData::read_parameters()
  *
  *  @todo Does this actually make it easier?
  */
@@ -75,7 +75,7 @@ void lattice_input_data_handling(const std::string path_output,
   }
 }
 
-/*! Simplifies and cleans GlobalData::read_parameters()
+/** Simplifies and cleans GlobalData::read_parameters()
  *
  *  @todo Does this actually make it easier?
  */
@@ -103,7 +103,7 @@ void eigenvec_perambulator_input_data_handling(const int number_of_eigen_vec,
   }
 }
 
-/*! Simplifies and cleans GlobalData::read_parameters()
+/** Simplifies and cleans GlobalData::read_parameters()
  *
  *  @todo Does this actually make it easier?
  */
@@ -139,7 +139,7 @@ void config_input_data_handling(const int start_config,
   }
 }
 
-/*! Creates quarks from quark_configs and performs sanity check
+/** Creates quarks from quark_configs and performs sanity check
  *
  *  @param          quark_configs   Quarks as read from the infile
  *                                  @todo rename to quark_string
@@ -171,7 +171,7 @@ void quark_input_data_handling(const std::vector<std::string> quark_configs,
   }
 }
 
-/*! Creates operator_list from operator_list configs
+/** Creates operator_list from operator_list configs
  *
  *  @param          operator_list_configs Operators as read from the infile
  *                                        @todo rename to operator_string
@@ -195,7 +195,7 @@ void operator_input_data_handling(const std::vector<std::string> operator_string
   }
 }
 
-/*! Creates correlator_list from correlator_string configs
+/** Creates correlator_list from correlator_string configs
  *
  *  @param          correlator_string @parblock
  *    Correlators as read from the infile
@@ -235,7 +235,7 @@ void correlator_input_data_handling(const std::vector<std::string> &correlator_s
 
 }  // end of unnamed namespace
 
-/*!
+/**
  *  @param quark_configs            Quarks as read from the infile
  *  @param operator_list_configs    Operators as read from the infile
  *  @param correlator_list_configs  Correlators as read from the infile

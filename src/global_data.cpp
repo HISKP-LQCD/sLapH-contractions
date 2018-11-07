@@ -21,7 +21,7 @@
 
 namespace po = boost::program_options;
 
-/*! Convenience function for when a @em store_to value is being provided
+/** Convenience function for when a @em store_to value is being provided
  *  to typed_value.
  *
  *  @param store_to The variable that will hold the parsed value upon notify.
@@ -33,7 +33,7 @@ boost::program_options::typed_value<T> *make_value(T *store_to) {
   return boost::program_options::value<T>(store_to);
 }
 
-/*! Reading of infile is delegated to boost::program_options.
+/** Reading of infile is delegated to boost::program_options.
  *
  *  @see GlobalData::input_handling()
  *  @see GlobalData::init_lookup_tables()
@@ -229,7 +229,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   init_lookup_tables(gd);
 
   // setting the sizes and numbers of random vectors and perambulators
-  /*! @todo: setting the sizes and numbers of rnd_vecs and perams should be
+  /** @todo: setting the sizes and numbers of rnd_vecs and perams should be
    *          put in a separate function
    */
   gd.rnd_vec_construct.nb_entities = 0;

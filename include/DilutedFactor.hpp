@@ -41,7 +41,7 @@ void merge_push_back(SmallVectorRndId<rvecs> &data, RndId const &addition) {
   std::inplace_merge(std::begin(data), old_end, std::end(data));
 }
 
-/*! Product yielding the off-diagonal elements.
+/** Product yielding the off-diagonal elements.
 
   From the sets of DilutedFactor elements, the product set of DilutedFactor is build such
   that it only contains elements with _unequal_ left and right random vector index. This
@@ -470,6 +470,6 @@ void multiply(DilutedFactors<n1 + n2, rvecs1 + rvecs2 + 1> &L,
   }
 }
 
-/*! Map from DiagramIndex.id to DilutedTrace for all random index combinations */
+/** Map from DiagramIndex.id to DilutedTrace for all random index combinations */
 template <size_t rvecs>
 using DilutedTraces = std::map<ssize_t, std::vector<DilutedTrace<rvecs>>>;

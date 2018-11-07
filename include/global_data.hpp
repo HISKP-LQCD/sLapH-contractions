@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <vector>
 
-/*! Class containing all metadata for contractions and functions to set them
+/** Class containing all metadata for contractions and functions to set them
  *  from infile
  *
  *  Metadata roughly characterized by either
@@ -61,12 +61,12 @@ struct GlobalData {
   HypPars hyp_parameters;
 };
 
-/*! Reading the input parameters from the infile in the main routine and
+/** Reading the input parameters from the infile in the main routine and
  *  initializing GlobalData
  */
 void read_parameters(GlobalData &gd, int ac, char *av[]);
 
-/*! Fills the random vector and perambulator structs with the paths and
+/** Fills the random vector and perambulator structs with the paths and
  *  file names to read the data
  */
 void build_IO_names(GlobalData &gd, const ssize_t config);

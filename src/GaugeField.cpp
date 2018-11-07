@@ -758,7 +758,7 @@ double GaugeField::plaque_ts(const ssize_t t) {
   return (plaquette / cnt);
 }
 
-/*! Read in gauge field to vector of timeslices */
+/** Read in gauge field to vector of timeslices */
 void GaugeField::read_gauge_field(const ssize_t config_i,
                                   const ssize_t slice_i,
                                   const ssize_t slice_f) {

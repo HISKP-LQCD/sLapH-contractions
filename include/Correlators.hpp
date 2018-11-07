@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-/*! Calculates correlation functions according to the stochastic Laplacian
+/** Calculates correlation functions according to the stochastic Laplacian
  *  Heaviside (sLapH) method.
  *
  *  Within the sLapH framework every hadronic correlation function can be

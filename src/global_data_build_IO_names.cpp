@@ -69,7 +69,7 @@ static std::string create_correlator_file_name(const ssize_t config) {
 
 }  // end anonymous namespace
 
-/*!
+/**
  * @param config Configuration number for which paths and file names shall be
  *               constructed
  */

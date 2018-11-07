@@ -40,7 +40,6 @@ int main(int ac, char *av[]) {
   Eigen::initParallel();
   Eigen::setNbThreads(gd.nb_eigen_threads);
 
-  // ---------------------------------------------------------------------------
   // Creating instances of perambulators, random vectors, operators, and
   // correlators. The eigenvectors are read from disc in the operator class.
   Perambulator perambulators(gd.peram_construct.nb_entities,
@@ -68,7 +67,6 @@ int main(int ac, char *av[]) {
     std::abort();
   }
 
-  // ---------------------------------------------------------------------------
   // Loop over all configurations stated in the infile -------------------------
   for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
        config_i += gd.delta_config) {

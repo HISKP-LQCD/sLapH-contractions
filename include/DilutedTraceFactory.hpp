@@ -7,7 +7,7 @@
 template <DilutedFactorType qlt1, DilutedFactorType qlt2, size_t rvecs>
 struct DilutedTraceTraceFactory {
  public:
-  /*! num_times is the sum of times of contained factors -1 for each continuity
+  /** num_times is the sum of times of contained factors -1 for each continuity
    *  condition of the quarkline diagram
    */
   static constexpr int num_times = DilutedFactorTypeTraits<qlt1>::num_times +

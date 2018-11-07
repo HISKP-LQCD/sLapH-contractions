@@ -137,7 +137,7 @@ class BlockIterator {
 
   int sink_block() const { return block_sink_; }
 
-  /*!
+  /**
     The following quark line index is a contraption that assigns each time
     slice within the current block a number in the interval `[0, 2 * dilT)`.
     The entries `[0, dilT)` correspond to the “block → sink“ step and the

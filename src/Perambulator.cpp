@@ -2,7 +2,7 @@
 
 #include "StopWatch.hpp"
 
-/*!
+/**
  *  @param entity       The entry where this peram will be stored
  *  @param Lt           Total number of timeslices - for each peram the same
  *  @param nb_eigen_vec Total number of eigen vecs - for each peram the same
@@ -70,7 +70,7 @@ void Perambulator::read_perambulator(const ssize_t entity,
   swatch.print();
 }
 
-/*!
+/**
  *  @param Lt            Total number of timeslices - for each peram the same
  *  @param nb_eigen_vec  Total number of eigen vecs - for each peram the same
  *  @param quark         Contains information about dilution scheme and size

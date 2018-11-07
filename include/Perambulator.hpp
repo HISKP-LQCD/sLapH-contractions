@@ -11,16 +11,16 @@
 #include <iostream>
 #include <vector>
 
-/*! Memory allocation and reading routines for perambulators */
+/** Memory allocation and reading routines for perambulators */
 class Perambulator {
  private:
   std::vector<Eigen::MatrixXcd> peram;
 
  public:
-  /*! Default constructor */
+  /** Default constructor */
   Perambulator() : peram(0, Eigen::MatrixXcd(0, 0)){};
 
-  /*! Constructor which creates the correct sizes of the matrices
+  /** Constructor which creates the correct sizes of the matrices
    *
    *  @param nb_entitites Number of perambulators
    *  @param size_rows    Number of rows for each perambulator
@@ -37,15 +37,15 @@ class Perambulator {
     std::cout << "\tPerambulators initialised" << std::endl;
   }
 
-  /*! Default deconstructor - std::vector and Eigen should handle everything */
+  /** Default deconstructor - std::vector and Eigen should handle everything */
   ~Perambulator(){};
 
-  /*! Overloading [] operator for Perambulator objects */
+  /** Overloading [] operator for Perambulator objects */
   inline const Eigen::MatrixXcd &operator[](const ssize_t entity) const {
     return peram.at(entity);
   }
 
-  /*! Reading one perambulators from a single file */
+  /** Reading one perambulators from a single file */
   void read_perambulator(const ssize_t entity,
                          const ssize_t Lt,
                          const ssize_t nb_eigen_vec,
@@ -53,7 +53,7 @@ class Perambulator {
                          const std::string &filename,
                          const bool mock = false);
 
-  /*! Reading perambulators where each perambulator is stored in a different
+  /** Reading perambulators where each perambulator is stored in a different
    *  file
    */
   void read_perambulators_from_separate_files(

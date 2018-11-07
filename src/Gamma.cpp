@@ -4,7 +4,7 @@ namespace {
 std::complex<double> const I(0.0, 1.0);
 }
 
-/*! Look-up table for gamma matrices.
+/** Look-up table for gamma matrices.
 
   For every Gamma structure (currently 0-15) the four non-zero values are specified.
   The index i in row[i] specifies the column of the gamma matrix, the value of row[i] is

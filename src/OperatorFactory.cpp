@@ -16,7 +16,7 @@ static ssize_t map_char_to_dir(const char dir) {
   return integer_dir;
 }
 
-/*! Displace Matrix of eigenvectors by looping over displacement
+/** Displace Matrix of eigenvectors by looping over displacement
  vectors
 
  v is the Eigensystem at a specific timeslice
@@ -53,7 +53,7 @@ Eigen::MatrixXcd displace_eigenvectors(Eigen::MatrixXcd const &v,
   return res;
 }
 
-/*! Creates a two-dimensional vector containing the momenta for the operators
+/** Creates a two-dimensional vector containing the momenta for the operators
  *
  *  @param[in] Lx, Ly, Lz      Lattice extent in spatial directions
  *  @param[in] vdaggerv_lookup Contains the momenta
@@ -67,7 +67,7 @@ void create_momenta(ssize_t const Lx,
                     array_cd_d2 &momentum) {
   static const std::complex<double> I(0.0, 1.0);
 
-  /*! To calculate Vdagger exp(i*p*x) V only the momenta corresponding to the
+  /** To calculate Vdagger exp(i*p*x) V only the momenta corresponding to the
    *  quantum number id in op_VdaggerV will be used. The rest can be obtained
    *  by adjoining
    */
@@ -111,7 +111,7 @@ void create_momenta_new(ssize_t const Lx,
                         ssize_t const Lz,
                         std::vector<VdaggerVQuantumNumbers> const &vdaggerv_lookup,
                         array_cd_d2 &momentum) {
-  /*! To calculate Vdagger exp(i*p*x) V only the momenta corresponding to the
+  /** To calculate Vdagger exp(i*p*x) V only the momenta corresponding to the
    *  quantum number id in op_VdaggerV will be used. The rest can be obtained
    *  by adjoining
    */
@@ -168,7 +168,7 @@ void write_vdaggerv(const std::string &pathname,
 
 }  // namespace
 
-/*!
+/**
  * @param Lt, Lx, Ly, Lz  Temporal and spatial lattice extent
  * @param nb_ev           Number of eigenvectors
  * @param dilE            Number of diluted blocks in eigenvector space
@@ -243,7 +243,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
             Eigen::MatrixXcd::Zero(nb_ev, nb_ev));
 
   // Read gauge field only if it is needed.
-  /*! @todo might be useful to parallelize */
+  /** @todo might be useful to parallelize */
   std::unique_ptr<GaugeField> gauge(nullptr);
   if (operator_lookuptable.need_gaugefield) {
     // If parameters for smearing are set, smear operator
@@ -490,7 +490,7 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
   is_vdaggerv_set = true;
 }
 
-/*!
+/**
  *  @param filename The name to write to / read from the V^\dagger V operators
  *  @param rnd_vec  The random vector
  *  @param config   The configuration number to be read. Unused if
@@ -517,7 +517,7 @@ void OperatorFactory::create_operators(const std::string &filename,
   }
 }
 
-/*!
+/**
  *  E.g. after building Quarkline Q2, vdaggerv is no longer needed and can be
  *  deleted to free up space
  *
