@@ -41,6 +41,7 @@ boost::program_options::typed_value<T> *make_value(T *store_to) {
 void read_parameters(GlobalData &gd, int ac, char *av[]) {
   std::string input_file;
   std::string output_file;
+
   // Variables that will store parsed values for quarks.
   std::vector<std::string> quark_configs;
   // Variables that will store parsed values for operators.
@@ -50,15 +51,15 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   // Declare a group of options that will be allowed only on command line
   po::options_description generic("Command line options");
-  generic.add_options()("help,h", "produce help message")("version,v",
-                                                          "print version string")(
-      "verbose", "does additional tests and prints more details")(
-      "input,i",
-      po::value<std::string>(&input_file)->default_value("LapHs.in"),
-      "name of input file.")(
-      "output,o",
-      po::value<std::string>(&output_file)->default_value("LapHs.out"),
-      "name of output file.");
+  generic.add_options()("help,h", "produce help message");
+  generic.add_options()("version,v", "print version string");
+  generic.add_options()("verbose", "does additional tests and prints more details");
+  generic.add_options()("input,i",
+                        po::value<std::string>(&input_file)->default_value("LapHs.in"),
+                        "name of input file.");
+  generic.add_options()("output,o",
+                        po::value<std::string>(&output_file)->default_value("LapHs.out"),
+                        "name of output file.");
 
   // Declare a group of options that will be allowed both on command line and
   // in input file

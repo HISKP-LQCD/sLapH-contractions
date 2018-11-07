@@ -10,15 +10,31 @@
 #include <sys/stat.h>
 #include <vector>
 
-/** Class containing all metadata for contractions and functions to set them
- *  from infile
+/**
+ * Class containing all metadata for contractions and functions to set them
+ * from infile
  *
  *  Metadata roughly characterized by either
+ *
  *  - physical parameters
  *  - flags
  *  - paths
  */
 struct GlobalData {
+  /**
+   * Cutoff for the sum of individual momenta.
+   *
+   * The index is the total momentum squared, @f$ |P|^2 @f$, the value the sum
+   * of the individual momenta squared, @f$ |p_1|^2 + |p_2|^2 @f$. The values
+   * are chosen by hand from a feeling about the signal quality. When building
+   * momentum combinations to compute, the condition @f$ |p_1|^2 + |p_2|^2 \le
+   * c(|P|^2) @f$ will be enforced.
+   *
+   * Signal quality gets worse with large individual momenta, therefore it does
+   * not make sense to include a very large @f$ p_1 @f$ in the @f$ |P|^2 = 0
+   * @f$ case (with @f$ p_2 = - p_1 @f$). The current cutoff of 4 means that
+   * only individual momenta up to @f$ (0, 0, 2) @f$ are computed.
+   */
   GlobalData() {
     momentum_cutoff[0] = 4;
     momentum_cutoff[1] = 5;
@@ -61,21 +77,23 @@ struct GlobalData {
   HypPars hyp_parameters;
 };
 
-/** Reading the input parameters from the infile in the main routine and
- *  initializing GlobalData
+/**
+ * Reading the input parameters from the infile in the main routine and
+ * initializing GlobalData.
  */
 void read_parameters(GlobalData &gd, int ac, char *av[]);
 
-/** Fills the random vector and perambulator structs with the paths and
- *  file names to read the data
+/**
+ * Fills the random vector and perambulator structs with the paths and file
+ * names to read the data.
  */
-void build_IO_names(GlobalData &gd, const ssize_t config);
+void build_IO_names(GlobalData &gd, ssize_t const config);
   
 
 void input_handling(GlobalData &gd,
-                    const std::vector<std::string> &quark_configs,
-                    const std::vector<std::string> &operator_list_configs,
-                    const std::vector<std::string> &correlator_list_configs);
+                    std::vector<std::string> const &quark_configs,
+                    std::vector<std::string> const &operator_list_configs,
+                    std::vector<std::string> const &correlator_list_configs);
 
 void init_lookup_tables(GlobalData &gd);
 
