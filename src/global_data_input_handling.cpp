@@ -9,8 +9,8 @@
  *  @date Mar 28, 2013
  */
 
-#include "global_data.h"
-#include "global_data_utils.h"
+#include "global_data.hpp"
+#include "global_data_utils.hpp"
 
 namespace gdu = ::global_data_utils;
 

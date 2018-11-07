@@ -1,8 +1,8 @@
-#include "Diagram.h"
+#include "Diagram.hpp"
+
+#include "local_timer.hpp"
 
 #include <omp.h>
-
-#include "local_timer.h"
 
 /*****************************************************************************/
 /*                                    C2c                                    */

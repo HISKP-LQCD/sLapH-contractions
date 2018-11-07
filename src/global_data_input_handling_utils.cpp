@@ -1,4 +1,5 @@
-#include "global_data_utils.h"
+#include "global_data.hpp"
+#include "global_data_utils.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -6,7 +7,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
-#include "global_data.h"
 
 namespace {
 

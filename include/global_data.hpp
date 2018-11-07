@@ -3,16 +3,15 @@
 
 #pragma once
 
+#include "global_data_typedefs.hpp"
+#include "typedefs.hpp"
+
 #include <array>
+#include <iosfwd>
 #include <map>
 #include <string>
-#include <vector>
-#include <iosfwd>
-
 #include <sys/stat.h>
-
-#include "global_data_typedefs.h"
-#include "typedefs.h"
+#include <vector>
 
 /*! Class containing all metadata for contractions and functions to set them
  *  from infile

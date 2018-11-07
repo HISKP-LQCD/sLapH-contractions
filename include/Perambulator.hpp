@@ -7,16 +7,16 @@
 
 #pragma once
 
+#include "global_data_typedefs.hpp"
+#include "typedefs.hpp"
+
+#include <Eigen/Dense>
+
 #include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <vector>
-
-#include "Eigen/Dense"
-
-#include "global_data_typedefs.h"
-#include "typedefs.h"
 
 /*! Memory allocation and reading routines for perambulators */
 class Perambulator {

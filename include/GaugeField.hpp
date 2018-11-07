@@ -5,9 +5,35 @@
     Multiarrays. Functions: - 
  */
 
-#ifndef GAUGEFIELD_H_
-#define GAUGEFIELD_H_
-//!
+#pragma once
+
+//#include "lime.h"
+//#include "config_utils.h"
+#include "EigenVector.hpp"
+#include "io_utils.hpp"
+//#include "propagator_io.h"
+//#include "quark.h"
+#include "RandomVector.hpp"
+#include "typedefs.hpp"
+
+#include <boost/multi_array.hpp>
+#include <unsupported/Eigen/MatrixFunctions>
+
+#include <cmath>
+#include <complex>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <vector>
+
+
+//! \typedef 2dim array for lookup tables
+typedef boost::multi_array<int, 2> look;
+//! \typedef 2dim array for gauge field matrices of one timeslice.
+//! 
+typedef boost::multi_array<Eigen::Matrix3cd, 2> array_3cd_d2_eigen;
+
 //! \class GaugeField
 //! \brief Class for handling the Gaugefield, displacement routines and Smearing
 //! methods.
@@ -19,36 +45,7 @@
 //!                                                                             
 //! Smearings implemented so far are Hyp-Smearing, Ape-Smearing and Stout
 //! smearing, acting directly on the read in gaugefield
-//!
-#include <cmath>
-#include <complex>
-#include <ctime>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <vector>
 
-//#include "Eigen/Dense"
-//#include "Eigen/Core"
-//#include "Eigen/SparseCore"
-#include <unsupported/Eigen/MatrixFunctions>
-#include "boost/multi_array.hpp" 
-
-//#include "lime.h"
-//#include "config_utils.h"
-#include "EigenVector.h"
-#include "io_utils.h"
-//#include "propagator_io.h"
-//#include "quark.h"
-#include "RandomVector.h"
-#include "typedefs.h"
-
-
-//! \typedef 2dim array for lookup tables
-typedef boost::multi_array<int, 2> look;
-//! \typedef 2dim array for gauge field matrices of one timeslice.
-//! 
-typedef boost::multi_array<Eigen::Matrix3cd, 2> array_3cd_d2_eigen;
 class GaugeField {
   public:
     //! \brief Constructor
@@ -234,5 +231,3 @@ class GaugeField {
   //! \brief 2d boost_multiarray for indices in down direction
   look idown;
 };
-
-#endif //GAUGEFIELD_H_

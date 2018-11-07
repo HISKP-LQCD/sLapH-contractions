@@ -41,6 +41,7 @@
 #define RANLXS_C
 
 #include "ranlxs.h"
+
 #include <cfloat>
 #include <climits>
 #include <cmath>

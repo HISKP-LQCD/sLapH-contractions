@@ -1,5 +1,6 @@
-#include "Perambulator.h"
-#include "StopWatch.h"
+#include "Perambulator.hpp"
+
+#include "StopWatch.hpp"
 
 /******************************************************************************/
 /*!

@@ -1,6 +1,8 @@
-#include "boost/multi_array.hpp"
+#pragma once
 
-#include "DilutedFactorY.h"
+#include "DilutedFactorY.hpp"
+
+#include <boost/multi_array.hpp>
 
 template <DilutedFactorType qlt1, DilutedFactorType qlt2, size_t rvecs>
 struct DilutedTraceTraceFactory {

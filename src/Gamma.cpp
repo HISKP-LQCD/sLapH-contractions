@@ -1,4 +1,4 @@
-#include <Gamma.h>
+#include <Gamma.hpp>
 
 namespace {
 std::complex<double> const I(0.0, 1.0);

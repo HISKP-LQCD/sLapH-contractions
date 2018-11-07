@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typedefs.h"
+#include "typedefs.hpp"
 
 template <typename Numeric>
 class DiagramNumeric;

@@ -5,8 +5,8 @@
  *  @author Markus Werner
  */
 
-#include "OperatorsForMesons.h"
-#include "StopWatch.h"
+#include "OperatorsForMesons.hpp"
+#include "StopWatch.hpp"
 
 #include <boost/format.hpp>
 

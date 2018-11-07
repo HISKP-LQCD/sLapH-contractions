@@ -1,12 +1,12 @@
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <string>
+#include "typedefs.hpp"
 
 #include <Eigen/Dense>
 
-#include "typedefs.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

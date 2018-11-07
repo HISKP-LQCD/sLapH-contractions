@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Correlators.h"
-#include "DilutedFactorY.h"
-#include "DilutedTraceFactory.h"
-#include "h5-wrapper.h"
-
-#include <mutex>
+#include "Correlators.hpp"
+#include "DilutedFactorY.hpp"
+#include "DilutedTraceFactory.hpp"
+#include "h5-wrapper.hpp"
 
 #include <omp.h>
+
+#include <mutex>
 
 /*! Locally replaces QuarklineLookup extended by lookuptable for rVdaggerVr */
 struct DilutedFactorLookup {

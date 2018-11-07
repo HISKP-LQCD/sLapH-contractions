@@ -1,4 +1,4 @@
-#include "dilution-iterator.h"
+#include "dilution-iterator.hpp"
 
 std::ostream &operator<<(std::ostream &os, DilutionIterator const &di) {
   os << "DilutionIterator(source=" << di.source() << ", sink=" << di.sink() << ")";

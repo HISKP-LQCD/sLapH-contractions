@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <typedefs.h>
+#include "typedefs.hpp"
+
 #include <ostream>
 
 /*! Small struct which contains all information to build and read random

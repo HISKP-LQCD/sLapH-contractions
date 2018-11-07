@@ -1,4 +1,4 @@
-#include "GaugeField.h"
+#include "GaugeField.hpp"
 
 #include <boost/format.hpp>
 

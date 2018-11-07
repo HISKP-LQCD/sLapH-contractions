@@ -1,4 +1,4 @@
-#include "OperatorsForMesons.h"
+#include "OperatorsForMesons.hpp"
 
 #include <benchmark/benchmark.h>
 

@@ -7,16 +7,16 @@
 // Description  : Contraction code for Laphs Perambulators
 // *****************************************************************************
 
-#include <iomanip>
-#include <iostream>
+#include "EigenVector.hpp"
+#include "typedefs.hpp"
 
 #include <omp.h>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
-#include "EigenVector.h"
-#include "typedefs.h"
+#include <iomanip>
+#include <iostream>
 
-#include "boost/filesystem.hpp"
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

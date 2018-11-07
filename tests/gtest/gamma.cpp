@@ -1,4 +1,4 @@
-#include "Gamma.h"
+#include "Gamma.hpp"
 
 #include <gtest/gtest.h>
 

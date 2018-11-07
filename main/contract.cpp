@@ -11,13 +11,13 @@
  *  @copyright Copies are prohibited so far
  */
 
+#include "Correlators.hpp"
+#include "git.hpp"
+#include "global_data.hpp"
+
+#include <omp.h>
+
 #include <iostream>
-
-#include "omp.h"
-
-#include "Correlators.h"  // contains all other headers
-#include "git.h"
-#include "global_data.h"
 
 /*! Read parameters from infile and perform the specified contractions
  *

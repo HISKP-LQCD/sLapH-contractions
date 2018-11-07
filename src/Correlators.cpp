@@ -1,19 +1,18 @@
-#include "Correlators.h"
+#include "Correlators.hpp"
 
 //#define DILUTION_ITERATOR_PRINT
 
-#include "Diagram.h"
-#include "DilutedFactor.h"
-#include "DilutedFactorY.h"
-#include "StopWatch.h"
-#include "dilution-iterator.h"
-#include "typedefs.h"
-
-#include "local_timer.h"
-
-#include <iomanip>
+#include "Diagram.hpp"
+#include "DilutedFactor.hpp"
+#include "DilutedFactorY.hpp"
+#include "StopWatch.hpp"
+#include "dilution-iterator.hpp"
+#include "typedefs.hpp"
+#include "local_timer.hpp"
 
 #include <omp.h>
+
+#include <iomanip>
 
 int get_time_delta(BlockIterator const &slice_pair, int const Lt) {
   return abs((slice_pair.sink() - slice_pair.source() - Lt) % Lt);

@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "typedefs.h"
+#include "typedefs.hpp"
+
+#include "ranlxs.h"
 
 #include <complex>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "ranlxs.h"
 
 /*! Memory allocation and IO routines for random vectors */
 class RandomVector {

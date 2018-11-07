@@ -1,6 +1,6 @@
-#include <StopWatch.h>
+#include "StopWatch.hpp"
 
-#include "typedefs.h"
+#include "typedefs.hpp"
 
 #include <omp.h>
 

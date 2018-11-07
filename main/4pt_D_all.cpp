@@ -7,15 +7,15 @@
 // Description  : Contraction code for Laphs Perambulators
 // *****************************************************************************
 
-#include <iostream>
+#include "global_data_typedefs.hpp"
+#include "Perambulator.hpp"
+#include "RandomVector.hpp"
+#include "typedefs.hpp"
 
 #include <omp.h>
 #include <boost/format.hpp>
 
-#include "global_data_typedefs.h"
-#include "Perambulator.h"
-#include "RandomVector.h"
-#include "typedefs.h"
+#include <iostream>
 
 int main (int ac, char* av[]) {
 

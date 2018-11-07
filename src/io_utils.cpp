@@ -1,6 +1,4 @@
-/* $Id: io_utils.c,v 1.2 2007/11/22 15:57:38 urbach Exp $ */
-
-#include "io_utils.h"
+#include "io_utils.hpp"
 
 int isnan_f (float x) {
 	return x != x;

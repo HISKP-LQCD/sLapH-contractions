@@ -1,4 +1,4 @@
-#include "dilution-iterator.h"
+#include "dilution-iterator.hpp"
 
 int main() {
     test_dilution_scheme(6, 2, DilutionType::block);

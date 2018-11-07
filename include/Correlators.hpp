@@ -9,6 +9,15 @@
 
 #pragma once
 
+#include "Diagram.hpp"
+#include "DiagramForward.hpp"
+#include "OperatorsForMesons.hpp"
+#include "Perambulator.hpp"
+#include "typedefs.hpp"
+
+#include <boost/multi_array.hpp>
+#include <Eigen/Dense>
+
 #include <complex>
 #include <fstream>
 #include <iostream>
@@ -17,15 +26,6 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include <Eigen/Dense>
-#include "boost/multi_array.hpp"
-
-#include "DiagramForward.h"
-#include "OperatorsForMesons.h"
-#include "Perambulator.h"
-#include "Diagram.h"
-#include "typedefs.h"
 
 /******************************************************************************/
 

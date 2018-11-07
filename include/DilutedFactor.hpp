@@ -7,20 +7,18 @@
 
 #pragma once
 
+#include "global_data.hpp"
+#include "local_timer.hpp"
+#include "OperatorsForMesons.hpp"
+#include "typedefs.hpp"
+
+#include <omp.h>
+#include <Eigen/Dense>
+
 #include <iosfwd>
 #include <set>
 #include <sstream>
 #include <vector>
-
-#include "Eigen/Dense"
-
-#include "OperatorsForMesons.h"
-#include "global_data.h"
-#include "typedefs.h"
-
-#include "local_timer.h"
-
-#include <omp.h>
 
 template <size_t rvecs1, size_t rvecs2>
 bool has_intersection(SmallVectorRndId<rvecs1> const &left,

@@ -1,7 +1,4 @@
-/* $Id: io_utils.h,v 1.2 2007/11/22 15:57:38 urbach Exp $ */
-
-#ifndef _IO_UTILS_H
-#define _IO_UTILS_H
+#pragma once
 
 #include <cstdlib>
 #include <cstdio>
@@ -10,8 +7,9 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <cmath>
+
 extern "C" {
-#include "lime.h"
+#include <lime.h>
 }
 
 #ifndef isnan
@@ -40,5 +38,3 @@ int write_ildg_format_xml (char *filename, LimeWriter * limewriter,
 void single2double_cm (double * const R, float * const S);
 void double2single_cm (float * const S, double * const R);
 void zero_spinor (double * const R);
-
-#endif

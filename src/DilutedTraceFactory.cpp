@@ -1,4 +1,4 @@
-#include "DilutedTraceFactory.h"
+#include "DilutedTraceFactory.hpp"
 
 template <>
 void DilutedTraceTraceFactory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>::build(

@@ -7,23 +7,22 @@
 
 #pragma once
 
+#include "EigenVector.hpp"
+#include "global_data_typedefs.hpp"
+#include "GaugeField.hpp"
+#include "RandomVector.hpp"
+#include "typedefs.hpp"
+
+#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
+#include <boost/multi_array.hpp>
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <Eigen/Dense>
-
-#include "boost/filesystem.hpp"
-#include "boost/format.hpp"
-#include "boost/multi_array.hpp"
-
-
-#include "EigenVector.h"
-#include "global_data_typedefs.h"
-#include "GaugeField.h"
-#include "RandomVector.h"
-#include "typedefs.h"
 
 /*! Calculates operators as they emerge in correlation functions using the
  *  stochastic estimates from the stochastic Laplacian Heaviside method

@@ -1,4 +1,4 @@
-#include "EigenVector.h"
+#include "EigenVector.hpp"
 
 #include <boost/format.hpp>
 

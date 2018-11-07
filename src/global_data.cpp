@@ -1,19 +1,18 @@
 /*! @file
  */
 
-#include "global_data.h"
+#include "global_data.hpp"
 
-#include "git.h"
-
-#include <Eigen/Core>
-#include <Eigen/Dense>
-#include <Eigen/SparseCore>
+#include "git.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 
 #include <algorithm>
 #include <cmath>

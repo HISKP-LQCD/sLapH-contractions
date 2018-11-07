@@ -1,9 +1,10 @@
-#include <string>
+#include "EigenVector.hpp"
+#include "GaugeField.hpp"
+#include "typedefs.hpp"
+
 #include <boost/format.hpp>
 
-#include "GaugeField.h"
-#include "EigenVector.h"
-#include "typedefs.h"
+#include <string>
 
 int main() {
   std::string path_ev_in("/hiskp4/bartek/eigensystems/quenched/wilson_b5.85_L12T24/data");

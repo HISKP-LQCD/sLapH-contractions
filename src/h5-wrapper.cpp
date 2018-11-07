@@ -1,8 +1,8 @@
-#include "h5-wrapper.h"
+#include "h5-wrapper.hpp"
 
-#include "DilutedFactor.h"
+#include "DilutedFactor.hpp"
 
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
 
 void create_folder(std::string const &path) {
   if (access(path.c_str(), 0) != 0) {

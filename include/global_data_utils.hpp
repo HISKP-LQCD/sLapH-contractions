@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include "global_data_typedefs.hpp"
+#include "typedefs.hpp"
+
 #include <array>
 #include <iostream>
 #include <string>
-
-#include "global_data_typedefs.h"
-#include "typedefs.h"
 
 namespace global_data_utils {
 

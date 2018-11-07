@@ -1,11 +1,11 @@
-#include "DilutedFactorY.h"
+#include "DilutedFactorY.hpp"
 
-#include <utility>
+#include "local_timer.hpp"
+
 #include <omp.h>
 
+#include <utility>
 #include <iostream>
-
-#include "local_timer.h"
 
 namespace {
 std::complex<double> const I(0.0, 1.0);
