@@ -63,46 +63,43 @@ bool desired_total_momentum(Vector const &p_tot, std::vector<Vector> const &P) {
 static bool momenta_below_cutoff(Vector const &p1,
                                  Vector const &p2,
                                  std::map<int, int> const &momentum_cutoff) {
-  const Vector p_tot = p1 + p2;
+  Vector const p_tot = p1 + p2;
 
   if (p_tot.squaredNorm() > 4) {
     std::cout << "In momenta_below_cutoff(): WARNING! No cutoff for P > 4"
               << " implemented" << std::endl;
   }
 
-  if (p1.squaredNorm() + p2.squaredNorm() > momentum_cutoff.at(p_tot.squaredNorm())) {
-    return false;
-  } else {
-    return true;
-  }
+  return p1.squaredNorm() + p2.squaredNorm() <= momentum_cutoff.at(p_tot.squaredNorm());
 }
 
 }  // end of unnamed namespace
 
-/** Build an array with all the quantum numbers needed for a particular
- *  correlation function respecting physical conservation laws
+/**
+ * Build an array with all the quantum numbers needed for a particular
+ * correlation function respecting physical conservation laws.
  *
- *  @param[in]  correlator      A single correlator specified in the infile
- *                              and processed into the Correlators struct
- *  @param[in]  operator_list   List of all operators specified in the infile
- *                              and processed into Operators struct
- *  @param[out] quantum_numbers A list of all physical quantum numbers as
- *                              specified in the QuantumNumbers struct that are
- *                              possible for @em correlator
+ * @param[in] correlator A single correlator specified in the infile and
+ * processed into the Correlators struct
+ * @param[in] operator_list List of all operators specified in the infile and
+ * processed into Operators struct
+ * @param[out] quantum_numbers A list of all physical quantum numbers as
+ * specified in the QuantumNumbers struct that are possible for @em correlator
+ * @param[in] momentum_cutoff Cutoffs for sum of momenta squared, see
+ * GlobalData::momentum_cutoff.
  *
- *  @em correlator contains multiple operator_numbers. From combinatorics a
- *  large number of combinations arise. In general only a subset of them are
- *  physically allowed or necessary to calculate.
- *  In this function momentum conservation is enforced and multiple cutoffs
- *  introduced.
+ * \p correlator contains multiple operator_numbers. From combinatorics a
+ * large number of combinations arise. In general only a subset of them are
+ * physically allowed or necessary to calculate. In this function momentum
+ * conservation is enforced and multiple cutoffs introduced.
  */
 void build_quantum_numbers_from_correlator_list(
-    const Correlators_2 &correlator,
-    const Operator_list &operator_list,
+    Correlators_2 const &correlator,
+    Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
     std::map<int, int> const &momentum_cutoff) {
   std::vector<Operators> qn_op;
-  for (const auto &op_number : correlator.operator_numbers) {
+  for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
       std::ostringstream oss;
       oss << "Operator with ID " << op_number
@@ -115,19 +112,18 @@ void build_quantum_numbers_from_correlator_list(
 
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
-  /** Restriction to what shall actually be computed is done in if statements
-   *  for each diagram because it depends on the number of quarks.
-   *
-   *  @todo Think about a way to avoid these if conditions.
-   */
+  // Restriction to what shall actually be computed is done in if statements
+  // for each diagram because it depends on the number of quarks.
+  //
+  // @todo Think about a way to avoid these if conditions.
   if (correlator.type == "C1") {
-    for (const auto &op0 : qn_op[0])
+    for (auto const &op0 : qn_op[0])
       quantum_numbers.emplace_back(std::vector<QuantumNumbers>({op0}));
   } else if (correlator.type == "C2c" || correlator.type == "C20" ||
              correlator.type == "C20V" || correlator.type == "Check") {
     // Build all combinations of operators and impose momentum conservation
     // and cutoffs
-    for (const auto &op0 : qn_op[0]) {
+    for (auto const &op0 : qn_op[0]) {
       Vector p_so = op0.momentum;
 
       if (desired_total_momentum(p_so, correlator.tot_mom)) {
