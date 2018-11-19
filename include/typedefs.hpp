@@ -10,6 +10,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <iomanip>
 
 int constexpr max_rnd_ids = 10;
 
