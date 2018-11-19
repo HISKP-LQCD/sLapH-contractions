@@ -829,14 +829,6 @@ static void build_C20V_lookup(
     auto const candidate =
         candidate_factory->make(ssize(c_look), hdf5_dataset_name, &trQ1_lookup, ql_ids);
 
-    /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
-     *  numbers to 0,1
-     */
-    // auto id1 = build_trQ1_lookup({ql_ids[0]}, trQ1_lookup);
-    // auto id2 = build_trQ1_lookup({ql_ids[1]}, trQ1_lookup);
-
-    // DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1, id2}};
-
     /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
 
