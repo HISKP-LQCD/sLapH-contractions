@@ -655,6 +655,7 @@ struct InnerLookup {
   std::vector<DilutedFactorIndex> *quarkline_lookup;
   size_t q1;
   size_t q2;
+  bool is_q1;
 };
 
 struct OuterLookup {
@@ -679,68 +680,68 @@ BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
 
   map["C20"] =
       OuterLookup{&gd.correlator_lookuptable.C20,
-                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 0},
-                   InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1}},
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 0, false},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                        gd.correlator_lookuptable.trQ1Q1, std::vector<ssize_t>{0, 1}))}};
 
   map["C20V"] =
       OuterLookup{&gd.correlator_lookuptable.C20V,
-                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 0},
-                   InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 1}},
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 0, true},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 1, true}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{0})),
                    std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{1}))}};
 
   map["C30"] = OuterLookup{&gd.correlator_lookuptable.C30,
-                           {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}},
+                           {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0, false},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2, false}},
                            {}};
 
   map["C3c"] = OuterLookup{&gd.correlator_lookuptable.C3c,
-                           {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                            InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}},
+                           {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0, false},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false},
+                            InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2, false}},
                            {}};
 
   map["C30V"] =
       OuterLookup{&gd.correlator_lookuptable.C30V,
-                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 0},
-                   InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                   InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 2}},
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 0, false},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 2, true}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                        gd.correlator_lookuptable.trQ1Q1, std::vector<ssize_t>{0, 1})),
                    std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{2}))}};
 
   map["C40B"] = OuterLookup{&gd.correlator_lookuptable.C40B,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}},
+                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3, false}},
                             {}};
 
   map["C4cB"] = OuterLookup{&gd.correlator_lookuptable.C4cB,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}},
+                            {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3, false}},
                             {}};
 
   map["C40C"] = OuterLookup{&gd.correlator_lookuptable.C40C,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}},
+                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3, false}},
                             {}};
 
   map["C4cC"] = OuterLookup{&gd.correlator_lookuptable.C4cC,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}},
+                            {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2, false},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3, false}},
                             {}};
 
   return map;
@@ -881,82 +882,6 @@ static void build_C2c_lookup(
   }
 }
 
-/** Create lookuptable where to find the quarklines to build C30V.
- *
- *  @param[in]  quarks            Quarks as read from the infile and processed
- *                                into quark struct
- *  @param[in]  quark_numbers     List which quarks are specified in the infile
- *  @param[in]  start_config      Number of first gauge configuration
- *  @param[in]  path_output       Output path from the infile.
- *  @param[in]  quantum_numbers   A list of all physical quantum numbers
- *                                quantum field operators for all correlators
- *                                with Dirac structure factored out that are
- *                                possible for @em correlator
- *  @param[in]  vdv_indices       Indices identifying VdaggerV operators
- *  @param[out] Q1_lookup         Lookuptable containing unique combinations of
- *                                peram-, vdv-, and ric-indices needed to built
- *                                Q1
- *  @param[out] trQ1_lookup       Lookuptable containign unique combinations of
- *                                parts tr(Q1).
- *  @param[out] trQ1Q1_lookup     Lookuptable containign unique combinations of
- *                                parts tr(Q1Q1).
- *                                Also known as trQ1Q1
- *  @param[out] c_look            Lookup table for C30V
- *
- *  @bug I am fairly certain that the quarks are mixed up. It is
- *        also wrong in init_lookup_tables() (MW 27.3.17)
- */
-static void build_C30V_lookup(
-    std::vector<quark> const &quarks,
-    std::vector<int> const &quark_numbers,
-    int start_config,
-    const std::string &path_output,
-    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
-    std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices,
-    std::vector<DilutedFactorIndex> &Q1_lookup,
-    std::vector<DiagramIndex> &trQ1_lookup,
-    std::vector<DiagramIndex> &trQ1Q1_lookup,
-    std::vector<DiagramIndex> &c_look) {
-  std::vector<ssize_t> ql_ids(3);
-  std::vector<std::pair<ssize_t, ssize_t>> ric_ids;
-
-  // Build the correlator and dataset names for hdf5 output files
-  std::vector<std::string> quark_types;
-  for (const auto &id : quark_numbers) {
-    quark_types.emplace_back(quarks[id].type);
-  }
-
-  for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[1], quark_numbers[0], false);
-    build_Quarkline_lookup_one_qn(
-        0, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[0], quark_numbers[1], false);
-    build_Quarkline_lookup_one_qn(
-        1, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[2], quark_numbers[2], true);
-    build_Quarkline_lookup_one_qn(
-        2, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-
-    auto const id0 = build_corr0_lookup({ql_ids[0], ql_ids[1]}, trQ1Q1_lookup);
-    auto const id1 = build_trQ1_lookup({ql_ids[2]}, trQ1_lookup);
-
-    std::string const hdf5_dataset_name = build_hdf5_dataset_name(
-        "C30V", start_config, path_output, quark_types, quantum_numbers[d]);
-
-    DiagramIndex const candidate{
-        ssize(c_look), hdf5_dataset_name, {id0, id1}, std::vector<int>{}};
-
-    /** XXX Better with std::set */
-    auto const it = std::find(c_look.begin(), c_look.end(), candidate);
-
-    if (it == c_look.end()) {
-      c_look.push_back(candidate);
-    }
-  }
-}
-
 /** Create lookuptable where to find the quarklines to build C30.
  *
  *  @param[in]  quarks            Quarks as read from the infile and processed
@@ -998,7 +923,7 @@ static void build_general_lookup(
       auto const ric_ids = create_rnd_vec_id(quarks,
                                              quark_numbers[lle.q1],
                                              quark_numbers[lle.q2],
-                                             name == "C1" || name == "C20V");
+                                             name == "C1" || lle.is_q1);
       build_Quarkline_lookup_one_qn(lle.q2,
                                     quantum_numbers[d],
                                     vdv_indices[d],
@@ -1398,7 +1323,7 @@ void init_lookup_tables(GlobalData &gd) {
 
     if (correlator.type == "C20" || correlator.type == "C20V" ||
         correlator.type == "C30" || correlator.type == "C3c" ||
-        correlator.type == "30V" || correlator.type == "C40B" ||
+        correlator.type == "C30V" || correlator.type == "C40B" ||
         correlator.type == "C4cB" || correlator.type == "C40C" ||
         correlator.type == "C4cC") {
       auto const &lookup_lookup = lookup_lookup_map.at(correlator.type);
@@ -1461,17 +1386,6 @@ void init_lookup_tables(GlobalData &gd) {
                         gd.quarkline_lookuptable.Q2V,
                         gd.correlator_lookuptable.trQ0Q2,
                         gd.correlator_lookuptable.C4cV);
-    } else if (correlator.type == "C30V") {
-      build_C30V_lookup(gd.quarks,
-                        correlator.quark_numbers,
-                        gd.start_config,
-                        gd.path_output,
-                        quantum_numbers,
-                        vdv_indices,
-                        gd.quarkline_lookuptable.Q1,
-                        gd.correlator_lookuptable.trQ1,
-                        gd.correlator_lookuptable.trQ1Q1,
-                        gd.correlator_lookuptable.C30V);
     } else if (correlator.type == "C40D") {
       build_C40D_lookup(gd.quarks,
                         correlator.quark_numbers,
