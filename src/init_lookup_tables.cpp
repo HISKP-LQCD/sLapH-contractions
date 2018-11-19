@@ -108,6 +108,18 @@ BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
                             InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}}};
 
+  map["C40B"] = OuterLookup{&gd.correlator_lookuptable.C40B,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
+
+  map["C4cB"] = OuterLookup{&gd.correlator_lookuptable.C4cB,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
+
   map["C40C"] = OuterLookup{&gd.correlator_lookuptable.C40C,
                             {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
                              InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
@@ -384,7 +396,7 @@ void build_quantum_numbers_from_correlator_list(
 
 // TODO: Not the right place, not sure where to place it otherwise
 /** Makes a string object of a displacement vector */
-static std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
+std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
   std::string out;
   if (in.empty())
     out = "000";
@@ -1382,138 +1394,6 @@ static void build_C40V_lookup(
   }
 }
 
-/** Create lookuptable where to find the quarklines to build C4cB.
- *
- *  @param[in]  quarks            Quarks as read from the infile and processed
- *                                into quark struct
- *  @param[in]  quark_numbers     List which quarks are specified in the infile
- *  @param[in]  start_config      Number of first gauge configuration
- *  @param[in]  path_output       Output path from the infile.
- *  @param[in]  quantum_numbers   A list of all physical quantum numbers
- *                                quantum field operators for all correlators
- *                                with Dirac structure factored out that are
- *                                possible for @em correlator
- *  @param[in]  vdv_indices       Indices identifying VdaggerV operators
- *  @param[out] Q0_lookup         Lookuptable containing unique combinations of
- *                                peram-, vdv-, and ric-indices needed to built
- *                                Q0
- *  @param[out] Q2L_lookup        Lookuptable containing unique combinations of
- *                                peram-, vdv-, and ric-indices needed to built
- *                                Q2L
- *  @param[out] c_look            Lookup table for C4cB
- */
-static void build_C4cB_lookup(
-    std::vector<quark> const &quarks,
-    std::vector<int> const &quark_numbers,
-    int start_config,
-    const std::string &path_output,
-    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
-    std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices,
-    std::vector<DilutedFactorIndex> &Q0_lookup,
-    std::vector<DilutedFactorIndex> &Q2L_lookup,
-    std::vector<DiagramIndex> &c_look) {
-  std::vector<ssize_t> ql_ids(4);
-  std::vector<std::pair<ssize_t, ssize_t>> ric_ids;
-
-  // Build the correlator and dataset names for hdf5 output files
-  std::vector<std::string> quark_types;
-  for (const auto &id : quark_numbers)
-    quark_types.emplace_back(quarks[id].type);
-
-  for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[3], quark_numbers[0], false);
-    build_Quarkline_lookup_one_qn(
-        0, quantum_numbers[d], vdv_indices[d], ric_ids, Q2L_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[0], quark_numbers[1], false);
-    build_Quarkline_lookup_one_qn(
-        1, quantum_numbers[d], vdv_indices[d], ric_ids, Q0_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[1], quark_numbers[2], false);
-    build_Quarkline_lookup_one_qn(
-        2, quantum_numbers[d], vdv_indices[d], ric_ids, Q2L_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[2], quark_numbers[3], false);
-    build_Quarkline_lookup_one_qn(
-        3, quantum_numbers[d], vdv_indices[d], ric_ids, Q0_lookup, ql_ids);
-
-    std::string hdf5_dataset_name = build_hdf5_dataset_name(
-        "C4cB", start_config, path_output, quark_types, quantum_numbers[d]);
-
-    DiagramIndex candidate(ssize(c_look), hdf5_dataset_name, ql_ids);
-
-    /** XXX Better with std::set */
-    auto it = std::find(c_look.begin(), c_look.end(), candidate);
-
-    if (it == c_look.end()) {
-      c_look.push_back(candidate);
-    }
-  }
-}
-
-/** Create lookuptable where to find the quarklines to build C40B.
- *
- *  @param[in]  quarks            Quarks as read from the infile and processed
- *                                into quark struct
- *  @param[in]  quark_numbers     List which quarks are specified in the infile
- *  @param[in]  start_config      Number of first gauge configuration
- *  @param[in]  path_output       Output path from the infile.
- *  @param[in]  quantum_numbers   A list of all physical quantum numbers
- *                                quantum field operators for all correlators
- *                                with Dirac structure factored out that are
- *                                possible for @em correlator
- *  @param[in]  vdv_indices       Indices identifying VdaggerV operators
- *  @param[out] Q1_lookup         Lookuptable containing unique combinations of
- *                                peram-, vdv-, and ric-indices needed to built
- *                                Q1
- *  @param[out] c_look            Lookup table for C40B
- *
- *  @bug I am fairly certain that the quarks are mixed up. It is
- *        also wrong in init_lookup_tables() (MW 27.3.17)
- */
-static void build_C40B_lookup(
-    std::vector<quark> const &quarks,
-    std::vector<int> const &quark_numbers,
-    int start_config,
-    const std::string &path_output,
-    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
-    std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices,
-    std::vector<DilutedFactorIndex> &Q1_lookup,
-    std::vector<DiagramIndex> &c_look) {
-  std::vector<ssize_t> ql_ids(4);
-  std::vector<std::pair<ssize_t, ssize_t>> ric_ids;
-
-  // Build the correlator and dataset names for hdf5 output files
-  std::vector<std::string> quark_types;
-  for (const auto &id : quark_numbers)
-    quark_types.emplace_back(quarks[id].type);
-
-  for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[3], quark_numbers[0], false);
-    build_Quarkline_lookup_one_qn(
-        0, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[0], quark_numbers[1], false);
-    build_Quarkline_lookup_one_qn(
-        1, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[1], quark_numbers[2], false);
-    build_Quarkline_lookup_one_qn(
-        2, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-    ric_ids = create_rnd_vec_id(quarks, quark_numbers[2], quark_numbers[3], false);
-    build_Quarkline_lookup_one_qn(
-        3, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
-
-    std::string hdf5_dataset_name = build_hdf5_dataset_name(
-        "C40B", start_config, path_output, quark_types, quantum_numbers[d]);
-
-    DiagramIndex candidate{
-        ssize(c_look), hdf5_dataset_name, ql_ids, std::vector<int>({})};
-
-    /** XXX Better with std::set */
-    auto it = std::find(c_look.begin(), c_look.end(), candidate);
-
-    if (it == c_look.end()) {
-      c_look.push_back(candidate);
-    }
-  }
-}
-
 /**
  *  from GlobalData::correlators_list, GlobalData::operator::list and
  *  GlobalData::quarks
@@ -1552,7 +1432,9 @@ void init_lookup_tables(GlobalData &gd) {
     auto const lookup_lookup_map = make_build_lookup_lookup_map(gd);
 
     if (correlator.type == "C30" || correlator.type == "C3c" ||
+        correlator.type == "C40B" || correlator.type == "C4cB" ||
         correlator.type == "C40C" || correlator.type == "C4cC") {
+      std::cout << correlator.type << std::endl;
       build_general_lookup(correlator.type,
                            lookup_lookup_map.at(correlator.type),
                            gd.quarks,
@@ -1611,16 +1493,6 @@ void init_lookup_tables(GlobalData &gd) {
                         gd.quarkline_lookuptable.Q2V,
                         gd.correlator_lookuptable.trQ0Q2,
                         gd.correlator_lookuptable.C4cV);
-    } else if (correlator.type == "C4cB") {
-      build_C4cB_lookup(gd.quarks,
-                        correlator.quark_numbers,
-                        gd.start_config,
-                        gd.path_output,
-                        quantum_numbers,
-                        vdv_indices,
-                        gd.quarkline_lookuptable.Q0,
-                        gd.quarkline_lookuptable.Q2L,
-                        gd.correlator_lookuptable.C4cB);
     } else if (correlator.type == "C20V") {
       build_C20V_lookup(gd.quarks,
                         correlator.quark_numbers,
@@ -1672,15 +1544,6 @@ void init_lookup_tables(GlobalData &gd) {
                         gd.quarkline_lookuptable.Q1,
                         gd.correlator_lookuptable.trQ1Q1,
                         gd.correlator_lookuptable.C40V);
-    } else if (correlator.type == "C40B") {
-      build_C40B_lookup(gd.quarks,
-                        correlator.quark_numbers,
-                        gd.start_config,
-                        gd.path_output,
-                        quantum_numbers,
-                        vdv_indices,
-                        gd.quarkline_lookuptable.Q1,
-                        gd.correlator_lookuptable.C40B);
     } else {
       std::ostringstream oss;
       oss << "Correlator type " << correlator.type << " not known!" << std::endl;
