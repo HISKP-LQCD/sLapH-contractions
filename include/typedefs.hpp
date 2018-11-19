@@ -258,12 +258,8 @@ struct DiagramIndex {
   DiagramIndex(const ssize_t id,
                const std::string &hdf5_dataset_name,
                const std::vector<ssize_t> &lookup,
-               const std::vector<int> &gamma)
+               const std::vector<int> &gamma = std::vector<int>{})
       : id(id), hdf5_dataset_name(hdf5_dataset_name), lookup(lookup), gamma(gamma){};
-  DiagramIndex(const ssize_t id,
-               const std::string &hdf5_dataset_name,
-               const std::vector<ssize_t> &lookup)
-      : DiagramIndex(id, hdf5_dataset_name, lookup, std::vector<int>({})){};
 };
 
 inline bool operator==(DiagramIndex const &first, DiagramIndex const &second) {
