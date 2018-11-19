@@ -706,10 +706,10 @@ BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
                            {}};
 
   map["C30V"] =
-      OuterLookup{&gd.correlator_lookuptable.C30,
-                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
+      OuterLookup{&gd.correlator_lookuptable.C30V,
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 0},
                    InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                   InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 2}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                        gd.correlator_lookuptable.trQ1Q1, std::vector<ssize_t>{0, 1})),
                    std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
@@ -1398,8 +1398,9 @@ void init_lookup_tables(GlobalData &gd) {
 
     if (correlator.type == "C20" || correlator.type == "C20V" ||
         correlator.type == "C30" || correlator.type == "C3c" ||
-        correlator.type == "C40B" || correlator.type == "C4cB" ||
-        correlator.type == "C40C" || correlator.type == "C4cC") {
+        correlator.type == "30V" || correlator.type == "C40B" ||
+        correlator.type == "C4cB" || correlator.type == "C40C" ||
+        correlator.type == "C4cC") {
       auto const &lookup_lookup = lookup_lookup_map.at(correlator.type);
 
       build_general_lookup(correlator.type,
