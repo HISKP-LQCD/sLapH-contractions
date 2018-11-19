@@ -75,6 +75,30 @@ static bool momenta_below_cutoff(Vector const &p1,
 
 }  // end of unnamed namespace
 
+struct LookupLookup {
+  std::vector<DilutedFactorIndex> const * quarkline_lookup;
+  std::vector<size_t> quark_numbers;
+};
+
+/**
+ * Data structure containing quark lines and DilutedFactor indices.
+ *
+ * I really dislike the name “lookup” as as a data structure where you cannot
+ * retrieve things is basically useless. But that does not mean that we can
+ * name new stuff like this, I have even added it here twice!
+ */
+using BuildLookupLookupMap = std::map<std::string, std::vector<LookupLookup>>;
+
+BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
+  BuildLookupLookupMap map;
+
+  map["C30"] = {LookupLookup{&gd.quarkline_lookuptable.Q1, {2, 0}},
+                LookupLookup{&gd.quarkline_lookuptable.Q1, {0, 1}},
+                LookupLookup{&gd.quarkline_lookuptable.Q1, {1, 2}}};
+
+  return map;
+}
+
 /**
  * Build an array with all the quantum numbers needed for a particular
  * correlation function respecting physical conservation laws.
