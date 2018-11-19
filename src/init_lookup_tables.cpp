@@ -928,18 +928,11 @@ void init_lookup_tables(GlobalData &gd) {
     std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
 
     auto const lookup_lookup_map = make_build_lookup_lookup_map(gd);
+    auto const &it = lookup_lookup_map.find(correlator.type);
 
-    if (correlator.type == "C1" || correlator.type == "C20" || correlator.type == "C2c" ||
-        correlator.type == "C20V" || correlator.type == "C30" ||
-        correlator.type == "C3c" || correlator.type == "C30V" ||
-        correlator.type == "C40B" || correlator.type == "C4cB" ||
-        correlator.type == "C40C" || correlator.type == "C4cC" ||
-        correlator.type == "C40D" || correlator.type == "C4cD" ||
-        correlator.type == "C40V" || correlator.type == "C4cV") {
-      auto const &lookup_lookup = lookup_lookup_map.at(correlator.type);
-
+    if (it != lookup_lookup_map.cend()) {
       build_general_lookup(correlator.type,
-                           lookup_lookup,
+                           it->second,
                            gd.quarks,
                            correlator.quark_numbers,
                            gd.start_config,
