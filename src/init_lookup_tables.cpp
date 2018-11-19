@@ -597,44 +597,59 @@ static ssize_t build_corrC_lookup(std::vector<ssize_t> const ql_ids,
 
 class AbstractCandidateFactory {
  public:
-  virtual DiagramIndex make(ssize_t const id,
-                            std::string const &hdf5_dataset_name,
-                            std::vector<DiagramIndex> *tr_lookup,
-                            std::vector<ssize_t> const &ql_ids,
-                            std::vector<int> const &gamma = std::vector<int>{}) = 0;
+  using Indices = std::vector<ssize_t>;
+
+  AbstractCandidateFactory(std::vector<DiagramIndex> &tr_lookup,
+                           Indices indices)
+      : tr_lookup_(tr_lookup), indices_(indices) {}
+
+  virtual ~AbstractCandidateFactory() {};
+
+  virtual ssize_t make(std::vector<ssize_t> const &ql_ids) = 0;
+
+ protected:
+  std::vector<DiagramIndex> &tr_lookup_;
+  Indices indices_;
 };
 
 class CandidateFactoryTrQ1 : public AbstractCandidateFactory {
  public:
-  DiagramIndex make(ssize_t const id,
-                    std::string const &hdf5_dataset_name,
-                    std::vector<DiagramIndex> *tr_lookup,
-                    std::vector<ssize_t> const &ql_ids,
-                    std::vector<int> const &gamma) {
-    std::vector<ssize_t> lookup;
-    std::vector<size_t> indices{0, 1};
-    for (auto const &index : indices) {
-      auto const id = build_trQ1_lookup({ql_ids[index]}, *tr_lookup);
-      lookup.push_back(id);
+  using AbstractCandidateFactory::AbstractCandidateFactory;
+
+  ssize_t make(Indices const &ql_ids) override {
+    std::vector<ssize_t> ids;
+    Indices indices2;
+    for (auto const index : indices_) {
+      indices2.push_back(ql_ids[index]);
     }
-
-    DiagramIndex candidate{id, hdf5_dataset_name, lookup, gamma};
-
-    return candidate;
+    auto const id = build_trQ1_lookup(indices2, tr_lookup_);
+    return id;
   }
 };
 
-class CandidateFactoryPassthrough : public AbstractCandidateFactory {
+class CandidateFactoryTrQ1Q1 : public AbstractCandidateFactory {
  public:
-  DiagramIndex make(ssize_t const id,
-                    std::string const &hdf5_dataset_name,
-                    std::vector<DiagramIndex> *tr_lookup,
-                    std::vector<ssize_t> const &ql_ids,
-                    std::vector<int> const &gamma) {
-    DiagramIndex candidate{id, hdf5_dataset_name, ql_ids, gamma};
-    return candidate;
+  using AbstractCandidateFactory::AbstractCandidateFactory;
+
+  ssize_t make(Indices const &ql_ids) override {
+    std::vector<ssize_t> ids;
+    Indices indices2;
+    for (auto const index : indices_) {
+      indices2.push_back(ql_ids[index]);
+    }
+    auto const id = build_corr0_lookup(indices2, tr_lookup_);
+    return id;
   }
 };
+
+// class CandidateFactoryPassthrough : public AbstractCandidateFactory {
+//  public:
+//   CandidateFactoryPassthrough() {}
+// 
+//   Indices make(Indices const &ql_ids) override {
+//     return ql_ids;
+//   }
+// };
 
 struct InnerLookup {
   std::vector<DilutedFactorIndex> *quarkline_lookup;
@@ -643,9 +658,11 @@ struct InnerLookup {
 };
 
 struct OuterLookup {
+  using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
+
   std::vector<DiagramIndex> *c_look;
-  std::unique_ptr<AbstractCandidateFactory> candidate_factory;
   std::vector<InnerLookup> inner;
+  Factories candidate_factories;
 };
 
 /**
@@ -660,51 +677,64 @@ using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
 BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
   BuildLookupLookupMap map;
 
-  map["C30"] = OuterLookup{
-      &gd.correlator_lookuptable.C30,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}}};
+  map["C20V"] =
+      OuterLookup{&gd.correlator_lookuptable.C20V,
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 0},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 1}},
+                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
+                       gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{0})),
+                   std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
+                       gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{1}))}};
 
-  map["C3c"] = OuterLookup{
-      &gd.correlator_lookuptable.C3c,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}}};
+  map["C30"] = OuterLookup{&gd.correlator_lookuptable.C30,
+                           {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}},
+                           {}};
 
-  map["C40B"] = OuterLookup{
-      &gd.correlator_lookuptable.C40B,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
+  map["C3c"] = OuterLookup{&gd.correlator_lookuptable.C3c,
+                           {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0},
+                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                            InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}},
+                           {}};
 
-  map["C4cB"] = OuterLookup{
-      &gd.correlator_lookuptable.C4cB,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
-       InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
+  map["C30V"] =
+      OuterLookup{&gd.correlator_lookuptable.C30,
+                  {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                   InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}},
+                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
+                       gd.correlator_lookuptable.trQ1Q1, std::vector<ssize_t>{0, 1})),
+                   std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
+                       gd.correlator_lookuptable.trQ1, std::vector<ssize_t>{2}))}};
 
-  map["C40C"] = OuterLookup{
-      &gd.correlator_lookuptable.C40C,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-       InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
+  map["C40B"] = OuterLookup{&gd.correlator_lookuptable.C40B,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}},
+                            {}};
 
-  map["C4cC"] = OuterLookup{
-      &gd.correlator_lookuptable.C4cC,
-      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
-      {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0},
-       InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-       InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2},
-       InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
+  map["C4cB"] = OuterLookup{&gd.correlator_lookuptable.C4cB,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}},
+                            {}};
+
+  map["C40C"] = OuterLookup{&gd.correlator_lookuptable.C40C,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}},
+                            {}};
+
+  map["C4cC"] = OuterLookup{&gd.correlator_lookuptable.C4cC,
+                            {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
+                             InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2},
+                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}},
+                            {}};
 
   return map;
 }
@@ -821,13 +851,13 @@ static void build_C20V_lookup(
     build_Quarkline_lookup_one_qn(
         1, quantum_numbers[d], vdv_indices[d], ric_ids, Q1_lookup, ql_ids);
 
+    auto id1 = build_trQ1_lookup({ql_ids[0]}, trQ1_lookup);
+    auto id2 = build_trQ1_lookup({ql_ids[1]}, trQ1_lookup);
+
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
         "C20V", start_config, path_output, quark_types, quantum_numbers[d]);
 
-    std::unique_ptr<AbstractCandidateFactory> candidate_factory(new CandidateFactoryTrQ1);
-
-    auto const candidate =
-        candidate_factory->make(ssize(c_look), hdf5_dataset_name, &trQ1_lookup, ql_ids);
+    DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1, id2}};
 
     /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
@@ -1105,8 +1135,17 @@ static void build_general_lookup(
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
         name, start_config, path_output, quark_types, quantum_numbers[d]);
 
-    auto const candidate =
-        ll.candidate_factory->make(ssize(*ll.c_look), hdf5_dataset_name, nullptr, ql_ids);
+    std::vector<ssize_t> ql_ids_new;
+    if (ssize(ll.candidate_factories) == 0) {
+      ql_ids_new = ql_ids;
+    } else {
+      for (auto const &candidate_factory : ll.candidate_factories) {
+        auto const id = candidate_factory->make(ql_ids);
+        ql_ids_new.push_back(id);
+      }
+    }
+
+    DiagramIndex candidate(ssize(*ll.c_look), hdf5_dataset_name, ql_ids_new);
 
     /** XXX Better with std::set */
     auto it = std::find(ll.c_look->begin(), ll.c_look->end(), candidate);
