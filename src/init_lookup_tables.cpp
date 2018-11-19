@@ -600,7 +600,7 @@ class AbstractCandidateFactory {
   virtual DiagramIndex make(ssize_t const id,
                             std::string const &hdf5_dataset_name,
                             std::vector<DiagramIndex> *tr_lookup,
-                            std::vector<std::vector<ssize_t>> const &indices,
+                            std::vector<ssize_t> const &ql_ids,
                             std::vector<int> const &gamma = std::vector<int>{}) = 0;
 };
 
@@ -609,11 +609,12 @@ class CandidateFactoryTrQ1 : public AbstractCandidateFactory {
   DiagramIndex make(ssize_t const id,
                     std::string const &hdf5_dataset_name,
                     std::vector<DiagramIndex> *tr_lookup,
-                    std::vector<std::vector<ssize_t>> const &indices,
+                    std::vector<ssize_t> const &ql_ids,
                     std::vector<int> const &gamma) {
     std::vector<ssize_t> lookup;
+    std::vector<size_t> indices{0, 1};
     for (auto const &index : indices) {
-      auto const id = build_trQ1_lookup(index, *tr_lookup);
+      auto const id = build_trQ1_lookup({ql_ids[index]}, *tr_lookup);
       lookup.push_back(id);
     }
 
@@ -628,10 +629,9 @@ class CandidateFactoryPassthrough : public AbstractCandidateFactory {
   DiagramIndex make(ssize_t const id,
                     std::string const &hdf5_dataset_name,
                     std::vector<DiagramIndex> *tr_lookup,
-                    std::vector<std::vector<ssize_t>> const &indices,
+                    std::vector<ssize_t> const &ql_ids,
                     std::vector<int> const &gamma) {
-
-    DiagramIndex candidate{id, hdf5_dataset_name, indices[0], gamma};
+    DiagramIndex candidate{id, hdf5_dataset_name, ql_ids, gamma};
     return candidate;
   }
 };
@@ -824,20 +824,18 @@ static void build_C20V_lookup(
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
         "C20V", start_config, path_output, quark_types, quantum_numbers[d]);
 
-
     std::unique_ptr<AbstractCandidateFactory> candidate_factory(new CandidateFactoryTrQ1);
 
-    std::vector<std::vector<ssize_t>> const indices{{ql_ids[0]}, {ql_ids[1]}};
-    auto const candidate = candidate_factory->make(
-        ssize(c_look), hdf5_dataset_name, &trQ1_lookup, indices);
+    auto const candidate =
+        candidate_factory->make(ssize(c_look), hdf5_dataset_name, &trQ1_lookup, ql_ids);
 
     /** @todo create hdf5_dataset name for trQ1Q1. Must restrict quantum
      *  numbers to 0,1
      */
-    //auto id1 = build_trQ1_lookup({ql_ids[0]}, trQ1_lookup);
-    //auto id2 = build_trQ1_lookup({ql_ids[1]}, trQ1_lookup);
+    // auto id1 = build_trQ1_lookup({ql_ids[0]}, trQ1_lookup);
+    // auto id2 = build_trQ1_lookup({ql_ids[1]}, trQ1_lookup);
 
-    //DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1, id2}};
+    // DiagramIndex candidate{ssize(c_look), hdf5_dataset_name, {id1, id2}};
 
     /** XXX Better with std::set */
     auto it = std::find(c_look.begin(), c_look.end(), candidate);
@@ -1115,9 +1113,8 @@ static void build_general_lookup(
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
         name, start_config, path_output, quark_types, quantum_numbers[d]);
 
-    std::vector<std::vector<ssize_t>> const indices{ql_ids};
-    auto const candidate = ll.candidate_factory->make(
-        ssize(*ll.c_look), hdf5_dataset_name, nullptr, indices);
+    auto const candidate =
+        ll.candidate_factory->make(ssize(*ll.c_look), hdf5_dataset_name, nullptr, ql_ids);
 
     /** XXX Better with std::set */
     auto it = std::find(ll.c_look->begin(), ll.c_look->end(), candidate);
