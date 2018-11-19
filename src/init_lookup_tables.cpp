@@ -75,66 +75,6 @@ static bool momenta_below_cutoff(Vector const &p1,
 
 }  // end of unnamed namespace
 
-struct InnerLookup {
-  std::vector<DilutedFactorIndex> *quarkline_lookup;
-  size_t q1;
-  size_t q2;
-};
-
-struct OuterLookup {
-  std::vector<DiagramIndex> *c_look;
-  std::vector<InnerLookup> inner;
-};
-
-/**
- * Data structure containing quark lines and DilutedFactor indices.
- *
- * I really dislike the name “lookup” as as a data structure where you cannot
- * retrieve things is basically useless. But that does not mean that we can
- * name new stuff like this, I have even added it here twice!
- */
-using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
-
-BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
-  BuildLookupLookupMap map;
-
-  map["C30"] = OuterLookup{&gd.correlator_lookuptable.C30,
-                           {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}}};
-
-  map["C3c"] = OuterLookup{&gd.correlator_lookuptable.C3c,
-                           {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0},
-                            InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                            InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}}};
-
-  map["C40B"] = OuterLookup{&gd.correlator_lookuptable.C40B,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
-
-  map["C4cB"] = OuterLookup{&gd.correlator_lookuptable.C4cB,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
-
-  map["C40C"] = OuterLookup{&gd.correlator_lookuptable.C40C,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
-
-  map["C4cC"] = OuterLookup{&gd.correlator_lookuptable.C4cC,
-                            {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
-                             InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2},
-                             InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
-
-  return map;
-}
-
 /**
  * Build an array with all the quantum numbers needed for a particular
  * correlation function respecting physical conservation laws.
@@ -699,6 +639,79 @@ class CandidateFactoryPassthrough : public AbstractCandidateFactory {
   }
 };
 
+struct InnerLookup {
+  std::vector<DilutedFactorIndex> *quarkline_lookup;
+  size_t q1;
+  size_t q2;
+};
+
+struct OuterLookup {
+  std::vector<DiagramIndex> *c_look;
+  std::unique_ptr<AbstractCandidateFactory> candidate_factory;
+  std::vector<InnerLookup> inner;
+};
+
+/**
+ * Data structure containing quark lines and DilutedFactor indices.
+ *
+ * I really dislike the name “lookup” as as a data structure where you cannot
+ * retrieve things is basically useless. But that does not mean that we can
+ * name new stuff like this, I have even added it here twice!
+ */
+using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
+
+BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
+  BuildLookupLookupMap map;
+
+  map["C30"] = OuterLookup{
+      &gd.correlator_lookuptable.C30,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2}}};
+
+  map["C3c"] = OuterLookup{
+      &gd.correlator_lookuptable.C3c,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q2L, 2, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q0, 1, 2}}};
+
+  map["C40B"] = OuterLookup{
+      &gd.correlator_lookuptable.C40B,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
+
+  map["C4cB"] = OuterLookup{
+      &gd.correlator_lookuptable.C4cB,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q2L, 3, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q2L, 1, 2},
+       InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
+
+  map["C40C"] = OuterLookup{
+      &gd.correlator_lookuptable.C40C,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q1, 3, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 1, 2},
+       InnerLookup{&gd.quarkline_lookuptable.Q1, 2, 3}}};
+
+  map["C4cC"] = OuterLookup{
+      &gd.correlator_lookuptable.C4cC,
+      std::unique_ptr<AbstractCandidateFactory>(new CandidateFactoryPassthrough()),
+      {InnerLookup{&gd.quarkline_lookuptable.Q2V, 3, 0},
+       InnerLookup{&gd.quarkline_lookuptable.Q0, 0, 1},
+       InnerLookup{&gd.quarkline_lookuptable.Q2V, 1, 2},
+       InnerLookup{&gd.quarkline_lookuptable.Q0, 2, 3}}};
+
+  return map;
+}
+
 /**
  * Create lookuptable where to find the quarklines to build C20.
  *
@@ -1105,13 +1118,8 @@ static void build_general_lookup(
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
         name, start_config, path_output, quark_types, quantum_numbers[d]);
 
-    std::unique_ptr<AbstractCandidateFactory> candidate_factory(new CandidateFactoryPassthrough);
-
-    auto const candidate = candidate_factory->make(ssize(*ll.c_look),
-                                                   hdf5_dataset_name,
-                                                   nullptr,
-                                                   ql_ids,
-                                                   std::vector<size_t>{});
+    auto const candidate = ll.candidate_factory->make(
+        ssize(*ll.c_look), hdf5_dataset_name, nullptr, ql_ids, std::vector<size_t>{});
 
     /** XXX Better with std::set */
     auto it = std::find(ll.c_look->begin(), ll.c_look->end(), candidate);
@@ -1490,9 +1498,10 @@ void init_lookup_tables(GlobalData &gd) {
     if (correlator.type == "C30" || correlator.type == "C3c" ||
         correlator.type == "C40B" || correlator.type == "C4cB" ||
         correlator.type == "C40C" || correlator.type == "C4cC") {
-      std::cout << correlator.type << std::endl;
+      auto const &lookup_lookup = lookup_lookup_map.at(correlator.type);
+
       build_general_lookup(correlator.type,
-                           lookup_lookup_map.at(correlator.type),
+                           lookup_lookup,
                            gd.quarks,
                            correlator.quark_numbers,
                            gd.start_config,
