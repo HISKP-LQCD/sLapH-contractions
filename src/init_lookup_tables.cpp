@@ -1769,6 +1769,9 @@ void init_lookup_tables(GlobalData &gd) {
     build_VdaggerV_lookup(
         quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
     std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
+
+    auto const lookup_lookup_map = make_build_lookup_lookup_map(gd);
+
     if (correlator.type == "C1") {
       build_C1_lookup(gd.quarks,
                       correlator.quark_numbers,
@@ -1883,14 +1886,15 @@ void init_lookup_tables(GlobalData &gd) {
                         gd.correlator_lookuptable.trQ1Q1,
                         gd.correlator_lookuptable.C30V);
     } else if (correlator.type == "C30") {
-      build_C30_lookup(gd.quarks,
-                       correlator.quark_numbers,
-                       gd.start_config,
-                       gd.path_output,
-                       quantum_numbers,
-                       vdv_indices,
-                       gd.quarkline_lookuptable.Q1,
-                       gd.correlator_lookuptable.C30);
+      build_general_lookup("C30",
+                           lookup_lookup_map.at("C30"),
+                           gd.quarks,
+                           correlator.quark_numbers,
+                           gd.start_config,
+                           gd.path_output,
+                           quantum_numbers,
+                           vdv_indices,
+                           gd.correlator_lookuptable.C30);
     } else if (correlator.type == "C40D") {
       build_C40D_lookup(gd.quarks,
                         correlator.quark_numbers,
