@@ -334,7 +334,6 @@ void build_quantum_numbers_from_correlator_list(
   }
 }
 
-// TODO: Not the right place, not sure where to place it otherwise
 /** Makes a string object of a displacement vector */
 std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
   std::string out;
@@ -347,23 +346,24 @@ std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
   return out;
 }
 
-/** Create the names for output files and hdf5 datasets.
+/**
+ * Create the names for output files and hdf5 datasets.
  *
- *  @param[in]  corr_type {C1,C2c,C20,C20V,C3c,C30,C4cD,C4cV,C4cC,C4cB,C40D,
- *                         C40V,C40C,C40B} :
- *  @param[in]  cnfg :            Number of first gauge configuration
- *  @param[in]  outpath           Output path from the infile.
- *  @param[in]  quark_types       Flavor of the quarks
- *  @param[in]  quantum_numbers   Physical quantum numbers
- *  @param[out] hdf5_dataset_name Names for the datasets in one-to-one
- *                                correspondence to @em quantum_numbers
+ * @param[in]  corr_type {C1,C2c,C20,C20V,C3c,C30,C4cD,C4cV,C4cC,C4cB,C40D,
+ *                        C40V,C40C,C40B} :
+ * @param[in]  cnfg :            Number of first gauge configuration
+ * @param[in]  outpath           Output path from the infile.
+ * @param[in]  quark_types       Flavor of the quarks
+ * @param[in]  quantum_numbers   Physical quantum numbers
+ * @param[out] hdf5_dataset_name Names for the datasets in one-to-one
+ *                               correspondence to @em quantum_numbers
  *
- *  The output path is constructed by appending a "/" to @em outpath.
- *  The output filename is built from @em corr_type and @em cnfg.
- *  The dataset name is built from @em corr_type, a letter for each
- *  @em quark_type, and the quantum numbers.
+ * The output path is constructed by appending a "/" to @em outpath.
+ * The output filename is built from @em corr_type and @em cnfg.
+ * The dataset name is built from @em corr_type, a letter for each
+ * @em quark_type, and the quantum numbers.
  *
- *  @todo Why don't we just build the complete path here already?
+ * @todo Why don't we just build the complete path here already?
  */
 static void build_correlator_names(
     const std::string &corr_type,
@@ -401,20 +401,21 @@ static std::string const build_hdf5_dataset_name(
   }
   return filename;
 }
-/******************************************************************************/
-/** Translate list of QuantumNumbers into lookuptable for VdaggerV
+
+/**
+ * Translate list of QuantumNumbers into lookuptable for VdaggerV
  *
- *  @param[in]  quantum_numbers List of all quantum numbers operators are needed
- *                              for
- *  @param[out] vdaggerv_lookup Unique list of all VdaggerV operators needed.
- *                              Corresponds to @em quantum_numbers, but in
- *                              contrast does not contain Dirac structure.
- *                              Part of GlobalData::operator_lookup
- *  @param[out] vdv_indices     Indexlist referring to @em vdaggerv_lookup
- *                              to replace @em quantum_numbers
- *                              The first index is the id of VdaggerV, the
- *                              second tells us if VdaggerV must be daggered to
- *                              get the desired quantum numbers.
+ * @param[in]  quantum_numbers List of all quantum numbers operators are needed
+ *                             for
+ * @param[out] vdaggerv_lookup Unique list of all VdaggerV operators needed.
+ *                             Corresponds to @em quantum_numbers, but in
+ *                             contrast does not contain Dirac structure.
+ *                             Part of GlobalData::operator_lookup
+ * @param[out] vdv_indices     Indexlist referring to @em vdaggerv_lookup
+ *                             to replace @em quantum_numbers
+ *                             The first index is the id of VdaggerV, the
+ *                             second tells us if VdaggerV must be daggered to
+ *                             get the desired quantum numbers.
  */
 void build_VdaggerV_lookup(
     const std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
@@ -641,6 +642,7 @@ class CandidateFactoryTrQ1Q1 : public AbstractCandidateFactory {
     return id;
   }
 };
+
 class CandidateFactoryTrQ0Q2 : public AbstractCandidateFactory {
  public:
   using AbstractCandidateFactory::AbstractCandidateFactory;
@@ -655,15 +657,6 @@ class CandidateFactoryTrQ0Q2 : public AbstractCandidateFactory {
     return id;
   }
 };
-
-// class CandidateFactoryPassthrough : public AbstractCandidateFactory {
-//  public:
-//   CandidateFactoryPassthrough() {}
-//
-//   Indices make(Indices const &ql_ids) override {
-//     return ql_ids;
-//   }
-// };
 
 struct InnerLookup {
   std::vector<DilutedFactorIndex> *quarkline_lookup;
