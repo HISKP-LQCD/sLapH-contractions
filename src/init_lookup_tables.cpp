@@ -216,11 +216,11 @@ std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
  * @todo Why don't we just build the complete path here already?
  */
 static void build_correlator_names(
-    const std::string &corr_type,
+    std::string const &corr_type,
     int cnfg,
-    const std::string &outpath,
-    const std::vector<std::string> &quark_types,
-    const std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
+    std::string const &outpath,
+    std::vector<std::string> const &quark_types,
+    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<std::string> &hdf5_dataset_name) {
   for (const auto &qn_row : quantum_numbers) {
     std::string filename = corr_type + "_";
@@ -236,11 +236,11 @@ static void build_correlator_names(
 }
 
 static std::string const build_hdf5_dataset_name(
-    const std::string &corr_type,
+    std::string const &corr_type,
     int cnfg,
-    const std::string &outpath,
-    const std::vector<std::string> &quark_types,
-    const std::vector<QuantumNumbers> &qn) {
+    std::string const &outpath,
+    std::vector<std::string> const &quark_types,
+    std::vector<QuantumNumbers> const &qn) {
   std::string filename = corr_type + "_";
   for (const auto &qt : quark_types)  // adding quark content
     filename += qt;
@@ -268,12 +268,12 @@ static std::string const build_hdf5_dataset_name(
  *                             get the desired quantum numbers.
  */
 void build_VdaggerV_lookup(
-    const std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
+    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<VdaggerVQuantumNumbers> &vdaggerv_lookup,
     std::vector<std::vector<std::pair<ssize_t, bool>>> &vdv_indices) {
-  for (const auto &qn_vec : quantum_numbers) {
+  for (auto const &qn_vec : quantum_numbers) {
     std::vector<std::pair<ssize_t, bool>> vdv_indices_row;
-    for (const auto &qn : qn_vec) {
+    for (auto const &qn : qn_vec) {
       bool dagger;
       // checking if the combination of quantum numbers already exists in
       // vdaggerv. The position is stored in the iterator it.
@@ -286,7 +286,7 @@ void build_VdaggerV_lookup(
                                auto c3 =
                                    (Vector(vdv_qn.momentum.data()) == (-1) * qn.momentum);
                                /** @TODO: Think about the daggering!! */
-                               const Vector zero(0, 0, 0);
+                               Vector const zero(0, 0, 0);
                                if (c1 and c2) {
                                  dagger = false;
                                  return true;
@@ -341,10 +341,10 @@ void build_VdaggerV_lookup(
  *
  */
 static std::vector<std::pair<ssize_t, ssize_t>> create_rnd_vec_id(
-    const std::vector<quark> &quarks,
-    const ssize_t id_q1,
-    const ssize_t id_q2,
-    const bool C1) {
+    std::vector<quark> const &quarks,
+    ssize_t const id_q1,
+    ssize_t const id_q2,
+    bool const C1) {
   // set start and end points of rnd numbers
   auto rndq1_start = 0;
   for (auto i = 0; i < id_q1; i++)
@@ -390,10 +390,10 @@ static void build_Quarkline_lookup_one_qn(
     std::vector<std::pair<ssize_t, ssize_t>> const &rnd_vec_ids,
     std::vector<DilutedFactorIndex> &Ql_lookup,
     std::vector<ssize_t> &Ql_lookup_ids) {
-  const auto qn = quantum_numbers[operator_id];
+  auto const qn = quantum_numbers[operator_id];
 
-  const auto id_vdaggerv = vdv_indices[operator_id].first;
-  const auto need_vdaggerv_daggering = vdv_indices[operator_id].second;
+  auto const id_vdaggerv = vdv_indices[operator_id].first;
+  auto const need_vdaggerv_daggering = vdv_indices[operator_id].second;
 
   // If Ql_lookup already contains the particular row and physical content,
   // just set the index to the existing QuarklineIndices, otherwise generate
@@ -687,14 +687,14 @@ static void build_general_lookup(
     std::vector<quark> const &quarks,
     std::vector<int> const &quark_numbers,
     int start_config,
-    const std::string &path_output,
+    std::string const &path_output,
     std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices) {
   std::vector<ssize_t> ql_ids(ll.inner.size());
 
   // Build the correlator and dataset names for hdf5 output files
   std::vector<std::string> quark_types;
-  for (const auto &id : quark_numbers)
+  for (auto const &id : quark_numbers)
     quark_types.emplace_back(quarks[id].type);
 
   for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
@@ -742,7 +742,7 @@ static void build_general_lookup(
  *  @bug In build_Q1_lookup the order of quarks given is consistently switched.
  */
 void init_lookup_tables(GlobalData &gd) {
-  for (const auto &correlator : gd.correlator_list) {
+  for (auto const &correlator : gd.correlator_list) {
     // Build an array (quantum_numbers) with all the quantum numbers needed for
     // this particular correlation function.
     std::vector<std::vector<QuantumNumbers>> quantum_numbers;
@@ -751,7 +751,7 @@ void init_lookup_tables(GlobalData &gd) {
 
     // Build the correlator and dataset names for hdf5 output files
     std::vector<std::string> quark_types;
-    for (const auto &id : correlator.quark_numbers)
+    for (auto const &id : correlator.quark_numbers)
       quark_types.emplace_back(gd.quarks[id].type);
     std::vector<std::string> hdf5_dataset_name;
     build_correlator_names(correlator.type,
@@ -795,7 +795,7 @@ void init_lookup_tables(GlobalData &gd) {
    */
   std::array<int, 3> const zero{0, 0, 0};
   bool found = false;
-  for (const auto &op_vdv : gd.operator_lookuptable.vdaggerv_lookup)
+  for (auto const &op_vdv : gd.operator_lookuptable.vdaggerv_lookup)
     if ((op_vdv.momentum == zero) && (op_vdv.displacement.empty())) {
       gd.operator_lookuptable.index_of_unity = op_vdv.id;
       found = true;
@@ -803,7 +803,7 @@ void init_lookup_tables(GlobalData &gd) {
   if (!found)
     gd.operator_lookuptable.index_of_unity = -1;
 
-  for (const auto &op_vdv : gd.operator_lookuptable.vdaggerv_lookup)
+  for (auto const &op_vdv : gd.operator_lookuptable.vdaggerv_lookup)
     if (!op_vdv.displacement.empty()) {
       gd.operator_lookuptable.need_gaugefield = true;
       break;
