@@ -57,6 +57,9 @@ void build_quantum_numbers_from_correlator_list(
 
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
+  // The following data structure holds the source and sink vertex indices in
+  // the diagrams. The first part of the pair are the source vertices, the
+  // second part are the sink vertices.
   using Vertices = std::pair<std::vector<int>, std::vector<int>>;
   std::map<std::string, Vertices> diagram_vertices;
 
@@ -77,12 +80,15 @@ void build_quantum_numbers_from_correlator_list(
   diagram_vertices["C4cV"] = Vertices({0, 1}, {2, 3});
   diagram_vertices["Check"] = Vertices({0}, {1});
 
+  // We extract the vertices from the given diagram. As this is not critical in
+  // performance we treat us with boundary checks here via `at` instead of
+  // `operator[]`.
   auto const &vertices = diagram_vertices.at(correlator.type);
-  std::vector<QuantumNumbers> qn_source(vertices.first.size());
-  std::vector<QuantumNumbers> qn_sink(vertices.second.size());
-  std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
 
-
+  // The contractions that have to be done are all combinations of the various
+  // possibilities from each vertex. We filter by momentum conservation later.
+  // For the cartesian product of all operator sets we first need the sequence
+  // of operators at each vertex.
   std::vector<ssize_t> lengths_source(vertices.first.size());
   std::transform(vertices.first.begin(),
                  vertices.first.end(),
@@ -90,6 +96,7 @@ void build_quantum_numbers_from_correlator_list(
                  [&qn_op](int const i) { return ssize(qn_op.at(i)); });
   CartesianProduct product_source(lengths_source);
 
+  // Same for the sink vertices.
   std::vector<ssize_t> lengths_sink(vertices.first.size());
   std::transform(vertices.first.begin(),
                  vertices.first.end(),
@@ -97,13 +104,35 @@ void build_quantum_numbers_from_correlator_list(
                  [&qn_op](int const i) { return ssize(qn_op.at(i)); });
   CartesianProduct product_sink(lengths_sink);
 
+  // Space to store the quantum numbers assembled from the given index
+  // combination. These are defined here to avoid many allocations.
+  std::vector<QuantumNumbers> qn_source(vertices.first.size());
+  std::vector<QuantumNumbers> qn_sink(vertices.second.size());
+  std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
+
+  // We iterate over all source index combinations.
   for (auto const &indices_source : product_source) {
+    // From the given index set we need to extract the operators. This is a bit
+    // tricky as there are two levels of indexing here. The index `j` just
+    // counts the source vertices of the diagram, always starting from 0.
     for (int j = 0; j != ssize(vertices.first); ++j) {
+      // Then we need to get the vertex index (spanning source and sink) via
+      // the data structure. This lets us retrieve the set of operators for
+      // that vertex.
       auto const &ops = qn_op.at(vertices.first.at(j));
+
+      // From that operator we take the one that is specified in the current
+      // index set from the cartesian product.
       qn_source[j] = ops.at(indices_source[j]);
+
+      // Perhaps slightly inconsistent the operators are not grouped by source
+      // and sink in the assembly code much later. Therefore we need to copy
+      // the operator into this second temporary data structure where it is
+      // indexed with the global vertex index.
       qn_all[vertices.first.at(j)] = qn_source[j];
     }
 
+    // Compute the total source momentum.
     Vector p_so{0, 0, 0};
     int sum_norm_sq = 0;
     for (auto const &q : qn_source) {
@@ -111,19 +140,27 @@ void build_quantum_numbers_from_correlator_list(
       sum_norm_sq += q.momentum.squaredNorm();
     }
 
+    // If the operator was specified with a total momentum selection but the
+    // current one is not in that list, discard the current combination of
+    // operators.
     if (!correlator.tot_mom.empty() &&
         std::find(correlator.tot_mom.begin(), correlator.tot_mom.end(), p_so) ==
             correlator.tot_mom.end()) {
       continue;
     }
 
+    // Also discard when we are beyond the momentum cutoff.
     if (sum_norm_sq > momentum_cutoff.at(p_so.squaredNorm())) {
       continue;
     }
 
+    // The `C1` diagram is special as it is source-only. We do not need to work
+    // with sink operators at all, then. Enforcing momentum conservation is not
+    // sensible in this context.
     if (vertices.second.empty()) {
       quantum_numbers.push_back(qn_source);
     } else {
+      // Analogously iterate through the sink vertex operators.
       for (auto const &indices_sink : product_sink) {
         for (int j = 0; j != ssize(vertices.second); ++j) {
           auto const &ops = qn_op.at(vertices.second.at(j));
@@ -136,6 +173,9 @@ void build_quantum_numbers_from_correlator_list(
           p_si += q.momentum;
         }
 
+        // In case that momentum is conserved we add the operators to the
+        // lookup table. Here it is not grouped by source and sink but rather
+        // in that global ordering.
         if (p_so == -p_si) {
           quantum_numbers.push_back(qn_all);
         }
