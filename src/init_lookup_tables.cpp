@@ -114,9 +114,11 @@ void build_quantum_numbers_from_correlator_list(
   std::map<std::string, Vertices> diagram_vertices;
 
   diagram_vertices["C20"] = Vertices({0}, {1});
-  //diagram_vertices["C20V"] = Vertices({0}, {1});
-  //diagram_vertices["C2c"] = Vertices({0}, {1});
-  //diagram_vertices["Check"] = Vertices({0}, {1});
+  diagram_vertices["C20V"] = Vertices({0}, {1});
+  diagram_vertices["C2c"] = Vertices({0}, {1});
+  diagram_vertices["C30"] = Vertices({0, 2}, {1});
+  diagram_vertices["C3c"] = Vertices({0, 2}, {1});
+  diagram_vertices["Check"] = Vertices({0}, {1});
 
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
@@ -158,61 +160,6 @@ void build_quantum_numbers_from_correlator_list(
         quantum_numbers.push_back(qn);
       }
     }
-  } else if (correlator.type == "C2c" || correlator.type == "C20" ||
-             correlator.type == "C20V" || correlator.type == "Check") {
-    // Build all combinations of operators and impose momentum conservation
-    // and cutoffs
-    for (auto const &op0 : qn_op[0]) {
-      Vector p_so = op0.momentum;
-
-      if (desired_total_momentum(p_so, correlator.tot_mom)) {
-        for (const auto &op1 : qn_op[1]) {
-          Vector p_si = op1.momentum;
-
-          // momentum at source and sink must always be the same for 2pt fcts.
-          if (p_so == -p_si) {
-            std::vector<QuantumNumbers> single_vec_qn = {op0, op1};
-            MU_DEBUG(op0.momentum);
-            MU_DEBUG(op1.momentum);
-            quantum_numbers.emplace_back(single_vec_qn);
-          }
-        }
-      }
-    }
-  } else if (correlator.type == "C3c" || correlator.type == "C30") {
-    std::map<int, int> counter; /** initialized with zero */
-
-    for (const auto &op0 : qn_op[0]) {
-      for (const auto &op2 : qn_op[2]) {
-        Vector p_so_1 = op0.momentum;
-        Vector p_so_2 = op2.momentum;
-        Vector p_so = p_so_1 + p_so_2;
-
-        if (desired_total_momentum(p_so, correlator.tot_mom) &&
-            momenta_below_cutoff(p_so_1, p_so_2, momentum_cutoff)) {
-          for (const auto &op1 : qn_op[1]) {
-            Vector p_si = op1.momentum;
-
-            if (desired_total_momentum(p_si, correlator.tot_mom)) {
-              if (p_so == -p_si) {
-                const int p_tot = p_si.squaredNorm();
-                counter[p_tot]++;
-
-                quantum_numbers.emplace_back(std::vector<QuantumNumbers>{op0, op1, op2});
-              }
-            }
-          }
-        }
-      }
-    }
-
-    int total_number_of_combinations = 0;
-    for (const auto c : counter) {
-      std::cout << "\tCombinations for P = " << c.first << ": " << c.second << std::endl;
-      total_number_of_combinations += c.second;
-    }
-    std::cout << "\tTest finished - Combinations: " << total_number_of_combinations
-              << std::endl;
   } else if (correlator.type == "C30V") {
     std::map<int, int> counter; /** initialized with zero */
 
