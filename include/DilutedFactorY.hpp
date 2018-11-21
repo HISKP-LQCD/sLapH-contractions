@@ -1,15 +1,15 @@
 #pragma once
 
 #include "DilutedFactor.hpp"
-#include "dilution-iterator.hpp"
 #include "Gamma.hpp"
 #include "OperatorsForMesons.hpp"
 #include "Perambulator.hpp"
+#include "dilution-iterator.hpp"
 #include "typedefs.hpp"
 
+#include <Eigen/Dense>
 #include <boost/circular_buffer.hpp>
 #include <boost/multi_array.hpp>
-#include <Eigen/Dense>
 
 #include <algorithm>
 #include <fstream>

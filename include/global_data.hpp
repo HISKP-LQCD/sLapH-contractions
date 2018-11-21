@@ -3,11 +3,11 @@
 #include "global_data_typedefs.hpp"
 #include "typedefs.hpp"
 
+#include <sys/stat.h>
 #include <array>
 #include <iosfwd>
 #include <map>
 #include <string>
-#include <sys/stat.h>
 #include <vector>
 
 using DiagramIndicesCollection = std::map<std::string, std::vector<DiagramIndex>>;

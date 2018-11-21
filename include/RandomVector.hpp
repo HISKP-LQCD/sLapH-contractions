@@ -39,9 +39,7 @@ class RandomVector {
     return vec.at(entity * length + entry);
   }
 
-  const std::vector<Complex> & get(void) const {
-    return vec;
-  }
+  const std::vector<Complex> &get(void) const { return vec; }
 
   /** Computes the random vectors for the sources
    *

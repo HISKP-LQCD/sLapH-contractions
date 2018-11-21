@@ -1,8 +1,8 @@
 #pragma once
 
+#include "OperatorsForMesons.hpp"
 #include "global_data.hpp"
 #include "local_timer.hpp"
-#include "OperatorsForMesons.hpp"
 #include "typedefs.hpp"
 
 #include <omp.h>
@@ -109,7 +109,8 @@ inline Complex operator+(Complex const &c, DilutedTrace<rvecs> const &df) {
 }
 
 template <int n, size_t rvecs>
-using DilutedFactors = std::map<std::array<ssize_t, n>, std::vector<DilutedFactor<rvecs>>>;
+using DilutedFactors =
+    std::map<std::array<ssize_t, n>, std::vector<DilutedFactor<rvecs>>>;
 
 template <size_t n, size_t rvecs>
 std::string to_string(typename DilutedFactors<n, rvecs>::key_type const &array) {
@@ -183,14 +184,14 @@ Complex trace(std::vector<DilutedFactor<rvecs1>> const &left_vec,
     }
     LT_ULTRA_FINE_STOP;
     LT_ULTRA_FINE_PRINT("[DilutedFactor::trace] right_sum");
-    
+
     LT_ULTRA_FINE_START;
     auto const &product = left.data * right_sum;
     result += product.trace();
     LT_ULTRA_FINE_STOP;
     LT_ULTRA_FINE_PRINT("[DilutedFactor::trace] product_trace");
 
-  } // for(left_vec)
+  }  // for(left_vec)
 
   if (num_summands == 0) {
     throw std::runtime_error(
@@ -251,12 +252,12 @@ std::vector<DilutedTrace<rvecs1 + rvecs2 + 2>> factor_to_trace(
       // vector indices. Therefore we can sum all these elements up to have less
       // multiplications to do.
       result_vec.push_back(
-          {typename DilutedTrace<rvecs_result>::Data{ (left.data * right.data).trace()},
+          {typename DilutedTrace<rvecs_result>::Data{(left.data * right.data).trace()},
            used});
     }
     LT_ULTRA_FINE_STOP;
-    LT_ULTRA_FINE_PRINT("[DilutedFactor::factor_to_trace] multiply_trace"); 
-  } // for(left_vec)
+    LT_ULTRA_FINE_PRINT("[DilutedFactor::factor_to_trace] multiply_trace");
+  }  // for(left_vec)
 
   if (result_vec.size() == 0) {
     throw std::runtime_error(
@@ -464,7 +465,7 @@ void multiply(DilutedFactors<n1 + n2, rvecs1 + rvecs2 + 1> &L,
     LT_ULTRA_FINE_START;
 
     L[key] = f0 * f1;
-   
+
     LT_ULTRA_FINE_STOP;
     LT_ULTRA_FINE_PRINT("[DilutedFactor::multiply] multiply");
   }

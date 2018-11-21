@@ -2,13 +2,13 @@
 
 #include "Diagram.hpp"
 #include "DiagramForward.hpp"
-#include "global_data.hpp"
 #include "OperatorsForMesons.hpp"
 #include "Perambulator.hpp"
+#include "global_data.hpp"
 #include "typedefs.hpp"
 
-#include <boost/multi_array.hpp>
 #include <Eigen/Dense>
+#include <boost/multi_array.hpp>
 
 #include <complex>
 #include <fstream>

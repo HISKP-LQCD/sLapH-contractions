@@ -58,8 +58,7 @@ struct DiagramParts {
             dil_fac_lookup.Q2V),
         trQ0Q2(q0, q2v, corr_lookup.at("trQ0Q2"), dilution_scheme),
         trQ1Q1(q1, q1, corr_lookup.at("trQ1Q1"), dilution_scheme),
-        trQ1(q1, corr_lookup.at("trQ1"), dilution_scheme){
-  }
+        trQ1(q1, corr_lookup.at("trQ1"), dilution_scheme) {}
 
   void clear() {
     q0.clear();
@@ -69,7 +68,6 @@ struct DiagramParts {
     trQ0Q2.clear();
     trQ1Q1.clear();
     trQ1.clear();
-
   }
 
   DilutedFactorFactory<DilutedFactorType::Q0> q0;
@@ -262,7 +260,8 @@ class C3c : public DiagramNumeric<Complex> {
                      BlockIterator const &slice_pair,
                      DiagramParts &q) override;
 
-  std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>> quantum_num_ids_;
+  std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>>
+      quantum_num_ids_;
 };
 
 /** Build neutral 3pt correlation function
@@ -286,7 +285,8 @@ class C30 : public DiagramNumeric<Complex> {
                      BlockIterator const &slice_pair,
                      DiagramParts &q) override;
 
-  std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>> quantum_num_ids_;
+  std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>>
+      quantum_num_ids_;
 };
 
 class C30V : public DiagramNumeric<ComplexProduct> {

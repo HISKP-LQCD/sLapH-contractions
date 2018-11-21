@@ -2,9 +2,9 @@
 
 #include "typedefs.hpp"
 
-#include <boost/filesystem.hpp>
 #include <H5Cpp.h>
 #include <omp.h>
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <map>
@@ -186,7 +186,7 @@ class WriteHDF5Correlator {
 
     if (boost::filesystem::exists(name)) {
       file = H5::H5File(name, H5F_ACC_RDWR);
-    } else{
+    } else {
       file = H5::H5File(name, H5F_ACC_TRUNC);
     }
   }

@@ -33,7 +33,8 @@ class EigenVector {
   // writing the eigen vector to some file
   // input: filename -> the filename
   // TODO: NOT IMPLEMENTED YET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  void write_eigen_vector(const std::string &filename, const ssize_t,
+  void write_eigen_vector(const std::string &filename,
+                          const ssize_t,
                           const ssize_t verbose);
   // reading the eigen vectors from some file
   // input: filename -> the filename which must contain the path and the

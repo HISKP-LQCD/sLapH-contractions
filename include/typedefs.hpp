@@ -1,16 +1,16 @@
 #pragma once
 
-#include <boost/container/static_vector.hpp>
-#include <boost/multi_array.hpp>
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <boost/container/static_vector.hpp>
+#include <boost/multi_array.hpp>
 
 #include <algorithm>
 #include <array>
 #include <complex>
+#include <iomanip>
 #include <list>
 #include <vector>
-#include <iomanip>
 
 int constexpr max_rnd_ids = 10;
 
@@ -136,7 +136,7 @@ struct ComplexProduct {
  */
 struct VdaggerVQuantumNumbers {
   ssize_t id;
-  std::array<int, 3> momentum;     /**< The -momentum as 3-vector */
+  std::array<int, 3> momentum;        /**< The -momentum as 3-vector */
   DisplacementDirection displacement; /**< The displacement as 3-vector */
 
   /** Constructor */
@@ -168,7 +168,7 @@ struct OperatorLookup {
   int index_of_unity;
   bool need_gaugefield = false;
 
-  inline ssize_t size(){ return vdaggerv_lookup.size(); }
+  inline ssize_t size() { return vdaggerv_lookup.size(); }
 };
 
 /** Struct that holds all information on which VdaggerV must be diluted with

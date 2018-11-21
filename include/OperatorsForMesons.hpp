@@ -1,21 +1,21 @@
 #pragma once
 
 #include "EigenVector.hpp"
-#include "global_data_typedefs.hpp"
 #include "GaugeField.hpp"
 #include "RandomVector.hpp"
+#include "global_data_typedefs.hpp"
 #include "typedefs.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 
+#include <Eigen/Dense>
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <Eigen/Dense>
 
 /** Calculates operators as they emerge in correlation functions using the
  *  stochastic estimates from the stochastic Laplacian Heaviside method
@@ -29,8 +29,8 @@
  *  not implemented
  *
  *  @TODO Implement derivate operators
- *  @note (MW 3.12.2017) rVdaggerVr moved to DilutedFactorFactory 
- *  @note (MW 21.12.2017) rVdaggerV moved to DilutedFactorFactory 
+ *  @note (MW 3.12.2017) rVdaggerVr moved to DilutedFactorFactory
+ *  @note (MW 21.12.2017) rVdaggerV moved to DilutedFactorFactory
  */
 class OperatorFactory {
  public:
@@ -67,7 +67,7 @@ class OperatorFactory {
     return vdaggerv[index][t];
   }
 
-private:
+ private:
   // Containers for operators which are accessible from outside
   array_Xcd_d2_eigen vdaggerv;
   /** @cond
@@ -86,7 +86,6 @@ private:
   std::string path_vdaggerv;
   std::string path_config;
   HypPars hyp_parameters;
-  
 
   // Internal functions to build individual operators --> The interface to these
   // functions is 'create_Operators'
@@ -94,8 +93,6 @@ private:
   void build_vdaggerv(const std::string &filename, const int config);
   void read_vdaggerv(const int config);
   void read_vdaggerv_liuming(const int config);
-
-
 };
 
 void create_momenta(const ssize_t Lx,
