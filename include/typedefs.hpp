@@ -75,7 +75,7 @@ typedef boost::multi_array<Eigen::MatrixXcd, 10> array_Xcd_d10_eigen;
  *
  * Example: {(>;x),(<;y),(<;x),...,(>;z)}
  */
-using DisplacementDirection = std::vector<std::pair<char,char>>;
+using DisplacementDirection = std::vector<std::pair<char, char>>;
 
 /** This is just a workaround for complex numbers to get it running for hdf5
  *
