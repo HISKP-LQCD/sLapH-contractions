@@ -110,6 +110,14 @@ void build_quantum_numbers_from_correlator_list(
     qn_op.emplace_back(operator_list[op_number]);
   }
 
+  using Vertices = std::pair<std::vector<int>, std::vector<int>>;
+  std::map<std::string, Vertices> diagram_vertices;
+
+  diagram_vertices["C20"] = Vertices({0}, {1});
+  //diagram_vertices["C20V"] = Vertices({0}, {1});
+  //diagram_vertices["C2c"] = Vertices({0}, {1});
+  //diagram_vertices["Check"] = Vertices({0}, {1});
+
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
   // Restriction to what shall actually be computed is done in if statements
@@ -119,6 +127,37 @@ void build_quantum_numbers_from_correlator_list(
   if (correlator.type == "C1") {
     for (auto const &op0 : qn_op[0])
       quantum_numbers.emplace_back(std::vector<QuantumNumbers>({op0}));
+  } else if (diagram_vertices.count(correlator.type) == 1) {
+    auto const &vertices = diagram_vertices[correlator.type];
+    std::vector<int> all_vertices = vertices.first;
+    std::copy(vertices.second.begin(), vertices.second.end(), std::back_inserter(all_vertices));
+    assert(ssize(all_vertices) > 0);
+
+    std::vector<QuantumNumbers> qn(all_vertices.size());
+
+    Vector const zero_momentum{0, 0, 0};
+
+    ssize_t combinations = 1;
+    for (auto const i : all_vertices) {
+      combinations *= ssize(qn_op[i]);
+    }
+
+    for (ssize_t i = 0; i != combinations; ++i) {
+      auto ii = i;
+      for (int j = 0; j != ssize(all_vertices); ++j) {
+        qn[j] = qn_op[j][ii % ssize(qn_op[j])];
+        ii /= ssize(qn_op[j]);
+      }
+
+      Vector total_momentum{0, 0, 0};
+      for (auto const &q : qn) {
+        total_momentum += q.momentum;
+      }
+
+      if (total_momentum == zero_momentum) {
+        quantum_numbers.push_back(qn);
+      }
+    }
   } else if (correlator.type == "C2c" || correlator.type == "C20" ||
              correlator.type == "C20V" || correlator.type == "Check") {
     // Build all combinations of operators and impose momentum conservation
@@ -133,14 +172,14 @@ void build_quantum_numbers_from_correlator_list(
           // momentum at source and sink must always be the same for 2pt fcts.
           if (p_so == -p_si) {
             std::vector<QuantumNumbers> single_vec_qn = {op0, op1};
+            MU_DEBUG(op0.momentum);
+            MU_DEBUG(op1.momentum);
             quantum_numbers.emplace_back(single_vec_qn);
           }
         }
       }
     }
-  }
-
-  else if (correlator.type == "C3c" || correlator.type == "C30") {
+  } else if (correlator.type == "C3c" || correlator.type == "C30") {
     std::map<int, int> counter; /** initialized with zero */
 
     for (const auto &op0 : qn_op[0]) {
