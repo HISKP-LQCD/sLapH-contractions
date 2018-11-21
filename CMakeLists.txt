@@ -101,11 +101,9 @@ if(NOT DEFINED LIME_LIBRARIES)
 endif()
 
 # OpenMP
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-  target_compile_options(lcontract PUBLIC ${OpenMP_CXX_FLAGS})
-  target_link_libraries(lcontract PUBLIC ${OpenMP_CXX_LIBRARIES} ${OpenMP_CXX_FLAGS})
-endif()
+find_package(OpenMP REQUIRED)
+target_compile_options(lcontract PUBLIC ${OpenMP_CXX_FLAGS})
+target_link_libraries(lcontract PUBLIC ${OpenMP_CXX_LIBRARIES} ${OpenMP_CXX_FLAGS})
 
 ###############################################################################
 #                                 Build Flags                                 #
