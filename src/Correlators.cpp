@@ -45,9 +45,6 @@ void contract(const ssize_t Lt,
               DilutedFactorIndicesCollection const &quark_lookup,
               std::string const output_path,
               std::string const output_filename) {
-  DilutedFactorLookup const dil_fac_lookup(
-      {quark_lookup.Q0, quark_lookup.Q1, quark_lookup.Q2V, quark_lookup.Q2L});
-
   std::vector<std::unique_ptr<Diagram>> diagrams;
 
   if (!corr_lookup.at("C2c").empty())
@@ -114,7 +111,7 @@ void contract(const ssize_t Lt,
                    dilE,
                    nev,
                    Lt,
-                   dil_fac_lookup,
+                   quark_lookup,
                    corr_lookup);
 
 #pragma omp for schedule(dynamic)

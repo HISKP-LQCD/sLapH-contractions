@@ -9,14 +9,6 @@
 
 #include <mutex>
 
-/** Locally replaces QuarklineLookup extended by lookuptable for rVdaggerVr */
-struct DilutedFactorLookup {
-  std::vector<DilutedFactorIndex> const Q0;
-  std::vector<DilutedFactorIndex> const Q1;
-  std::vector<DilutedFactorIndex> const Q2V;
-  std::vector<DilutedFactorIndex> const Q2L;
-};
-
 struct DiagramParts {
   DiagramParts(RandomVector const &random_vector,
                Perambulator const &perambulator,
@@ -26,7 +18,7 @@ struct DiagramParts {
                ssize_t const dilE,
                ssize_t const nev,
                ssize_t const Lt,
-               DilutedFactorLookup const &dil_fac_lookup,
+               DilutedFactorIndicesCollection const &dil_fac_lookup,
                DiagramIndicesCollection const &corr_lookup)
       : q0(random_vector,
            perambulator,
@@ -34,28 +26,28 @@ struct DiagramParts {
            dilT,
            dilE,
            nev,
-           dil_fac_lookup.Q0),
+           dil_fac_lookup.at("Q0")),
         q1(random_vector,
            perambulator,
            meson_operator,
            dilT,
            dilE,
            nev,
-           dil_fac_lookup.Q1),
+           dil_fac_lookup.at("Q1")),
         q2l(random_vector,
             perambulator,
             meson_operator,
             dilT,
             dilE,
             nev,
-            dil_fac_lookup.Q2L),
+            dil_fac_lookup.at("Q2L")),
         q2v(random_vector,
             perambulator,
             meson_operator,
             dilT,
             dilE,
             nev,
-            dil_fac_lookup.Q2V),
+            dil_fac_lookup.at("Q2V")),
         trQ0Q2(q0, q2v, corr_lookup.at("trQ0Q2"), dilution_scheme),
         trQ1Q1(q1, q1, corr_lookup.at("trQ1Q1"), dilution_scheme),
         trQ1(q1, corr_lookup.at("trQ1"), dilution_scheme) {}

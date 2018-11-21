@@ -10,6 +10,7 @@
 #include <complex>
 #include <iomanip>
 #include <list>
+#include <map>
 #include <vector>
 
 int constexpr max_rnd_ids = 10;
@@ -225,16 +226,11 @@ inline bool operator==(DilutedFactorIndex const &first, DilutedFactorIndex const
 
 /** Maps index from CorrelatorLookup to QuarklineQ1Indicies or
  *  QuarklineQ2Indicies, depending on the quarkline needed in Correlator
- *
- *  @deprecated No longer necessary in memory_optimised branch as the quarklines
- *              are built on the fly
  */
-struct DilutedFactorIndicesCollection {
-  std::vector<DilutedFactorIndex> Q0;
-  std::vector<DilutedFactorIndex> Q1;
-  std::vector<DilutedFactorIndex> Q2V;
-  std::vector<DilutedFactorIndex> Q2L;
-};
+using DilutedFactorIndicesCollection =
+    std::map<std::string, std::vector<DilutedFactorIndex>>;
+
+using DilutedFactorLookup = DilutedFactorIndicesCollection;
 
 // Q0 formerly called rVdaggerVr
 enum class DilutedFactorType { Q0, Q1, Q2, Q2L, Q2V };
