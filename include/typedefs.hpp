@@ -147,7 +147,7 @@ struct VdaggerVQuantumNumbers {
   VdaggerVQuantumNumbers(const ssize_t id,
                          std::array<int, 3> const &momentum,
                          DisplacementDirection const &displacement)
-      : id(id), momentum(momentum), displacement(displacement){};
+      : id(id), momentum(momentum), displacement(displacement) {}
 };
 
 /** Struct that contains all information for a sLapH operator
