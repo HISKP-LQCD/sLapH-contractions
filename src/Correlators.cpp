@@ -10,9 +10,15 @@
 #include "local_timer.hpp"
 #include "typedefs.hpp"
 
+#include <boost/multi_array.hpp>
+#include <Eigen/Dense>
 #include <omp.h>
 
+#include <complex>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <vector>
 
 int get_time_delta(BlockIterator const &slice_pair, int const Lt) {
   return abs((slice_pair.sink() - slice_pair.source() - Lt) % Lt);

@@ -7,14 +7,7 @@
 #include "global_data.hpp"
 #include "typedefs.hpp"
 
-#include <Eigen/Dense>
-#include <boost/multi_array.hpp>
-
-#include <complex>
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <vector>
 
 #include <sys/stat.h>
 #include <sys/types.h>
