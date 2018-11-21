@@ -76,7 +76,6 @@ class OperatorFactory {
   array_cd_d2 momentum;
   /** @endcond */
 
-  /****************************************************************************/
   /** @TODO comment private members */
   const OperatorLookup operator_lookuptable;
   const ssize_t Lt, Lx, Ly, Lz;
