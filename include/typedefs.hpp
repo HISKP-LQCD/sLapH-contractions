@@ -230,8 +230,6 @@ inline bool operator==(DilutedFactorIndex const &first, DilutedFactorIndex const
 using DilutedFactorIndicesCollection =
     std::map<std::string, std::vector<DilutedFactorIndex>>;
 
-using DilutedFactorLookup = DilutedFactorIndicesCollection;
-
 // Q0 formerly called rVdaggerVr
 enum class DilutedFactorType { Q0, Q1, Q2, Q2L, Q2V };
 
