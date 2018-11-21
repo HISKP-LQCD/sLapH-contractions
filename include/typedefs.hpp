@@ -52,10 +52,6 @@ typedef boost::multi_array<Complex, 10> array_cd_d10;
 /** Special type for Quarklines */
 typedef boost::multi_array<std::vector<Eigen::MatrixXcd>, 3> array_quarkline;
 
-// typedef boost::multi_array<std::vector<std::vector<cmplx> >, 4> array_corr;
-/** @TODO {Is that deprecated?} */
-typedef boost::multi_array<std::vector<Complex>, 2> array_C1;
-
 // Eigen typedefs
 typedef std::vector<Eigen::MatrixXcd> vec_Xcd_eigen;
 /** Data type for rvdaggerv and rvdaggervr */
