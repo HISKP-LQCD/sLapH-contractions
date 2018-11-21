@@ -48,7 +48,6 @@ void contract(const ssize_t Lt,
   DilutedFactorLookup const dil_fac_lookup(
       {quark_lookup.Q0, quark_lookup.Q1, quark_lookup.Q2V, quark_lookup.Q2L});
 
-  // XXX If we had C++14, we could do `make_unique`.
   std::vector<std::unique_ptr<Diagram>> diagrams;
 
   if (!corr_lookup.at("C2c").empty())
