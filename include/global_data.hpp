@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <vector>
 
+using DiagramIndicesCollection = std::map<std::string, std::vector<DiagramIndex>>;
+
 /**
  * Class containing all metadata for contractions and functions to set them
  * from infile

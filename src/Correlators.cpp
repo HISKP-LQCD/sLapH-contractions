@@ -51,37 +51,37 @@ void contract(const ssize_t Lt,
   // XXX If we had C++14, we could do `make_unique`.
   std::vector<std::unique_ptr<Diagram>> diagrams;
 
-  if (!corr_lookup.C2c.empty())
-    diagrams.emplace_back(new C2c(corr_lookup.C2c, output_path, output_filename, Lt));
-  if (!corr_lookup.C20.empty())
-    diagrams.emplace_back(new C20(corr_lookup.C20, output_path, output_filename, Lt));
-  if (!corr_lookup.C20V.empty())
-    diagrams.emplace_back(new C20V(corr_lookup.C20V, output_path, output_filename, Lt));
+  if (!corr_lookup.at("C2c").empty())
+    diagrams.emplace_back(new C2c(corr_lookup.at("C2c"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C20").empty())
+    diagrams.emplace_back(new C20(corr_lookup.at("C20"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C20V").empty())
+    diagrams.emplace_back(new C20V(corr_lookup.at("C20V"), output_path, output_filename, Lt));
 
-  if (!corr_lookup.C3c.empty())
-    diagrams.emplace_back(new C3c(corr_lookup.C3c, output_path, output_filename, Lt));
-  if (!corr_lookup.C30.empty())
-    diagrams.emplace_back(new C30(corr_lookup.C30, output_path, output_filename, Lt));
-  if (!corr_lookup.C30V.empty())
-    diagrams.emplace_back(new C30V(corr_lookup.C30V, output_path, output_filename, Lt));
+  if (!corr_lookup.at("C3c").empty())
+    diagrams.emplace_back(new C3c(corr_lookup.at("C3c"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C30").empty())
+    diagrams.emplace_back(new C30(corr_lookup.at("C30"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C30V").empty())
+    diagrams.emplace_back(new C30V(corr_lookup.at("C30V"), output_path, output_filename, Lt));
 
-  if (!corr_lookup.C4cB.empty())
-    diagrams.emplace_back(new C4cB(corr_lookup.C4cB, output_path, output_filename, Lt));
-  if (!corr_lookup.C4cC.empty())
-    diagrams.emplace_back(new C4cC(corr_lookup.C4cC, output_path, output_filename, Lt));
-  if (!corr_lookup.C40B.empty())
-    diagrams.emplace_back(new C40B(corr_lookup.C40B, output_path, output_filename, Lt));
-  if (!corr_lookup.C40C.empty())
-    diagrams.emplace_back(new C40C(corr_lookup.C40C, output_path, output_filename, Lt));
+  if (!corr_lookup.at("C4cB").empty())
+    diagrams.emplace_back(new C4cB(corr_lookup.at("C4cB"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C4cC").empty())
+    diagrams.emplace_back(new C4cC(corr_lookup.at("C4cC"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C40B").empty())
+    diagrams.emplace_back(new C40B(corr_lookup.at("C40B"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C40C").empty())
+    diagrams.emplace_back(new C40C(corr_lookup.at("C40C"), output_path, output_filename, Lt));
 
-  if (!corr_lookup.C4cD.empty())
-    diagrams.emplace_back(new C4cD(corr_lookup.C4cD, output_path, output_filename, Lt));
-  if (!corr_lookup.C4cV.empty())
-    diagrams.emplace_back(new C4cV(corr_lookup.C4cV, output_path, output_filename, Lt));
-  if (!corr_lookup.C40D.empty())
-    diagrams.emplace_back(new C40D(corr_lookup.C40D, output_path, output_filename, Lt));
-  if (!corr_lookup.C40V.empty())
-    diagrams.emplace_back(new C40V(corr_lookup.C40V, output_path, output_filename, Lt));
+  if (!corr_lookup.at("C4cD").empty())
+    diagrams.emplace_back(new C4cD(corr_lookup.at("C4cD"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C4cV").empty())
+    diagrams.emplace_back(new C4cV(corr_lookup.at("C4cV"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C40D").empty())
+    diagrams.emplace_back(new C40D(corr_lookup.at("C40D"), output_path, output_filename, Lt));
+  if (!corr_lookup.at("C40V").empty())
+    diagrams.emplace_back(new C40V(corr_lookup.at("C40V"), output_path, output_filename, Lt));
 
   DilutionScheme const dilution_scheme(Lt, dilT, DilutionType::block);
 

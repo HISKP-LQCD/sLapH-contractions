@@ -2,6 +2,7 @@
 
 #include "Diagram.hpp"
 #include "DiagramForward.hpp"
+#include "global_data.hpp"
 #include "OperatorsForMesons.hpp"
 #include "Perambulator.hpp"
 #include "typedefs.hpp"

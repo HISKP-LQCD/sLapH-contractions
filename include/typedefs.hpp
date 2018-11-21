@@ -271,35 +271,6 @@ inline bool operator==(DiagramIndex const &first, DiagramIndex const &second) {
     return false;
 }
 
-/** Contains information on all correlators
- *
- *  @todo modular programming looks different
- */
-struct DiagramIndicesCollection {
-  std::vector<DiagramIndex> trQ1;
-  std::vector<DiagramIndex> C1;
-  std::vector<DiagramIndex> C20V;
-
-  std::vector<DiagramIndex> trQ1Q1;
-  std::vector<DiagramIndex> C20;
-  std::vector<DiagramIndex> C40D;
-  std::vector<DiagramIndex> C40V;
-
-  std::vector<DiagramIndex> trQ0Q2;
-  std::vector<DiagramIndex> C2c;
-  std::vector<DiagramIndex> C4cD;
-  std::vector<DiagramIndex> C4cV;
-
-  std::vector<DiagramIndex> C30V;
-  std::vector<DiagramIndex> C30;
-  std::vector<DiagramIndex> C3c;
-
-  std::vector<DiagramIndex> C40C;
-  std::vector<DiagramIndex> C4cC;
-  std::vector<DiagramIndex> C40B;
-  std::vector<DiagramIndex> C4cB;
-};
-
 template <DilutedFactorType qlt>
 struct DilutedFactorTypeTraits {};
 
