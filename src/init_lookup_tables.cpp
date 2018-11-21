@@ -110,9 +110,12 @@ void build_quantum_numbers_from_correlator_list(
     qn_op.emplace_back(operator_list[op_number]);
   }
 
+  std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
+
   using Vertices = std::pair<std::vector<int>, std::vector<int>>;
   std::map<std::string, Vertices> diagram_vertices;
 
+  diagram_vertices["C1"] = Vertices({0}, {});
   diagram_vertices["C20"] = Vertices({0}, {1});
   diagram_vertices["C20V"] = Vertices({0}, {1});
   diagram_vertices["C2c"] = Vertices({0}, {1});
@@ -129,44 +132,67 @@ void build_quantum_numbers_from_correlator_list(
   diagram_vertices["C4cV"] = Vertices({0, 1}, {2, 3});
   diagram_vertices["Check"] = Vertices({0}, {1});
 
-  std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
+  auto const &vertices = diagram_vertices.at(correlator.type);
+  std::vector<QuantumNumbers> qn_source(vertices.first.size());
+  std::vector<QuantumNumbers> qn_sink(vertices.second.size());
+  std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
 
-  // Restriction to what shall actually be computed is done in if statements
-  // for each diagram because it depends on the number of quarks.
-  //
-  // @todo Think about a way to avoid these if conditions.
-  if (correlator.type == "C1") {
-    for (auto const &op0 : qn_op[0])
-      quantum_numbers.emplace_back(std::vector<QuantumNumbers>({op0}));
-  } else if (diagram_vertices.count(correlator.type) == 1) {
-    auto const &vertices = diagram_vertices[correlator.type];
-    std::vector<int> all_vertices = vertices.first;
-    std::copy(vertices.second.begin(), vertices.second.end(), std::back_inserter(all_vertices));
-    assert(ssize(all_vertices) > 0);
+  ssize_t combinations_source = 1;
+  for (auto const i : vertices.first) {
+    combinations_source *= ssize(qn_op.at(i));
+  }
 
-    std::vector<QuantumNumbers> qn(all_vertices.size());
+  ssize_t combinations_sink = 1;
+  for (auto const i : vertices.second) {
+    combinations_sink *= ssize(qn_op.at(i));
+  }
 
-    Vector const zero_momentum{0, 0, 0};
-
-    ssize_t combinations = 1;
-    for (auto const i : all_vertices) {
-      combinations *= ssize(qn_op[i]);
+  for (ssize_t iso = 0; iso != combinations_source; ++iso) {
+    auto iiso = iso;
+    for (int j = 0; j != ssize(vertices.first); ++j) {
+      auto const &ops = qn_op.at(vertices.first.at(j));
+      qn_source[j] = ops.at(iiso % ssize(ops));
+      qn_all[vertices.first.at(j)] = qn_source[j];
+      iiso /= ssize(ops);
     }
 
-    for (ssize_t i = 0; i != combinations; ++i) {
-      auto ii = i;
-      for (int j = 0; j != ssize(all_vertices); ++j) {
-        qn[j] = qn_op[j][ii % ssize(qn_op[j])];
-        ii /= ssize(qn_op[j]);
-      }
+    Vector p_so{0, 0, 0};
+    int sum_norm_sq = 0;
+    for (auto const &q : qn_source) {
+      p_so += q.momentum;
+      sum_norm_sq += q.momentum.squaredNorm();
+    }
 
-      Vector total_momentum{0, 0, 0};
-      for (auto const &q : qn) {
-        total_momentum += q.momentum;
-      }
+    if (!correlator.tot_mom.empty() &&
+        std::find(correlator.tot_mom.begin(), correlator.tot_mom.end(), p_so) ==
+            correlator.tot_mom.end()) {
+      continue;
+    }
 
-      if (total_momentum == zero_momentum) {
-        quantum_numbers.push_back(qn);
+    if (sum_norm_sq > momentum_cutoff.at(p_so.squaredNorm())) {
+      continue;
+    }
+
+    if (vertices.second.empty()) {
+      quantum_numbers.push_back(qn_source);
+    } else {
+      for (ssize_t isi = 0; isi != combinations_sink; ++isi) {
+        auto iisi = isi;
+        for (int j = 0; j != ssize(vertices.second); ++j) {
+          auto const &ops = qn_op.at(vertices.second.at(j));
+          qn_sink[j] = ops.at(iisi % ssize(ops));
+          qn_all[vertices.second.at(j)] = qn_sink[j];
+          iisi /= ssize(ops);
+        }
+
+        Vector p_si{0, 0, 0};
+        for (auto const &q : qn_sink) {
+          p_si += q.momentum;
+        }
+
+        if (p_so == -p_si) {
+          quantum_numbers.push_back(qn_all);
+        }
       }
     }
   }
