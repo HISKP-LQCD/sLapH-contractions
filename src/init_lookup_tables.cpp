@@ -14,66 +14,11 @@
 
 #include "init_lookup_tables.hpp"
 
+#include "CartesianProduct.hpp"
+
 #include <iostream>
 
-namespace {
-
 using Vector = QuantumNumbers::VectorData;
-
-/**
- *  Check whether a momentum is within the set of desired momenta specified
- *  in the correlator_list
- *
- *  @param[in]   p_tot Total 3-momentum at source or sink
- *  @param[out]  P     The specfied momenta of the reference frame
- *
- *  @returns     true if @f$|\mathtt{p_tot}|^2 \in \mathtt{P}@f$, false
- *otherwise
- */
-bool desired_total_momentum(Vector const &p_tot, std::vector<Vector> const &P) {
-  /** If no total momentum is specified, there is no selection.
-   *  @todo It is better to force the user to specify P. Catch that in
-   *        global_data_input_handling
-   */
-  if (P.empty()) {
-    return true;
-  }
-
-  if (std::find(P.begin(), P.end(), p_tot) == P.end()) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-/**
- *  For multi-meson operators check whether the sum of momenta at the same
- *  time slice is above a given cutoff
- *
- *  @param[in]  p1  Momentum of the first meson
- *  @param[in]  p2  Momentum of the second meson
- *
- *  @returns        true if @f$|\mathtt{p1}|^2 + |\mathtt{p2}|^2 <
- *\mathtt{cutoff} @f$,
- *                  false otherwise
- *
- *  @warning Cutoff is hardcoded in this function!
- *  @warning No cutoff for P > 4 is implemented!
- */
-static bool momenta_below_cutoff(Vector const &p1,
-                                 Vector const &p2,
-                                 std::map<int, int> const &momentum_cutoff) {
-  Vector const p_tot = p1 + p2;
-
-  if (p_tot.squaredNorm() > 4) {
-    std::cout << "In momenta_below_cutoff(): WARNING! No cutoff for P > 4"
-              << " implemented" << std::endl;
-  }
-
-  return p1.squaredNorm() + p2.squaredNorm() <= momentum_cutoff.at(p_tot.squaredNorm());
-}
-
-}  // end of unnamed namespace
 
 /**
  * Build an array with all the quantum numbers needed for a particular
@@ -137,23 +82,26 @@ void build_quantum_numbers_from_correlator_list(
   std::vector<QuantumNumbers> qn_sink(vertices.second.size());
   std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
 
-  ssize_t combinations_source = 1;
-  for (auto const i : vertices.first) {
-    combinations_source *= ssize(qn_op.at(i));
-  }
 
-  ssize_t combinations_sink = 1;
-  for (auto const i : vertices.second) {
-    combinations_sink *= ssize(qn_op.at(i));
-  }
+  std::vector<ssize_t> lengths_source(vertices.first.size());
+  std::transform(vertices.first.begin(),
+                 vertices.first.end(),
+                 lengths_source.begin(),
+                 [&qn_op](int const i) { return ssize(qn_op.at(i)); });
+  CartesianProduct product_source(lengths_source);
 
-  for (ssize_t iso = 0; iso != combinations_source; ++iso) {
-    auto iiso = iso;
+  std::vector<ssize_t> lengths_sink(vertices.first.size());
+  std::transform(vertices.first.begin(),
+                 vertices.first.end(),
+                 lengths_sink.begin(),
+                 [&qn_op](int const i) { return ssize(qn_op.at(i)); });
+  CartesianProduct product_sink(lengths_sink);
+
+  for (auto const &indices_source : product_source) {
     for (int j = 0; j != ssize(vertices.first); ++j) {
       auto const &ops = qn_op.at(vertices.first.at(j));
-      qn_source[j] = ops.at(iiso % ssize(ops));
+      qn_source[j] = ops.at(indices_source[j]);
       qn_all[vertices.first.at(j)] = qn_source[j];
-      iiso /= ssize(ops);
     }
 
     Vector p_so{0, 0, 0};
@@ -176,13 +124,11 @@ void build_quantum_numbers_from_correlator_list(
     if (vertices.second.empty()) {
       quantum_numbers.push_back(qn_source);
     } else {
-      for (ssize_t isi = 0; isi != combinations_sink; ++isi) {
-        auto iisi = isi;
+      for (auto const &indices_sink : product_sink) {
         for (int j = 0; j != ssize(vertices.second); ++j) {
           auto const &ops = qn_op.at(vertices.second.at(j));
-          qn_sink[j] = ops.at(iisi % ssize(ops));
+          qn_sink[j] = ops.at(indices_sink[j]);
           qn_all[vertices.second.at(j)] = qn_sink[j];
-          iisi /= ssize(ops);
         }
 
         Vector p_si{0, 0, 0};
