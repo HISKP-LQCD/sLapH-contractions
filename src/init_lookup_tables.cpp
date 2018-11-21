@@ -117,6 +117,7 @@ void build_quantum_numbers_from_correlator_list(
   diagram_vertices["C20V"] = Vertices({0}, {1});
   diagram_vertices["C2c"] = Vertices({0}, {1});
   diagram_vertices["C30"] = Vertices({0, 2}, {1});
+  diagram_vertices["C30V"] = Vertices({0, 1}, {2});
   diagram_vertices["C3c"] = Vertices({0, 2}, {1});
   diagram_vertices["Check"] = Vertices({0}, {1});
 
@@ -160,42 +161,6 @@ void build_quantum_numbers_from_correlator_list(
         quantum_numbers.push_back(qn);
       }
     }
-  } else if (correlator.type == "C30V") {
-    std::map<int, int> counter; /** initialized with zero */
-
-    for (const auto &op0 : qn_op[0]) {
-      for (const auto &op1 : qn_op[1]) {
-        Vector p_so_1 = op0.momentum;
-        Vector p_so_2 = op1.momentum;
-        Vector p_so = p_so_1 + p_so_2;
-
-        if (desired_total_momentum(p_so, correlator.tot_mom) &&
-            momenta_below_cutoff(p_so_1, p_so_2, momentum_cutoff)) {
-          for (const auto &op2 : qn_op[2]) {
-            Vector p_si = op2.momentum;
-
-            if (desired_total_momentum(p_si, correlator.tot_mom)) {
-              if (p_so == -p_si) {
-                const int p_tot = p_si.squaredNorm();
-                counter[p_tot]++;
-
-                quantum_numbers.emplace_back(std::vector<QuantumNumbers>{op0, op1, op2});
-              }
-            }
-          }
-        }
-      }
-    }
-
-    int total_number_of_combinations = 0;
-    for (const auto c : counter) {
-      std::cout << "\tCombinations for P = " << c.first << ": " << c.second << std::endl;
-      total_number_of_combinations += c.second;
-    }
-    std::cout << "\tTest finished - Combinations: " << total_number_of_combinations
-              << std::endl;
-  }
-
   else if (correlator.type == "C4cD" || correlator.type == "C40D" ||
            correlator.type == "C4cC" || correlator.type == "C40C") {
     std::map<int, int> counter; /** initialized with zero */
