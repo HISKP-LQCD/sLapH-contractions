@@ -26,7 +26,7 @@ From 2018-11-07 to 2018-11-19 the quark line generation has been refactored
 such that the information about each diagram is contained in just a few lines.
 Taking the C30V diagram as a non-trivial example, we have the following:
 
-```{cpp}`
+```{cpp}
 map["C30V"] =
     OuterLookup{&gd.correlator_lookuptable["C30V"],
                 {InnerLookup{&gd.quarkline_lookuptable["Q1"], 1, 0, false},
