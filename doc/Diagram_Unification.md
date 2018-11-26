@@ -54,4 +54,35 @@ This way the generation of all operator possibilities with momentum
 conservation in mind is exactly the same for diagrams with any number of
 vertices
 
+## Combining abstractions
+
+At the state on 2018-11-26 the three steps have been abstracted such that more
+information is available in data structures and not buried in duplicated code.
+From here on out we want to further abstract the information in the data
+structures such that the three structures that we have can be generated from a
+single canonical description of the diagrams.
+
+Ideally we are able to express the diagrams as just a collection of operators
+at vertices and quark lines between them. From this everything else can be
+inferred, in principle. Things like the trace objects and the M/L intermediate
+objects are something that would need to be expressed in this more abstract
+fashion, the abstraction would need to either be intelligent enough to figure
+it out from the general case or let the programmer specify which tricks are to
+be used where.
+
+First we must identify all the decision points that go into the contraction. We
+are given the shape of the diagram and know which propagators have the “γ5
+trick” applied to them. Then one can group the terms to form the Q0, Q1 and Q2
+objects. Markus und Martin think that letting the programmer specify the
+diagram in terms of the Q-objects is doable and just the right level of
+abstraction. The user specifies operators and propagators in the parameter
+file, but the named diagrams are in terms of Q-objects.
+
+We will continue with the `BuildLookupLookupMap` and extend the constructor to
+automatically deduce which `AbstractCandidateFactory` is needed. Also we change
+the `InnerLookup` to infer the `is_q1` automatically. Then the `InnerLookup`
+shall only get the strings and not the pointers, this will then allow to
+concatenate the `Q.` (read as regex) strings and build the `trQ.(Q.)?` from
+that.
+
 <!-- vim: set cc=80 spell tw=79 :-->
