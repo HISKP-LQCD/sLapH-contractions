@@ -520,6 +520,26 @@ struct OuterLookup {
 
   std::vector<InnerLookup> inner;
   Factories candidate_factories;
+
+  Factories candidate_factories2() const {
+    Factories f;
+
+
+
+    // Initialize pool with all vertices in the diagram.
+
+    // While there are vertices in the pool ...
+      // Start an empty list
+      // Until one is back at the start ...
+        // Iterate through all quark lines ...
+          // If line continues from current end ...
+            // Add quark line to list, update endpoint.
+      // If list contains 1 or two elements ...
+        // Build trQ1 or trQ1Q1 or trQ0Q2 from elements
+        // Remove used vertices from pool.
+
+    return f;
+  }
 };
 
 /**
