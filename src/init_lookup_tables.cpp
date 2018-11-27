@@ -533,9 +533,12 @@ struct OuterLookup {
     Factories f;
 
     for (auto const &trace : inner) {
-      std::ostringstream name_ss("tr");
+      std::ostringstream name_ss;
+      name_ss << "tr";
+
       std::vector<ssize_t> vertices;
       ssize_t previous_q2 = -1;
+
       for (auto const &ql : trace) {
         if (ql.name == "Q2L" || ql.name == "Q2V") {
           name_ss << "Q2";
@@ -563,15 +566,16 @@ struct OuterLookup {
       if (name == "trQ1") {
         f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        correlator_lookuptable[name], vertices)));
-        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-                       correlator_lookuptable[name], vertices)));
       } else if (name == "trQ0Q2") {
+        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
+                       correlator_lookuptable[name], vertices)));
+      } else if (name == "trQ1Q1") {
         f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                        correlator_lookuptable[name], vertices)));
       }
     }
 
-    if (f.size() != inner.size() || f.size() == 0) {
+    if (f.size() != 0 && f.size() != inner.size() ) {
       throw std::runtime_error(
           "The number of AbstractCandidateFactory's does not match the number of "
           "traces. Either all or none of the traces must be converted.");
@@ -689,7 +693,7 @@ BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
  */
 static void build_general_lookup(
     std::string const &name,
-    std::vector<DiagramIndex> &correlator_lookup,
+    DiagramIndicesCollection &correlator_lookuptable,
     std::map<std::string, std::vector<DilutedFactorIndex>> &quarkline_lookup,
     OuterLookup const &ll,
     std::vector<quark> const &quarks,
@@ -699,6 +703,7 @@ static void build_general_lookup(
     std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices) {
   std::vector<ssize_t> ql_ids(ll.inner_size());
+  auto &correlator_lookup = correlator_lookuptable[name];
 
   // Build the correlator and dataset names for hdf5 output files
   std::vector<std::string> quark_types;
@@ -723,10 +728,11 @@ static void build_general_lookup(
         name, start_config, path_output, quark_types, quantum_numbers[d]);
 
     std::vector<ssize_t> ql_ids_new;
-    if (ssize(ll.candidate_factories) == 0) {
+    auto const &candidate_factories = ll.candidate_factories2(correlator_lookuptable);
+    if (ssize(candidate_factories) == 0) {
       ql_ids_new = ql_ids;
     } else {
-      for (auto const &candidate_factory : ll.candidate_factories) {
+      for (auto const &candidate_factory : candidate_factories) {
         auto const id = candidate_factory->make(ql_ids);
         ql_ids_new.push_back(id);
       }
@@ -783,7 +789,7 @@ void init_lookup_tables(GlobalData &gd) {
 
     if (it != lookup_lookup_map.cend()) {
       build_general_lookup(correlator.type,
-                           gd.correlator_lookuptable[correlator.type],
+                           gd.correlator_lookuptable,
                            gd.quarkline_lookuptable,
                            it->second,
                            gd.quarks,
