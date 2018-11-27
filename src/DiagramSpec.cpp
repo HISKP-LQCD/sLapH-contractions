@@ -14,7 +14,7 @@ BuildLookupLookupMap make_build_lookup_lookup_map() {
   map["C20V"] = {Vertices({0}, {1}), TraceSpecs{{{"Q1", 0, 0}}, {{"Q1", 1, 1}}}};
 
   map["C30"] = {Vertices({0, 2}, {1}),
-                TraceSpecs{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}}};
+                TraceSpecs{{{"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 0}}}};
 
   map["C3c"] = {Vertices({0, 2}, {1}),
                 TraceSpecs{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}}};

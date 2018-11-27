@@ -120,27 +120,14 @@ C30::C30(std::vector<DiagramIndex> const &corr_lookup,
 void C30::assemble_impl(std::vector<Complex> &c,
                         BlockIterator const &slice_pair,
                         DiagramParts &q) {
-  DilutedFactors<2, 1> L1;
-  LT_DIAGRAMS_DECLARE;
-  LT_DIAGRAMS_START;
-  for (const auto &ids : quantum_num_ids_) {
-    multiply<1, 1, 0, 0>(L1,
-                         std::get<0>(ids),
-                         q.q1[{slice_pair.source(), slice_pair.source_block()}],
-                         q.q1[{slice_pair.source(), slice_pair.sink_block()}]);
-  }
-  LT_DIAGRAMS_STOP;
-  LT_DIAGRAMS_PRINT("[C30::assemble_impl] multiply");
+  for (int i = 0; i != ssize(corr_lookup()); ++i) {
+    auto const &c_look = corr_lookup()[i];
 
-  LT_DIAGRAMS_START;
-  for (int i = 0; i != ssize(quantum_num_ids_); ++i) {
-    auto const &ids = quantum_num_ids_[i];
-    c[i] +=
-        trace(L1[std::get<0>(ids)],
-              q.q1[{slice_pair.sink(), slice_pair.source_block()}].at(std::get<1>(ids)));
+    auto const &x =
+        q.trQ1Q1Q1[{slice_pair.source(), slice_pair.sink()}].at(c_look.lookup[0]);
+    c[i] += std::accumulate(std::begin(x), std::end(x), Complex(0.0, 0.0)) /
+            static_cast<double>(x.size());
   }
-  LT_DIAGRAMS_STOP;
-  LT_DIAGRAMS_PRINT("[C30::assemble_impl] trace");
 }
 
 /*****************************************************************************/

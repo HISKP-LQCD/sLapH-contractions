@@ -453,7 +453,7 @@ Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &
 
     auto const name = name_ss.str();
 
-    if (name == "trQ1" || name == "trQ0Q2" || name == "trQ1Q1") {
+    if (name == "trQ1" || name == "trQ0Q2" || name == "trQ1Q1" || name == "trQ1Q1Q1") {
       f.push_back(CandidateFactory{name, vertices});
     }
   }

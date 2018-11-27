@@ -49,18 +49,20 @@ struct DiagramParts {
             dilE,
             nev,
             dil_fac_lookup.at("Q2V")),
-        trQ0Q2(q0, q2v, trace_indices_map.at("trQ0Q2"), dilution_scheme),
+        trQ1(q1, trace_indices_map.at("trQ1"), dilution_scheme),
         trQ1Q1(q1, q1, trace_indices_map.at("trQ1Q1"), dilution_scheme),
-        trQ1(q1, trace_indices_map.at("trQ1"), dilution_scheme) {}
+        trQ0Q2(q0, q2v, trace_indices_map.at("trQ0Q2"), dilution_scheme),
+        trQ1Q1Q1(q1, q1, q1, trace_indices_map.at("trQ1Q1Q1"), dilution_scheme) {}
 
   void clear() {
     q0.clear();
     q1.clear();
     q2l.clear();
     q2v.clear();
-    trQ0Q2.clear();
-    trQ1Q1.clear();
     trQ1.clear();
+    trQ1Q1.clear();
+    trQ0Q2.clear();
+    trQ1Q1Q1.clear();
   }
 
   DilutedFactorFactory<DilutedFactorType::Q0> q0;
@@ -68,14 +70,20 @@ struct DiagramParts {
   DilutedFactorFactory<DilutedFactorType::Q2> q2l;
   DilutedFactorFactory<DilutedFactorType::Q2> q2v;
 
-  //< Temporal memory for tr(Q2V*rVdaggerVr)
-  DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2> trQ0Q2;
+  //< Temporal memory for tr(Q1)
+  DilutedTrace1Factory<DilutedFactorType::Q1, 1> trQ1;
 
   //< Temporal memory for tr(rVdaggerV*Q1*rVdaggerV*Q1)
   DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2> trQ1Q1;
 
-  //< Temporal memory for tr(Q1)
-  DilutedTrace1Factory<DilutedFactorType::Q1, 1> trQ1;
+  //< Temporal memory for tr(Q2V*rVdaggerVr)
+  DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2> trQ0Q2;
+
+  DilutedTrace3Factory<DilutedFactorType::Q1,
+                       DilutedFactorType::Q1,
+                       DilutedFactorType::Q1,
+                       3>
+      trQ1Q1Q1;
 };
 
 class Diagram {
