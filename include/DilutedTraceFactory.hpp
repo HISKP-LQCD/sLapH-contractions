@@ -5,7 +5,7 @@
 #include <boost/multi_array.hpp>
 
 template <DilutedFactorType qlt1, DilutedFactorType qlt2, size_t rvecs>
-struct DilutedTraceTraceFactory {
+struct DilutedTrace2Factory {
  public:
   /** num_times is the sum of times of contained factors -1 for each continuity
    *  condition of the quarkline diagram
@@ -16,7 +16,7 @@ struct DilutedTraceTraceFactory {
   using Key = std::array<int, num_times>;
   using Value = DilutedTraces<rvecs>;
 
-  DilutedTraceTraceFactory(DilutedFactorFactory<qlt1> &_df1,
+  DilutedTrace2Factory(DilutedFactorFactory<qlt1> &_df1,
                            DilutedFactorFactory<qlt2> &_df2,
                            std::vector<Indices> const &_dic,
                            DilutionScheme const &_ds)
@@ -43,13 +43,13 @@ struct DilutedTraceTraceFactory {
 };
 
 template <DilutedFactorType qlt, size_t rvecs>
-struct DilutedTraceFactory {
+struct DilutedTrace1Factory {
   static constexpr int num_times = DilutedFactorTypeTraits<qlt>::num_times - 1;
 
   using Key = std::array<int, num_times>;
   using Value = DilutedTraces<rvecs>;
 
-  DilutedTraceFactory(DilutedFactorFactory<qlt> &_df,
+  DilutedTrace1Factory(DilutedFactorFactory<qlt> &_df,
                       std::vector<Indices> const &_dic,
                       DilutionScheme const &_ds)
       : df(_df), diagram_index_collection(_dic), dilution_scheme(_ds) {}

@@ -1,7 +1,7 @@
 #include "DilutedTraceFactory.hpp"
 
 template <>
-void DilutedTraceTraceFactory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>::build(
+void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>::build(
     Key const &time_key) {
   auto t1 = time_key[0];
   auto t2 = time_key[1];
@@ -15,7 +15,7 @@ void DilutedTraceTraceFactory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>::
 }
 
 template <>
-void DilutedTraceTraceFactory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2>::build(
+void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2>::build(
     Key const &time_key) {
   auto t1 = time_key[0];
   auto t2 = time_key[1];
@@ -30,7 +30,7 @@ void DilutedTraceTraceFactory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2>::
 }
 
 template <>
-void DilutedTraceFactory<DilutedFactorType::Q1, 1>::build(Key const &time_key) {
+void DilutedTrace1Factory<DilutedFactorType::Q1, 1>::build(Key const &time_key) {
   auto t = time_key[0];
   auto b = dilution_scheme.time_to_block(t);
 
@@ -40,6 +40,6 @@ void DilutedTraceFactory<DilutedFactorType::Q1, 1>::build(Key const &time_key) {
   }
 }
 
-template class DilutedTraceTraceFactory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>;
-template class DilutedTraceTraceFactory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2>;
-template class DilutedTraceFactory<DilutedFactorType::Q1, 1>;
+template class DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2, 2>;
+template class DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1, 2>;
+template class DilutedTrace1Factory<DilutedFactorType::Q1, 1>;
