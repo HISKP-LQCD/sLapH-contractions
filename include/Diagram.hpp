@@ -274,10 +274,7 @@ class C3c : public DiagramNumeric<Complex> {
  */
 class C30 : public DiagramNumeric<Complex> {
  public:
-  C30(std::vector<DiagramIndex> const &corr_lookup,
-      std::string const &output_path,
-      std::string const &output_filename,
-      int const Lt);
+  using DiagramNumeric<Complex>::DiagramNumeric;
 
   char const *name() const override { return "C30"; }
 
@@ -285,9 +282,6 @@ class C30 : public DiagramNumeric<Complex> {
   void assemble_impl(std::vector<Complex> &c,
                      BlockIterator const &slice_pair,
                      DiagramParts &q) override;
-
-  std::vector<std::tuple<std::array<ssize_t, 2>, std::array<ssize_t, 1>>>
-      quantum_num_ids_;
 };
 
 class C30V : public DiagramNumeric<ComplexProduct> {

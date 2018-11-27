@@ -103,20 +103,6 @@ void C3c::assemble_impl(std::vector<Complex> &c,
 /*                                    C30                                    */
 /*****************************************************************************/
 
-C30::C30(std::vector<DiagramIndex> const &corr_lookup,
-         std::string const &output_path,
-         std::string const &output_filename,
-         int const Lt)
-    : DiagramNumeric<Complex>(corr_lookup, output_path, output_filename, Lt) {
-  quantum_num_ids_.reserve(corr_lookup.size());
-
-  for (const auto &c_look : corr_lookup) {
-    quantum_num_ids_.push_back(
-        make_tuple(std::array<ssize_t, 2>{c_look.lookup[2], c_look.lookup[0]},
-                   std::array<ssize_t, 1>{c_look.lookup[1]}));
-  }
-}
-
 void C30::assemble_impl(std::vector<Complex> &c,
                         BlockIterator const &slice_pair,
                         DiagramParts &q) {
