@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 add_library(lcontract
   src/Correlators.cpp
   src/Diagram.cpp
+  src/DiagramSpec.cpp
   src/dilution-iterator.cpp
   src/EigenVector.cpp
   src/Gamma.cpp

@@ -15,6 +15,7 @@
 #include "init_lookup_tables.hpp"
 
 #include "CartesianProduct.hpp"
+#include "DiagramSpec.hpp"
 
 #include <iostream>
 
@@ -57,33 +58,10 @@ void build_quantum_numbers_from_correlator_list(
 
   std::cout << "Constructing momentum combinations for " << correlator.type << std::endl;
 
-  // The following data structure holds the source and sink vertex indices in
-  // the diagrams. The first part of the pair are the source vertices, the
-  // second part are the sink vertices.
-  using Vertices = std::pair<std::vector<int>, std::vector<int>>;
-  std::map<std::string, Vertices> diagram_vertices;
-
-  diagram_vertices["C1"] = Vertices({0}, {});
-  diagram_vertices["C20"] = Vertices({0}, {1});
-  diagram_vertices["C20V"] = Vertices({0}, {1});
-  diagram_vertices["C2c"] = Vertices({0}, {1});
-  diagram_vertices["C30"] = Vertices({0, 2}, {1});
-  diagram_vertices["C30V"] = Vertices({0, 1}, {2});
-  diagram_vertices["C3c"] = Vertices({0, 2}, {1});
-  diagram_vertices["C40B"] = Vertices({0, 3}, {1, 2});
-  diagram_vertices["C40C"] = Vertices({0, 2}, {1, 3});
-  diagram_vertices["C40D"] = Vertices({0, 2}, {1, 3});
-  diagram_vertices["C40V"] = Vertices({0, 1}, {2, 3});
-  diagram_vertices["C4cB"] = Vertices({0, 3}, {1, 2});
-  diagram_vertices["C4cC"] = Vertices({0, 2}, {1, 3});
-  diagram_vertices["C4cD"] = Vertices({0, 2}, {1, 3});
-  diagram_vertices["C4cV"] = Vertices({0, 1}, {2, 3});
-  diagram_vertices["Check"] = Vertices({0}, {1});
-
   // We extract the vertices from the given diagram. As this is not critical in
   // performance we treat us with boundary checks here via `at` instead of
   // `operator[]`.
-  auto const &vertices = diagram_vertices.at(correlator.type);
+  auto const &vertices = diagram_spec.at(correlator.type).vertices;
 
   // The contractions that have to be done are all combinations of the various
   // possibilities from each vertex. We filter by momentum conservation later.
@@ -507,19 +485,6 @@ class CandidateFactoryTrQ0Q2 : public AbstractCandidateFactory {
   }
 };
 
-struct InnerLookup {
-  std::string name;
-  ssize_t q1;
-  ssize_t q2;
-
-  bool is_q1() const { return q1 == q2; }
-};
-
-struct OuterLookup {
-  std::vector<std::vector<InnerLookup>> traces;
-
-};
-
 using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
 
 Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &traces,
@@ -576,54 +541,6 @@ Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &
   }
 
   return f;
-}
-
-/**
- * Data structure containing quark lines and DilutedFactor indices.
- *
- * I really dislike the name “lookup” as as a data structure where you cannot
- * retrieve things is basically useless. But that does not mean that we cannot
- * name new stuff like this, I have even added it here twice!
- */
-using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
-
-BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
-  BuildLookupLookupMap map;
-
-  map["C1"] = OuterLookup{{{{"Q1", 0, 0}}}};
-
-  map["C20"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}}};
-
-  map["C2c"] = OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}}};
-
-  map["C20V"] = OuterLookup{{{{"Q1", 0, 0}}, {{"Q1", 1, 1}}}};
-
-  map["C30"] = OuterLookup{{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}}};
-
-  map["C3c"] = OuterLookup{{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}}};
-
-  map["C30V"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 2}}}};
-
-  map["C40B"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}};
-
-  map["C4cB"] = OuterLookup{{{{"Q2L", 3, 0}, {"Q0", 0, 1}, {"Q2L", 1, 2}, {"Q0", 2, 3}}}};
-
-  map["C40C"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}};
-
-  map["C4cC"] =
-      OuterLookup{{{{"Q2V", 3, 0}, {"Q0", 0, 1}, {"Q2V", 1, 2}, {"Q0", 2, 3}}}};
-
-  map["C40D"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}}};
-
-  map["C4cD"] =
-      OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}}};
-
-  map["C40V"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}}};
-
-  map["C4cV"] =
-      OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}}};
-
-  return map;
 }
 
 /** Create lookuptable where to find the quarklines to build C30.
@@ -743,25 +660,17 @@ void init_lookup_tables(GlobalData &gd) {
         quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
     std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
 
-    auto const lookup_lookup_map = make_build_lookup_lookup_map(gd);
-    auto const &it = lookup_lookup_map.find(correlator.type);
-
-    if (it != lookup_lookup_map.cend()) {
-      build_general_lookup(correlator.type,
-                           gd.correlator_lookuptable,
-                           gd.quarkline_lookuptable,
-                           it->second,
-                           gd.quarks,
-                           correlator.quark_numbers,
-                           gd.start_config,
-                           gd.path_output,
-                           quantum_numbers,
-                           vdv_indices);
-    } else {
-      std::ostringstream oss;
-      oss << "Correlator type " << correlator.type << " not known!" << std::endl;
-      throw std::runtime_error(oss.str());
-    }
+    auto const &spec = diagram_spec.at(correlator.type);
+    build_general_lookup(correlator.type,
+                         gd.correlator_lookuptable,
+                         gd.quarkline_lookuptable,
+                         spec,
+                         gd.quarks,
+                         correlator.quark_numbers,
+                         gd.start_config,
+                         gd.path_output,
+                         quantum_numbers,
+                         vdv_indices);
   }
 
   /** Sets index_of_unity to the index of operator_lookuptable.vdaggerv_lookup
