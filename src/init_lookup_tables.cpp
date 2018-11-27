@@ -529,10 +529,53 @@ struct OuterLookup {
     return sum;
   }
 
-  Factories candidate_factories2() const {
+  Factories candidate_factories2(DiagramIndicesCollection &correlator_lookuptable) const {
     Factories f;
 
+    for (auto const &trace : inner) {
+      std::ostringstream name_ss("tr");
+      std::vector<ssize_t> vertices;
+      ssize_t previous_q2 = -1;
+      for (auto const &ql : trace) {
+        if (ql.name == "Q2L" || ql.name == "Q2V") {
+          name_ss << "Q2";
+        } else {
+          name_ss << ql.name;
+        }
+        vertices.push_back(ql.q1);
 
+        if (previous_q2 >= 0 && ql.q1 != previous_q2) {
+          throw std::runtime_error(
+              "Inconsistency in quark line definitions of the diagrams. This is not a "
+              "user error but needs to be fixed by a developer.");
+        }
+        previous_q2 = ql.q2;
+      }
+
+      if (vertices[0] != trace.back().q2) {
+        throw std::runtime_error(
+            "This trace does not end with the vertex that it started with. This "
+            "inconsistency needs to be fixed by a developer.");
+      }
+
+      auto const name = name_ss.str();
+
+      if (name == "trQ1") {
+        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
+                       correlator_lookuptable[name], vertices)));
+        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
+                       correlator_lookuptable[name], vertices)));
+      } else if (name == "trQ0Q2") {
+        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
+                       correlator_lookuptable[name], vertices)));
+      }
+    }
+
+    if (f.size() != inner.size() || f.size() == 0) {
+      throw std::runtime_error(
+          "The number of AbstractCandidateFactory's does not match the number of "
+          "traces. Either all or none of the traces must be converted.");
+    }
 
     return f;
   }
