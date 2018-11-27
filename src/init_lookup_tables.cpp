@@ -545,12 +545,7 @@ static void build_general_lookup(
 
     DiagramIndex candidate(ssize(correlator_lookup), hdf5_dataset_name, ql_ids_new);
 
-    /** XXX Better with std::set */
-    auto it = std::find(correlator_lookup.begin(), correlator_lookup.end(), candidate);
-
-    if (it == correlator_lookup.end()) {
-      correlator_lookup.push_back(candidate);
-    }
+    unique_push_back(correlator_lookup, candidate);
   }
 }
 
