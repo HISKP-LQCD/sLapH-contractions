@@ -519,7 +519,6 @@ struct OuterLookup {
   using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
 
   std::vector<std::vector<InnerLookup>> inner;
-  Factories candidate_factories;
 
   size_t inner_size() const {
     size_t sum = 0;
@@ -597,76 +596,38 @@ using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
 BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
   BuildLookupLookupMap map;
 
-  map["C1"] =
-      OuterLookup{{{{"Q1", 0, 0}}},
-                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
-                      gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{0}))}};
+  map["C1"] = OuterLookup{{{{"Q1", 0, 0}}}};
 
-  map["C20"] =
-      OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}},
-                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-                      gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1}))}};
+  map["C20"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}}};
 
-  map["C2c"] =
-      OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}},
-                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-                      gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1}))}};
+  map["C2c"] = OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}}};
 
-  map["C20V"] =
-      OuterLookup{{{{"Q1", 0, 0}}, {{"Q1", 1, 1}}},
-                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
-                       gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{0})),
-                   std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
-                       gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{1}))}};
+  map["C20V"] = OuterLookup{{{{"Q1", 0, 0}}, {{"Q1", 1, 1}}}};
 
-  map["C30"] = OuterLookup{{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}}, {}};
+  map["C30"] = OuterLookup{{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}}};
 
-  map["C3c"] = OuterLookup{{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}}, {}};
+  map["C3c"] = OuterLookup{{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}}};
 
-  map["C30V"] =
-      OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 2}}},
-                  {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-                       gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
-                   std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
-                       gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{2}))}};
+  map["C30V"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 2}}}};
 
-  map["C40B"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}, {}};
+  map["C40B"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}};
 
-  map["C4cB"] =
-      OuterLookup{{{{"Q2L", 3, 0}, {"Q0", 0, 1}, {"Q2L", 1, 2}, {"Q0", 2, 3}}}, {}};
+  map["C4cB"] = OuterLookup{{{{"Q2L", 3, 0}, {"Q0", 0, 1}, {"Q2L", 1, 2}, {"Q0", 2, 3}}}};
 
-  map["C40C"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}, {}};
+  map["C40C"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}};
 
   map["C4cC"] =
-      OuterLookup{{{{"Q2V", 3, 0}, {"Q0", 0, 1}, {"Q2V", 1, 2}, {"Q0", 2, 3}}}, {}};
+      OuterLookup{{{{"Q2V", 3, 0}, {"Q0", 0, 1}, {"Q2V", 1, 2}, {"Q0", 2, 3}}}};
 
-  map["C40D"] = OuterLookup{
-      {{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}},
-      {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-           gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
-       std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-           gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{2, 3}))}};
+  map["C40D"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}}};
 
-  map["C4cD"] = OuterLookup{
-      {{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}},
-      {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-           gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1})),
-       std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-           gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{2, 3}))}};
+  map["C4cD"] =
+      OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}}};
 
-  map["C40V"] = OuterLookup{
-      {{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}},
-      {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-           gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
-       std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-           gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{2, 3}))}};
+  map["C40V"] = OuterLookup{{{{"Q1", 0, 1}, {"Q1", 1, 0}}, {{"Q1", 2, 3}, {"Q1", 3, 2}}}};
 
-  map["C4cV"] = OuterLookup{
-      {{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}},
-      {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-           gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1})),
-       std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-           gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{2, 3}))}};
+  map["C4cV"] =
+      OuterLookup{{{{"Q0", 0, 1}, {"Q2V", 1, 0}}, {{"Q0", 2, 3}, {"Q2V", 3, 2}}}};
 
   return map;
 }
