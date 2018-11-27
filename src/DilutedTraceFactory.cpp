@@ -47,19 +47,21 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
                           3>::build(Key const &time_key) {
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
+  auto const t3 = time_key[2];
   auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactors<2, 1> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
-    multiply<1, 1, 0, 0>(L1, {c_look[2], c_look[0]}, df3[{t1, b1}], df1[{t1, b2}]);
+    multiply<1, 1, 0, 0>(L1, {c_look[2], c_look[0]}, df3[{t3, b1}], df1[{t1, b2}]);
   }
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
-    Tr[{t1, t2}][i] =
-        factor_to_trace(L1[{c_look[2], c_look[0]}], df2[{t2, b1}].at({c_look[1]}));
+    Tr[{t1, t2, t3}][i] =
+        factor_to_trace(L1[{c_look[2], c_look[0]}], df2[{t2, b3}].at({c_look[1]}));
   }
 }
 

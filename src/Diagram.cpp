@@ -110,7 +110,7 @@ void C30::assemble_impl(std::vector<Complex> &c,
     auto const &c_look = corr_lookup()[i];
 
     auto const &x =
-        q.trQ1Q1Q1[{slice_pair.source(), slice_pair.sink()}].at(c_look.lookup[0]);
+        q.trQ1Q1Q1[{slice_pair.source(), slice_pair.sink(), slice_pair.source()}].at(c_look.lookup[0]);
     c[i] += std::accumulate(std::begin(x), std::end(x), Complex(0.0, 0.0)) /
             static_cast<double>(x.size());
   }
