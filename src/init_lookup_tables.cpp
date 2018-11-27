@@ -388,17 +388,6 @@ static void build_Quarkline_lookup_one_qn(
   }
 }
 
-static ssize_t build_trQ1_lookup(std::vector<ssize_t> const ql_ids,
-                                 std::vector<DiagramIndex> &trQ1_lookup) {
-  DiagramIndex candidate(ssize(trQ1_lookup), "", ql_ids);
-  auto it = std::find(trQ1_lookup.begin(), trQ1_lookup.end(), candidate);
-  if (it == trQ1_lookup.end()) {
-    trQ1_lookup.push_back(candidate);
-    return trQ1_lookup.back().id;
-  } else
-    return (it - trQ1_lookup.begin());
-}
-
 /** @BUG If push_back moves the vector somewhere else, it-begin() might not
  *       give the correct id.
  */
@@ -413,53 +402,14 @@ static ssize_t build_corr0_lookup(std::vector<ssize_t> const ql_ids,
     return (it - trQ1Q1_lookup.begin());
 }
 
-static ssize_t build_corrC_lookup(std::vector<ssize_t> const ql_ids,
-                                  std::vector<DiagramIndex> &trQ0Q2_lookup) {
-  DiagramIndex candidate(ssize(trQ0Q2_lookup), "", ql_ids);
-  auto it = std::find(trQ0Q2_lookup.begin(), trQ0Q2_lookup.end(), candidate);
-  if (it == trQ0Q2_lookup.end()) {
-    trQ0Q2_lookup.push_back(candidate);
-    return trQ0Q2_lookup.back().id;
-  } else
-    return (it - trQ0Q2_lookup.begin());
-}
-
-class AbstractCandidateFactory {
+class CandidateFactory {
  public:
   using Indices = std::vector<ssize_t>;
 
-  AbstractCandidateFactory(std::vector<DiagramIndex> &tr_lookup, Indices indices)
+  CandidateFactory(std::vector<DiagramIndex> &tr_lookup, Indices indices)
       : tr_lookup_(tr_lookup), indices_(indices) {}
 
-  virtual ~AbstractCandidateFactory(){};
-
-  virtual ssize_t make(std::vector<ssize_t> const &ql_ids) = 0;
-
- protected:
-  std::vector<DiagramIndex> &tr_lookup_;
-  Indices indices_;
-};
-
-class CandidateFactoryTrQ1 : public AbstractCandidateFactory {
- public:
-  using AbstractCandidateFactory::AbstractCandidateFactory;
-
-  ssize_t make(Indices const &ql_ids) override {
-    std::vector<ssize_t> ids;
-    Indices indices2;
-    for (auto const index : indices_) {
-      indices2.push_back(ql_ids[index]);
-    }
-    auto const id = build_trQ1_lookup(indices2, tr_lookup_);
-    return id;
-  }
-};
-
-class CandidateFactoryTrQ1Q1 : public AbstractCandidateFactory {
- public:
-  using AbstractCandidateFactory::AbstractCandidateFactory;
-
-  ssize_t make(Indices const &ql_ids) override {
+  ssize_t make(Indices const &ql_ids) const {
     std::vector<ssize_t> ids;
     Indices indices2;
     for (auto const index : indices_) {
@@ -468,24 +418,13 @@ class CandidateFactoryTrQ1Q1 : public AbstractCandidateFactory {
     auto const id = build_corr0_lookup(indices2, tr_lookup_);
     return id;
   }
+
+ protected:
+  std::vector<DiagramIndex> &tr_lookup_;
+  Indices indices_;
 };
 
-class CandidateFactoryTrQ0Q2 : public AbstractCandidateFactory {
- public:
-  using AbstractCandidateFactory::AbstractCandidateFactory;
-
-  ssize_t make(Indices const &ql_ids) override {
-    std::vector<ssize_t> ids;
-    Indices indices2;
-    for (auto const index : indices_) {
-      indices2.push_back(ql_ids[index]);
-    }
-    auto const id = build_corrC_lookup(indices2, tr_lookup_);
-    return id;
-  }
-};
-
-using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
+using Factories = std::vector<CandidateFactory>;
 
 Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &traces,
                                    DiagramIndicesCollection &correlator_lookuptable) {
@@ -522,15 +461,8 @@ Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &
 
     auto const name = name_ss.str();
 
-    if (name == "trQ1") {
-      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
-          new CandidateFactoryTrQ1(correlator_lookuptable[name], vertices)));
-    } else if (name == "trQ0Q2") {
-      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
-          new CandidateFactoryTrQ0Q2(correlator_lookuptable[name], vertices)));
-    } else if (name == "trQ1Q1") {
-      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
-          new CandidateFactoryTrQ1Q1(correlator_lookuptable[name], vertices)));
+    if (name == "trQ1" || name == "trQ0Q2" || name == "trQ1Q1") {
+      f.push_back(CandidateFactory(correlator_lookuptable[name], vertices));
     }
   }
 
@@ -609,7 +541,7 @@ static void build_general_lookup(
       ql_ids_new = ql_ids;
     } else {
       for (auto const &candidate_factory : candidate_factories) {
-        auto const id = candidate_factory->make(ql_ids);
+        auto const id = candidate_factory.make(ql_ids);
         ql_ids_new.push_back(id);
       }
     }

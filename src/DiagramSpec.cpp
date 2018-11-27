@@ -1,5 +1,7 @@
 #include "DiagramSpec.hpp"
 
+enum class Pos { source, sink };
+
 BuildLookupLookupMap make_build_lookup_lookup_map() {
   BuildLookupLookupMap map;
 
