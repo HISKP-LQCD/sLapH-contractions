@@ -546,7 +546,7 @@ struct OuterLookup {
  * Data structure containing quark lines and DilutedFactor indices.
  *
  * I really dislike the name “lookup” as as a data structure where you cannot
- * retrieve things is basically useless. But that does not mean that we can
+ * retrieve things is basically useless. But that does not mean that we cannot
  * name new stuff like this, I have even added it here twice!
  */
 using BuildLookupLookupMap = std::map<std::string, OuterLookup>;
