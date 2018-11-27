@@ -518,8 +518,16 @@ struct InnerLookup {
 struct OuterLookup {
   using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
 
-  std::vector<InnerLookup> inner;
+  std::vector<std::vector<InnerLookup>> inner;
   Factories candidate_factories;
+
+  size_t inner_size() const {
+    size_t sum = 0;
+    for (auto const &i : inner) {
+      sum += i.size();
+    }
+    return sum;
+  }
 
   Factories candidate_factories2() const {
     Factories f;
@@ -555,71 +563,71 @@ BuildLookupLookupMap make_build_lookup_lookup_map(GlobalData &gd) {
   BuildLookupLookupMap map;
 
   map["C1"] =
-      OuterLookup{{{"Q1", 0, 0}},
+      OuterLookup{{{{"Q1", 0, 0}}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                       gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{0}))}};
 
   map["C20"] =
-      OuterLookup{{{"Q1", 1, 0}, {"Q1", 0, 1}},
+      OuterLookup{{{{"Q1", 1, 0}, {"Q1", 0, 1}}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                       gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1}))}};
 
   map["C2c"] =
-      OuterLookup{{{"Q2V", 1, 0}, {"Q0", 0, 1}},
+      OuterLookup{{{{"Q2V", 1, 0}, {"Q0", 0, 1}}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
                       gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1}))}};
 
   map["C20V"] =
-      OuterLookup{{{"Q1", 0, 0}, {"Q1", 1, 1}},
+      OuterLookup{{{{"Q1", 0, 0}}, {{"Q1", 1, 1}}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{0})),
                    std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{1}))}};
 
-  map["C30"] = OuterLookup{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}, {}};
+  map["C30"] = OuterLookup{{{{"Q1", 2, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}}}, {}};
 
-  map["C3c"] = OuterLookup{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}, {}};
+  map["C3c"] = OuterLookup{{{{"Q2L", 2, 0}, {"Q1", 0, 1}, {"Q0", 1, 2}}}, {}};
 
   map["C30V"] =
-      OuterLookup{{{"Q1", 1, 0}, {"Q1", 0, 1}, {"Q1", 2, 2}},
+      OuterLookup{{{{"Q1", 1, 0}, {"Q1", 0, 1}}, {{"Q1", 2, 2}}},
                   {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
                        gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
                    std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
                        gd.correlator_lookuptable["trQ1"], std::vector<ssize_t>{2}))}};
 
-  map["C40B"] = OuterLookup{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}, {}};
+  map["C40B"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}, {}};
 
   map["C4cB"] =
-      OuterLookup{{{"Q2L", 3, 0}, {"Q0", 0, 1}, {"Q2L", 1, 2}, {"Q0", 2, 3}}, {}};
+      OuterLookup{{{{"Q2L", 3, 0}, {"Q0", 0, 1}, {"Q2L", 1, 2}, {"Q0", 2, 3}}}, {}};
 
-  map["C40C"] = OuterLookup{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}, {}};
+  map["C40C"] = OuterLookup{{{{"Q1", 3, 0}, {"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 3}}}, {}};
 
   map["C4cC"] =
-      OuterLookup{{{"Q2V", 3, 0}, {"Q0", 0, 1}, {"Q2V", 1, 2}, {"Q0", 2, 3}}, {}};
+      OuterLookup{{{{"Q2V", 3, 0}, {"Q0", 0, 1}, {"Q2V", 1, 2}, {"Q0", 2, 3}}}, {}};
 
   map["C40D"] = OuterLookup{
-      {{"Q1", 1, 0}, {"Q1", 0, 1}, {"Q1", 3, 2}, {"Q1", 2, 3}},
+      {{{"Q1", 1, 0}, {"Q1", 0, 1}}, {{"Q1", 3, 2}, {"Q1", 2, 3}}},
       {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
            gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
        std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
            gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{2, 3}))}};
 
   map["C4cD"] = OuterLookup{
-      {{"Q2V", 1, 0}, {"Q0", 0, 1}, {"Q2V", 3, 2}, {"Q0", 2, 3}},
+      {{{"Q2V", 1, 0}, {"Q0", 0, 1}}, {{"Q2V", 3, 2}, {"Q0", 2, 3}}},
       {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
            gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1})),
        std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
            gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{2, 3}))}};
 
   map["C40V"] = OuterLookup{
-      {{"Q1", 1, 0}, {"Q1", 0, 1}, {"Q1", 3, 2}, {"Q1", 2, 3}},
+      {{{"Q1", 1, 0}, {"Q1", 0, 1}}, {{"Q1", 3, 2}, {"Q1", 2, 3}}},
       {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
            gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{0, 1})),
        std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
            gd.correlator_lookuptable["trQ1Q1"], std::vector<ssize_t>{2, 3}))}};
 
   map["C4cV"] = OuterLookup{
-      {{"Q2V", 1, 0}, {"Q0", 0, 1}, {"Q2V", 3, 2}, {"Q0", 2, 3}},
+      {{{"Q2V", 1, 0}, {"Q0", 0, 1}}, {{"Q2V", 3, 2}, {"Q0", 2, 3}}},
       {std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
            gd.correlator_lookuptable["trQ0Q2"], std::vector<ssize_t>{0, 1})),
        std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
@@ -659,7 +667,7 @@ static void build_general_lookup(
     std::string const &path_output,
     std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices) {
-  std::vector<ssize_t> ql_ids(ll.inner.size());
+  std::vector<ssize_t> ql_ids(ll.inner_size());
 
   // Build the correlator and dataset names for hdf5 output files
   std::vector<std::string> quark_types;
@@ -667,15 +675,17 @@ static void build_general_lookup(
     quark_types.emplace_back(quarks[id].type);
 
   for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    for (auto const &lle : ll.inner) {
-      auto const ric_ids = create_rnd_vec_id(
-          quarks, quark_numbers[lle.q1], quark_numbers[lle.q2], lle.is_q1());
-      build_Quarkline_lookup_one_qn(lle.q2,
-                                    quantum_numbers[d],
-                                    vdv_indices[d],
-                                    ric_ids,
-                                    quarkline_lookup[lle.name],
-                                    ql_ids);
+    for (auto const &llx : ll.inner) {
+      for (auto const &lle : llx) {
+        auto const ric_ids = create_rnd_vec_id(
+            quarks, quark_numbers[lle.q1], quark_numbers[lle.q2], lle.is_q1());
+        build_Quarkline_lookup_one_qn(lle.q2,
+                                      quantum_numbers[d],
+                                      vdv_indices[d],
+                                      ric_ids,
+                                      quarkline_lookup[lle.name],
+                                      ql_ids);
+      }
     }
 
     std::string hdf5_dataset_name = build_hdf5_dataset_name(
