@@ -402,27 +402,24 @@ static ssize_t build_corr0_lookup(std::vector<ssize_t> const ql_ids,
     return (it - trQ1Q1_lookup.begin());
 }
 
-class CandidateFactory {
- public:
-  using Indices = std::vector<ssize_t>;
+using Indices = std::vector<ssize_t>;
 
-  CandidateFactory(std::vector<DiagramIndex> &tr_lookup, Indices indices)
-      : tr_lookup_(tr_lookup), indices_(indices) {}
-
-  ssize_t make(Indices const &ql_ids) const {
-    std::vector<ssize_t> ids;
-    Indices indices2;
-    for (auto const index : indices_) {
-      indices2.push_back(ql_ids[index]);
-    }
-    auto const id = build_corr0_lookup(indices2, tr_lookup_);
-    return id;
-  }
-
- protected:
-  std::vector<DiagramIndex> &tr_lookup_;
-  Indices indices_;
+struct CandidateFactory {
+  std::string name;
+  Indices indices;
 };
+
+ssize_t make_candidate(std::vector<DiagramIndex> &tr_lookup,
+                       Indices const &indices,
+                       Indices const &ql_ids) {
+  std::vector<ssize_t> ids;
+  Indices indices2;
+  for (auto const index : indices) {
+    indices2.push_back(ql_ids[index]);
+  }
+  auto const id = build_corr0_lookup(indices2, tr_lookup);
+  return id;
+}
 
 using Factories = std::vector<CandidateFactory>;
 
@@ -462,7 +459,7 @@ Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &
     auto const name = name_ss.str();
 
     if (name == "trQ1" || name == "trQ0Q2" || name == "trQ1Q1") {
-      f.push_back(CandidateFactory(correlator_lookuptable[name], vertices));
+      f.push_back(CandidateFactory{name, vertices});
     }
   }
 
@@ -541,7 +538,9 @@ static void build_general_lookup(
       ql_ids_new = ql_ids;
     } else {
       for (auto const &candidate_factory : candidate_factories) {
-        auto const id = candidate_factory.make(ql_ids);
+        auto const id = make_candidate(correlator_lookuptable[candidate_factory.name],
+                                       candidate_factory.indices,
+                                       ql_ids);
         ql_ids_new.push_back(id);
       }
     }
