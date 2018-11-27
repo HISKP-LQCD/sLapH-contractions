@@ -48,6 +48,7 @@ void contract(const ssize_t Lt,
               Perambulator const &perambulators,
               OperatorLookup const &operator_lookup,
               DiagramIndicesCollection const &corr_lookup,
+              std::map<std::string, std::vector<Indices>> const &trace_indices_map,
               DilutedFactorIndicesCollection const &quark_lookup,
               std::string const output_path,
               std::string const output_filename) {
@@ -118,7 +119,8 @@ void contract(const ssize_t Lt,
                    nev,
                    Lt,
                    quark_lookup,
-                   corr_lookup);
+                   corr_lookup,
+                   trace_indices_map);
 
 #pragma omp for schedule(dynamic)
     for (int b = 0; b < dilution_scheme.size(); ++b) {

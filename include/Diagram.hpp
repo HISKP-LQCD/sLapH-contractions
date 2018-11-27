@@ -19,7 +19,8 @@ struct DiagramParts {
                ssize_t const nev,
                ssize_t const Lt,
                DilutedFactorIndicesCollection const &dil_fac_lookup,
-               DiagramIndicesCollection const &corr_lookup)
+               DiagramIndicesCollection const &corr_lookup,
+               std::map<std::string, std::vector<Indices>> const &trace_indices_map)
       : q0(random_vector,
            perambulator,
            meson_operator,
@@ -48,9 +49,9 @@ struct DiagramParts {
             dilE,
             nev,
             dil_fac_lookup.at("Q2V")),
-        trQ0Q2(q0, q2v, corr_lookup.at("trQ0Q2"), dilution_scheme),
-        trQ1Q1(q1, q1, corr_lookup.at("trQ1Q1"), dilution_scheme),
-        trQ1(q1, corr_lookup.at("trQ1"), dilution_scheme) {}
+        trQ0Q2(q0, q2v, trace_indices_map.at("trQ0Q2"), dilution_scheme),
+        trQ1Q1(q1, q1, trace_indices_map.at("trQ1Q1"), dilution_scheme),
+        trQ1(q1, trace_indices_map.at("trQ1"), dilution_scheme) {}
 
   void clear() {
     q0.clear();

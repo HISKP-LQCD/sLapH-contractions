@@ -303,3 +303,5 @@ template <typename T>
 ssize_t ssize(std::vector<T> const &vec) {
   return static_cast<ssize_t>(vec.size());
 }
+
+using Indices = std::vector<ssize_t>;

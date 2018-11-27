@@ -59,6 +59,7 @@ struct GlobalData {
   DilutedFactorIndicesCollection quarkline_lookuptable;
   OperatorLookup operator_lookuptable;
   DiagramIndicesCollection correlator_lookuptable;
+  std::map<std::string, std::vector<Indices>> trace_indices_map;
 
   /**
    * Cutoff for the sum of individual momenta.

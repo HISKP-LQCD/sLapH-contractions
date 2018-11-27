@@ -95,6 +95,7 @@ int main(int ac, char *av[]) {
              perambulators,
              gd.operator_lookuptable,
              gd.correlator_lookuptable,
+             gd.trace_indices_map,
              gd.quarkline_lookuptable,
              gd.path_output,
              gd.filename_ending_correlators);

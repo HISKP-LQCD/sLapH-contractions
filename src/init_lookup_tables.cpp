@@ -399,14 +399,12 @@ ssize_t unique_push_back(std::vector<T> &vector, T const &element) {
   }
 }
 
-using Indices = std::vector<ssize_t>;
-
 struct CandidateFactory {
   std::string name;
   Indices indices;
 };
 
-ssize_t make_candidate(std::vector<DiagramIndex> &tr_lookup,
+ssize_t make_candidate(std::vector<Indices> &tr_lookup,
                        Indices const &indices,
                        Indices const &ql_ids) {
   std::vector<ssize_t> ids;
@@ -414,8 +412,7 @@ ssize_t make_candidate(std::vector<DiagramIndex> &tr_lookup,
   for (auto const index : indices) {
     indices2.push_back(ql_ids[index]);
   }
-  DiagramIndex candidate(ssize(tr_lookup), "", indices2);
-  auto const id = unique_push_back(tr_lookup, candidate);
+  auto const id = unique_push_back(tr_lookup, indices2);
   return id;
 }
 
@@ -493,6 +490,7 @@ Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &
 static void build_general_lookup(
     std::string const &name,
     DiagramIndicesCollection &correlator_lookuptable,
+    std::map<std::string, std::vector<Indices>> &trace_indices_map,
     std::map<std::string, std::vector<DilutedFactorIndex>> &quarkline_lookup,
     OuterLookup const &ll,
     std::vector<quark> const &quarks,
@@ -536,7 +534,7 @@ static void build_general_lookup(
       ql_ids_new = ql_ids;
     } else {
       for (auto const &candidate_factory : candidate_factories) {
-        auto const id = make_candidate(correlator_lookuptable[candidate_factory.name],
+        auto const id = make_candidate(trace_indices_map[candidate_factory.name],
                                        candidate_factory.indices,
                                        ql_ids);
         ql_ids_new.push_back(id);
@@ -587,6 +585,7 @@ void init_lookup_tables(GlobalData &gd) {
     auto const &spec = diagram_spec.at(correlator.type);
     build_general_lookup(correlator.type,
                          gd.correlator_lookuptable,
+                         gd.trace_indices_map,
                          gd.quarkline_lookuptable,
                          spec,
                          gd.quarks,

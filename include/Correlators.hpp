@@ -47,6 +47,7 @@ void contract(const ssize_t Lt,
               Perambulator const &perambulators,
               OperatorLookup const &operator_lookup,
               DiagramIndicesCollection const &corr_lookup,
+              std::map<std::string, std::vector<Indices>> const &trace_indices_map,
               DilutedFactorIndicesCollection const &quark_lookup,
               std::string const output_path,
               std::string const output_filename);

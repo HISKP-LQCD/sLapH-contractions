@@ -18,7 +18,7 @@ struct DilutedTraceTraceFactory {
 
   DilutedTraceTraceFactory(DilutedFactorFactory<qlt1> &_df1,
                            DilutedFactorFactory<qlt2> &_df2,
-                           std::vector<DiagramIndex> const &_dic,
+                           std::vector<Indices> const &_dic,
                            DilutionScheme const &_ds)
       : df1(_df1), df2(_df2), diagram_index_collection(_dic), dilution_scheme(_ds) {}
 
@@ -37,7 +37,7 @@ struct DilutedTraceTraceFactory {
  private:
   DilutedFactorFactory<qlt1> &df1;
   DilutedFactorFactory<qlt2> &df2;
-  std::vector<DiagramIndex> const &diagram_index_collection;
+  std::vector<Indices> const &diagram_index_collection;
   DilutionScheme const &dilution_scheme;
   std::map<Key, Value> Tr;
 };
@@ -50,7 +50,7 @@ struct DilutedTraceFactory {
   using Value = DilutedTraces<rvecs>;
 
   DilutedTraceFactory(DilutedFactorFactory<qlt> &_df,
-                      std::vector<DiagramIndex> const &_dic,
+                      std::vector<Indices> const &_dic,
                       DilutionScheme const &_ds)
       : df(_df), diagram_index_collection(_dic), dilution_scheme(_ds) {}
 
@@ -68,7 +68,7 @@ struct DilutedTraceFactory {
 
  private:
   DilutedFactorFactory<qlt> &df;
-  std::vector<DiagramIndex> const &diagram_index_collection;
+  std::vector<Indices> const &diagram_index_collection;
   DilutionScheme const &dilution_scheme;
   std::map<Key, Value> Tr;
 };
