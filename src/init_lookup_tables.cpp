@@ -388,18 +388,15 @@ static void build_Quarkline_lookup_one_qn(
   }
 }
 
-/** @BUG If push_back moves the vector somewhere else, it-begin() might not
- *       give the correct id.
- */
-static ssize_t build_corr0_lookup(std::vector<ssize_t> const ql_ids,
-                                  std::vector<DiagramIndex> &trQ1Q1_lookup) {
-  DiagramIndex candidate(ssize(trQ1Q1_lookup), "", ql_ids);
-  auto it = std::find(trQ1Q1_lookup.begin(), trQ1Q1_lookup.end(), candidate);
-  if (it == trQ1Q1_lookup.end()) {
-    trQ1Q1_lookup.push_back(candidate);
-    return trQ1Q1_lookup.back().id;
-  } else
-    return (it - trQ1Q1_lookup.begin());
+template <typename T>
+ssize_t unique_push_back(std::vector<T> &vector, T const &element) {
+  auto const it = std::find(vector.begin(), vector.end(), element);
+  if (it == vector.cend()) {
+    vector.push_back(element);
+    return vector.cend() - 1 - vector.cbegin();
+  } else {
+    return it - vector.cbegin();
+  }
 }
 
 using Indices = std::vector<ssize_t>;
@@ -417,7 +414,8 @@ ssize_t make_candidate(std::vector<DiagramIndex> &tr_lookup,
   for (auto const index : indices) {
     indices2.push_back(ql_ids[index]);
   }
-  auto const id = build_corr0_lookup(indices2, tr_lookup);
+  DiagramIndex candidate(ssize(tr_lookup), "", indices2);
+  auto const id = unique_push_back(tr_lookup, candidate);
   return id;
 }
 
