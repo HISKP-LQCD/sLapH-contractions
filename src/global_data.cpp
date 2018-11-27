@@ -228,6 +228,16 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   // the wanted correlators
   init_lookup_tables(gd);
 
+  std::cout << "The following elements are defined in `gd.correlator_lookuptable`:\n";
+  for (auto const &elem : gd.correlator_lookuptable)
+    std::cout << "  - " << elem.first << "\n";
+  std::cout << std::endl;
+
+  std::cout << "The following elements are defined in `gd.trace_indices_map`:\n";
+  for (auto const &elem : gd.trace_indices_map)
+    std::cout << "  - " << elem.first << "\n";
+  std::cout << std::endl;
+
   // setting the sizes and numbers of random vectors and perambulators
   /**
    * @todo: setting the sizes and numbers of rnd_vecs and perams should be put
