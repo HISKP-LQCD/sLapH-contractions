@@ -516,73 +516,67 @@ struct InnerLookup {
 };
 
 struct OuterLookup {
-  using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
+  std::vector<std::vector<InnerLookup>> traces;
 
-  std::vector<std::vector<InnerLookup>> inner;
-
-  size_t inner_size() const {
-    size_t sum = 0;
-    for (auto const &i : inner) {
-      sum += i.size();
-    }
-    return sum;
-  }
-
-  Factories candidate_factories2(DiagramIndicesCollection &correlator_lookuptable) const {
-    Factories f;
-
-    for (auto const &trace : inner) {
-      std::ostringstream name_ss;
-      name_ss << "tr";
-
-      std::vector<ssize_t> vertices;
-      ssize_t previous_q2 = -1;
-
-      for (auto const &ql : trace) {
-        if (ql.name == "Q2L" || ql.name == "Q2V") {
-          name_ss << "Q2";
-        } else {
-          name_ss << ql.name;
-        }
-        vertices.push_back(ql.q1);
-
-        if (previous_q2 >= 0 && ql.q1 != previous_q2) {
-          throw std::runtime_error(
-              "Inconsistency in quark line definitions of the diagrams. This is not a "
-              "user error but needs to be fixed by a developer.");
-        }
-        previous_q2 = ql.q2;
-      }
-
-      if (vertices[0] != trace.back().q2) {
-        throw std::runtime_error(
-            "This trace does not end with the vertex that it started with. This "
-            "inconsistency needs to be fixed by a developer.");
-      }
-
-      auto const name = name_ss.str();
-
-      if (name == "trQ1") {
-        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1(
-                       correlator_lookuptable[name], vertices)));
-      } else if (name == "trQ0Q2") {
-        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ0Q2(
-                       correlator_lookuptable[name], vertices)));
-      } else if (name == "trQ1Q1") {
-        f.push_back(std::shared_ptr<AbstractCandidateFactory>(new CandidateFactoryTrQ1Q1(
-                       correlator_lookuptable[name], vertices)));
-      }
-    }
-
-    if (f.size() != 0 && f.size() != inner.size() ) {
-      throw std::runtime_error(
-          "The number of AbstractCandidateFactory's does not match the number of "
-          "traces. Either all or none of the traces must be converted.");
-    }
-
-    return f;
-  }
 };
+
+using Factories = std::vector<std::shared_ptr<AbstractCandidateFactory>>;
+
+Factories make_candidate_factories(std::vector<std::vector<InnerLookup>> const &traces,
+                                   DiagramIndicesCollection &correlator_lookuptable) {
+  Factories f;
+
+  for (auto const &trace : traces) {
+    std::ostringstream name_ss;
+    name_ss << "tr";
+
+    std::vector<ssize_t> vertices;
+    ssize_t previous_q2 = -1;
+
+    for (auto const &ql : trace) {
+      if (ql.name == "Q2L" || ql.name == "Q2V") {
+        name_ss << "Q2";
+      } else {
+        name_ss << ql.name;
+      }
+      vertices.push_back(ql.q1);
+
+      if (previous_q2 >= 0 && ql.q1 != previous_q2) {
+        throw std::runtime_error(
+            "Inconsistency in quark line definitions of the diagrams. This is not a "
+            "user error but needs to be fixed by a developer.");
+      }
+      previous_q2 = ql.q2;
+    }
+
+    if (vertices[0] != trace.back().q2) {
+      throw std::runtime_error(
+          "This trace does not end with the vertex that it started with. This "
+          "inconsistency needs to be fixed by a developer.");
+    }
+
+    auto const name = name_ss.str();
+
+    if (name == "trQ1") {
+      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
+          new CandidateFactoryTrQ1(correlator_lookuptable[name], vertices)));
+    } else if (name == "trQ0Q2") {
+      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
+          new CandidateFactoryTrQ0Q2(correlator_lookuptable[name], vertices)));
+    } else if (name == "trQ1Q1") {
+      f.push_back(std::shared_ptr<AbstractCandidateFactory>(
+          new CandidateFactoryTrQ1Q1(correlator_lookuptable[name], vertices)));
+    }
+  }
+
+  if (f.size() != 0 && f.size() != traces.size()) {
+    throw std::runtime_error(
+        "The number of AbstractCandidateFactory's does not match the number of "
+        "traces. Either all or none of the traces must be converted.");
+  }
+
+  return f;
+}
 
 /**
  * Data structure containing quark lines and DilutedFactor indices.
@@ -663,7 +657,11 @@ static void build_general_lookup(
     std::string const &path_output,
     std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<std::vector<std::pair<ssize_t, bool>>> const &vdv_indices) {
-  std::vector<ssize_t> ql_ids(ll.inner_size());
+  size_t ql_size = 0;
+  for (auto const &trace : ll.traces) {
+    ql_size += trace.size();
+  }
+  std::vector<ssize_t> ql_ids(ql_size);
   auto &correlator_lookup = correlator_lookuptable[name];
 
   // Build the correlator and dataset names for hdf5 output files
@@ -672,7 +670,7 @@ static void build_general_lookup(
     quark_types.emplace_back(quarks[id].type);
 
   for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
-    for (auto const &llx : ll.inner) {
+    for (auto const &llx : ll.traces) {
       for (auto const &lle : llx) {
         auto const ric_ids = create_rnd_vec_id(
             quarks, quark_numbers[lle.q1], quark_numbers[lle.q2], lle.is_q1());
@@ -689,7 +687,7 @@ static void build_general_lookup(
         name, start_config, path_output, quark_types, quantum_numbers[d]);
 
     std::vector<ssize_t> ql_ids_new;
-    auto const &candidate_factories = ll.candidate_factories2(correlator_lookuptable);
+    auto const &candidate_factories = make_candidate_factories(ll.traces, correlator_lookuptable);
     if (ssize(candidate_factories) == 0) {
       ql_ids_new = ql_ids;
     } else {
