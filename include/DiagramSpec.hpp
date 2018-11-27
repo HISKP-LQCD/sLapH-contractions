@@ -18,9 +18,11 @@ struct InnerLookup {
   bool is_q1() const { return q1 == q2; }
 };
 
+using TraceSpecs = std::vector<std::vector<InnerLookup>>;
+
 struct OuterLookup {
   Vertices vertices;
-  std::vector<std::vector<InnerLookup>> traces;
+  TraceSpecs traces;
 };
 
 /**
