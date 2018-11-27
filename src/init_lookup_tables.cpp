@@ -509,8 +509,8 @@ class CandidateFactoryTrQ0Q2 : public AbstractCandidateFactory {
 
 struct InnerLookup {
   std::string name;
-  size_t q1;
-  size_t q2;
+  ssize_t q1;
+  ssize_t q2;
 
   bool is_q1() const { return q1 == q2; }
 };
