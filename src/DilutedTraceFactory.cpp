@@ -55,13 +55,13 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   DilutedFactors<2, 1> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
-    multiply<1, 1, 0, 0>(L1, {c_look[0], c_look[1]}, df1[{t1, b2}], df2[{t2, b3}]);
+    multiply<1, 1, 0, 0>(L1, {c_look[2], c_look[0]}, df3[{t3, b1}], df1[{t1, b2}]);
   }
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     Tr[{t1, t2, t3}][i] =
-        factor_to_trace(L1[{c_look[0], c_look[1]}], df3[{t3, b1}].at({c_look[2]}));
+        factor_to_trace(L1[{c_look[2], c_look[0]}], df2[{t2, b3}].at({c_look[1]}));
   }
 }
 
