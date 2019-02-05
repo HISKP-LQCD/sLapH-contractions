@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH -J {{ jobname }}
+#SBATCH --time=02:00:00
+#SBATCH --partition=devel
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=24
+{% if email_address != '' %}
+#SBATCH --mail-user={{ email_address }}
+#SBATCH --mail-type=FAIL
+{% endif %}
+#SBATCH --output={{ rundir }}/{{ jobname }}.out
+#SBATCH --error={{ rundir }}/{{ jobname }}.err
+
+set -e
+set -u
+
+module load Intel
+module load IntelMPI
+module load HDF5
+module load Boost
+module load Eigen
+
+export OMP_NUM_THREADS={{ cpus_per_task }}
+export KMP_AFFINITY=balanced,verbose
+
+cd {{ rundir }}
+
+date
+
+{% for config_id in config_ids_for_one_job %}
+srun -N1 -n1 -c$SLURM_CPUS_PER_TASK --exclusive \
+        ../contract -i {{ config_path }} \
+        --start_config {{ config_id }} --end_config {{ config_id }} &
+{% endfor %}
+
+wait
+
+date
