@@ -1,6 +1,8 @@
 #include "EigenVector.hpp"
 
 #include <boost/format.hpp>
+#include <sstream>
+#include <cfloat>
 
 void EigenVector::write_eigen_vector(const std::string &filename,
                                      const ssize_t t,
@@ -30,6 +32,38 @@ void EigenVector::write_eigen_vector(const std::string &filename,
     std::cout << "sum over all entries of V^d*V"
               << ":\t" << (V[t].adjoint() * V[t]).sum() << std::endl;
   }
+}
+
+bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
+  bool fail = false;
+  Eigen::MatrixXcd VdV = V[t].adjoint() * V[t];
+  const std::complex<double> trace = VdV.trace();
+  const std::complex<double> sum = VdV.sum();
+  // we allow for some deviation per eigenvector, but not much!
+  if( abs( trace.real() - V[t].cols() ) > 2*V[t].cols()*DBL_EPSILON ){
+    fail = true;
+    std::stringstream message;
+    // when printing the error, make sure to print exactly what is above in the if statement
+    message << "Trace of VdaggerV: " << trace << " with real part: " << (ssize_t)(trace.real()) <<
+      " is not correct, should be: " << (ssize_t)(V[t].cols());
+    if(do_throw){
+      throw std::runtime_error( message.str() );
+    } else {
+      std::cout << message.str() << std::endl;
+    }
+  }
+  if( abs( sum.real() - V[t].cols() ) > 2*V[t].cols()*DBL_EPSILON ){
+    fail = true;
+    std::stringstream message;
+    message << "Sum of VdaggerV elements: " << sum << " with real part: " << 
+      (ssize_t)(sum.real()) << " is not correct, should be: " << (ssize_t)(V[t].cols());
+    if(do_throw){
+      throw std::runtime_error( message.str() );
+    } else {
+      std::cout << message.str() << std::endl;
+    }
+  }
+  return fail;
 }
 
 void EigenVector::read_eigen_vector(const std::string &filename,
@@ -62,12 +96,8 @@ void EigenVector::read_eigen_vector(const std::string &filename,
     }
     infile.close();
 
-    // small test of trace and sum over the eigen vector matrix!
-    if (verbose) {
-      std::cout << "trace of V^d*V"
-                << ":\t" << (V[t].adjoint() * V[t]).trace() << std::endl;
-      std::cout << "sum over all entries of V^d*V"
-                << ":\t" << (V[t].adjoint() * V[t]).sum() << std::endl;
+    if( verbose ){
+      test_trace_sum(t);
     }
   } else {
     std::cout << "Randomizing eigenvectors ts: " << t << std::endl;
