@@ -342,6 +342,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
 
     t_start += n_read_threads;
   } // for(iphase)
+  swatch.stop();
   swatch.print();
   is_vdaggerv_set = true;
 }
