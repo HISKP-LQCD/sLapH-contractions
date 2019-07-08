@@ -277,7 +277,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
     ssize_t t_end = t_start + gd.nb_evec_read_threads;
     ssize_t n_read_threads = gd.nb_evec_read_threads;
     if( t_end >= Lt ){
-      n_read_threads = Lt - t_start - 1;
+      n_read_threads = Lt - t_start;
       t_end = Lt;
     }
 
