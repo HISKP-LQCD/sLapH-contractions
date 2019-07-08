@@ -5,6 +5,7 @@
 #include <boost/format.hpp>
 
 #include <iomanip>
+#include <cmath>
 
 static ssize_t map_char_to_dir(const char dir) {
   ssize_t integer_dir;
@@ -287,7 +288,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       for(ssize_t i = 0; i < n_read_threads; ++i){
         ssize_t t = t_start + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
-        V_t.read_eigen_vector(inter_name.c_str(), t, 1, false);
+        V_t.read_eigen_vector(inter_name.c_str(), i, 1, false);
       }
     }
    
@@ -316,7 +317,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
             vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
           }
         } else {
-          vdaggerv[op.id][t] = Eigen:MatrixXcd::Identity(nb_ev, nb_ev);
+          vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
         }
       }
 
@@ -341,6 +342,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
 
     t_start += n_read_threads;
   } // for(iphase)
+  swatch.stop();
   swatch.print();
   is_vdaggerv_set = true;
 }
