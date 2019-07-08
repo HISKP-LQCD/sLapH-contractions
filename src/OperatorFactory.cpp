@@ -5,6 +5,7 @@
 #include <boost/format.hpp>
 
 #include <iomanip>
+#include <cmath>
 
 static ssize_t map_char_to_dir(const char dir) {
   ssize_t integer_dir;
