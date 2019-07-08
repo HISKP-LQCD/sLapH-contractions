@@ -6,6 +6,7 @@
 
 #include <iomanip>
 #include <cmath>
+#include <sstream>
 
 static ssize_t map_char_to_dir(const char dir) {
   ssize_t integer_dir;
@@ -237,7 +238,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       std::cout << "\tFailure" << std::endl;
   }
 
-  StopWatch swatch("Eigenvector and Gauge I/O");
+  StopWatch swatch("Eigenvector and Gauge I/O, VdaggerV construction");
   // resizing each matrix in vdaggerv
   // TODO: check if it is better to use for_each and resize instead of std::fill
   std::fill(vdaggerv.origin(),
@@ -267,11 +268,13 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   // how many outer iterations do we need to work off all time slices in a stepping 
   // of 'nb_evec_read_threads'
   const ssize_t nphases = (ssize_t)ceil((double)Lt / gd.nb_evec_read_threads);
-  
+ 
+  // starting time slice 
   ssize_t t_start = 0;
-  
-  swatch.start();
-  
+ 
+  // note that the output of this with respect to the number of threads
+  StopWatch ev_io_watch("Threaded Eigenvector I/O");
+
   // loop over the phases
   for(ssize_t iphase = 0; iphase < nphases; iphase++){
     ssize_t t_end = t_start + gd.nb_evec_read_threads;
@@ -281,6 +284,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       t_end = Lt;
     }
 
+    ev_io_watch.start();
     // perform thread-parallel I/O
     #pragma omp parallel num_threads(n_read_threads)
     {
@@ -288,9 +292,13 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       for(ssize_t i = 0; i < n_read_threads; ++i){
         ssize_t t = t_start + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
-        V_t.read_eigen_vector(inter_name.c_str(), i, 1, false);
+        // we call with verbose=0 because we want to use the more efficient mode
+        // down below, when 'nb_vdaggerv_eigen_threads' are in use
+        V_t.read_eigen_vector(inter_name.c_str(), i, 0, false);
       }
     }
+    ev_io_watch.stop();
+    ev_io_watch.print();
    
     // perform highly parallel dense momentum projection and matrix multiplications
     // VdaggerV is independent of the gamma structure and momenta connected by
@@ -302,6 +310,17 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
 
     const int old_eigen_threads = Eigen::nbThreads();
     Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
+
+    for(ssize_t i = 0; i < n_read_threads; ++i){
+      bool test_fail = V_t.test_trace_sum(i, false);
+      if(test_fail){
+        std::stringstream message;
+        message << "Eigenvector verification failed at config: " << config << " time slice: " <<
+          t_start + i << std::endl;
+        throw std::runtime_error( message.str() );
+      }
+    }
+
     for(const auto &op : operator_lookuptable.vdaggerv_lookup){
       for(ssize_t i = 0; i < n_read_threads; ++i){
         ssize_t t = t_start + i;
