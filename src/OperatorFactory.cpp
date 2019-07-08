@@ -288,7 +288,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       for(ssize_t i = 0; i < n_read_threads; ++i){
         ssize_t t = t_start + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
-        V_t.read_eigen_vector(inter_name.c_str(), t, 1, false);
+        V_t.read_eigen_vector(inter_name.c_str(), i, 1, false);
       }
     }
    
