@@ -316,7 +316,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
             vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
           }
         } else {
-          vdaggerv[op.id][t] = Eigen:MatrixXcd::Identity(nb_ev, nb_ev);
+          vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
         }
       }
 
