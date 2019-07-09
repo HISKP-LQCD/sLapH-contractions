@@ -239,6 +239,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   }
 
   StopWatch swatch("Eigenvector and Gauge I/O, VdaggerV construction");
+  swatch.start();
   // resizing each matrix in vdaggerv
   // TODO: check if it is better to use for_each and resize instead of std::fill
   std::fill(vdaggerv.origin(),
