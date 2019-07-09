@@ -327,13 +327,13 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
         ssize_t t = t_start + i;
         if( op.id != id_unity ){
           if(!op.displacement.empty()){
-            W_t = displace_eigenvectors(V_t[i], *gauge, t, op.displacement, 1);
+            W_t.noalias() = displace_eigenvectors(V_t[i], *gauge, t, op.displacement, 1);
           } else {
             # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads)
             for(ssize_t x = 0; x < dim_row; ++x){
               mom(x) = momentum[op.id][x / 3];
             }
-            W_t = mom.asDiagonal() * V_t[i];
+            W_t.noalias() = mom.asDiagonal() * V_t[i];
             vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
           }
         } else {
