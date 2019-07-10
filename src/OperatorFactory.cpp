@@ -238,7 +238,8 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       std::cout << "\tFailure" << std::endl;
   }
 
-  StopWatch swatch("Eigenvector and Gauge I/O, VdaggerV construction");
+  StopWatch swatch("Eigenvector and Gauge I/O and VdaggerV construction (note: various thread numbers used)",
+                   1);
   swatch.start();
   // resizing each matrix in vdaggerv
   // TODO: check if it is better to use for_each and resize instead of std::fill
@@ -264,7 +265,11 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   }
 
   // memory for eigensystems on 'nb_evec_read_threads' time slices
+  StopWatch malloc_watch("V_t memory allocation", 1);
+  malloc_watch.start();
   EigenVector V_t(gd.nb_evec_read_threads, dim_row, nb_ev);
+  malloc_watch.stop();
+  malloc_watch.print();
 
   // how many outer iterations do we need to work off all time slices in a stepping 
   // of 'nb_evec_read_threads'
@@ -273,11 +278,12 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   // starting time slice 
   ssize_t t_start = 0;
  
-  // note that the output of this with respect to the number of threads
-  StopWatch ev_io_watch("Threaded Eigenvector I/O");
-
   // loop over the phases
+  StopWatch phase_watch("Outer loop phase", 1);
   for(ssize_t iphase = 0; iphase < nphases; iphase++){
+    phase_watch.start();
+    std::cout << "Phase " << iphase+1 << " of " << nphases << std::endl;
+
     ssize_t t_end = t_start + gd.nb_evec_read_threads;
     ssize_t n_read_threads = gd.nb_evec_read_threads;
     if( t_end >= Lt ){
@@ -285,33 +291,39 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       t_end = Lt;
     }
 
-    ev_io_watch.start();
-    // perform thread-parallel I/O
+    StopWatch ev_io_watch("Threaded Eigenvector I/O", n_read_threads);
+    // perform thread-parallel I/O with the thread number chosen so as to not exceed node
+    // memory limits
     #pragma omp parallel num_threads(n_read_threads)
     {
-      #pragma omp for
+      ev_io_watch.start();
+      #pragma omp for schedule(static)
       for(ssize_t i = 0; i < n_read_threads; ++i){
         ssize_t t = t_start + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
-        // we call with verbose=0 because we want to use the more efficient mode
-        // down below, when 'nb_vdaggerv_eigen_threads' are in use
+        // we call with verbose=0 because we want to run verification in the more efficient mode
+        // down below, when 'nb_vdaggerv_eigen_threads' are in use to perform VdV.trace and VdV.sum
         V_t.read_eigen_vector(inter_name.c_str(), i, 0, false);
       }
+      ev_io_watch.stop();
     }
-    ev_io_watch.stop();
     ev_io_watch.print();
    
-    // perform highly parallel dense momentum projection and matrix multiplications
-    // VdaggerV is independent of the gamma structure and momenta connected by
-    // sign flip are related by adjoining VdaggerV. Thus the expensive
-    // calculation must only be performed for a subset of quantum numbers given
-    // in op_VdaggerV.
+    // now we perform the highly parallel dense momentum projection and matrix multiplications
+    // Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
+    // For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
+    // no matter what has been set of nb_vdaggerv_eigen_threads
+    // on large lattices, however, allowing all cores to be used leads to lower total time
+    // for build_vdaggerv
+
     Eigen::MatrixXcd W_t;
     Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
 
     const int old_eigen_threads = Eigen::nbThreads();
     Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
 
+    StopWatch vdaggerv_check_watch("VdaggerV check (note: nb_vdagger_eigen_threads used)", 1);
+    vdaggerv_check_watch.start();
     for(ssize_t i = 0; i < n_read_threads; ++i){
       bool test_fail = V_t.test_trace_sum(i, false);
       if(test_fail){
@@ -321,47 +333,71 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
         throw std::runtime_error( message.str() );
       }
     }
+    vdaggerv_check_watch.stop();
+    vdaggerv_check_watch.print();
 
-    for(const auto &op : operator_lookuptable.vdaggerv_lookup){
-      for(ssize_t i = 0; i < n_read_threads; ++i){
-        ssize_t t = t_start + i;
+    // VdaggerV is independent of the gamma structure and momenta connected by
+    // sign flip are related by adjoining VdaggerV. Thus the expensive
+    // calculation must only be performed for a subset of quantum numbers given
+    // in op_VdaggerV.
+    for(ssize_t i = 0; i < n_read_threads; ++i){
+      ssize_t t = t_start + i;
+      for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
           if(!op.displacement.empty()){
             W_t.noalias() = displace_eigenvectors(V_t[i], *gauge, t, op.displacement, 1);
             vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
           } else {
-            # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads)
+            // depending on the compiler and how well threading is done, this simple
+            // operation can be up to a factor 100 slower with dynamic scheduling
+            # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
             for(ssize_t x = 0; x < dim_row; ++x){
               mom(x) = momentum[op.id][x / 3];
             }
-            vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V[t];
+            vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V_t[i];
           }
         } else {
           vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
         }
       }
-
-      // perform thread-parallel I/O to write out VdaggerV
-      if( handling_vdaggerv == "write" && op.id != id_unity ){
-        #pragma omp parallel for num_threads(n_read_threads)
-        for(ssize_t i = 0; i < n_read_threads; ++i){
-          ssize_t t = t_start + i;
-          std::string momentum_string = std::to_string(op.momentum[0]) +
-                                        std::to_string(op.momentum[1]) +
-                                        std::to_string(op.momentum[2]);
-          std::string displacement_string = to_string(op.displacement);
-          std::string outfile =
-              (boost::format("operators.%04d.p_%s.d_%s.t_%03d") % config %
-               momentum_string % displacement_string % (int)t)
-                  .str();
-          write_vdaggerv(full_path, std::string(outfile), vdaggerv[op.id][t]);
-        }
-      }
     }
     Eigen::setNbThreads(old_eigen_threads);
-
+    
     t_start += n_read_threads;
+
+    phase_watch.stop();
+    phase_watch.print();
   } // for(iphase)
+  
+
+  // perform thread-parallel I/O to write out VdaggerV
+  if( handling_vdaggerv == "write" ){
+    StopWatch vdaggerv_io_watch("VdaggerV thread-parallel writing",
+                                gd.nb_evec_read_threads);
+    #pragma omp parallel num_threads(gd.nb_evec_read_threads)
+    {
+      vdaggerv_io_watch.start();
+      #pragma omp for schedule(dynamic)
+      for(ssize_t t = 0; t < Lt; ++t){
+        for(const auto &op : operator_lookuptable.vdaggerv_lookup){
+          if( op.id != id_unity ){
+            std::string momentum_string = std::to_string(op.momentum[0]) +
+                                          std::to_string(op.momentum[1]) +
+                                          std::to_string(op.momentum[2]);
+            std::string displacement_string = to_string(op.displacement);
+            std::string outfile =
+                (boost::format("operators.%04d.p_%s.d_%s.t_%03d") % config %
+                 momentum_string % displacement_string % (int)t)
+                    .str();
+            write_vdaggerv(full_path, std::string(outfile), vdaggerv[op.id][t]);
+          }
+        }
+      }
+      vdaggerv_io_watch.stop();
+    } // pragma omp parallel
+    vdaggerv_io_watch.print();
+  }
+
   swatch.stop();
   swatch.print();
   is_vdaggerv_set = true;
