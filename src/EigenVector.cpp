@@ -46,6 +46,7 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
     // when printing the error, make sure to print exactly what is above in the if statement
     message << "Trace of VdaggerV: " << trace << " with real part: " << (ssize_t)(trace.real()) <<
       " is not correct, should be: " << (ssize_t)(V[t].cols());
+    printf("Real part of the trace %20.20e and its deviation \t%20.20e\n", trace.real(),abs( trace.real() - V[t].cols() ) );
     if(do_throw){
       throw std::runtime_error( message.str() );
     } else {
@@ -56,7 +57,9 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
     fail = true;
     std::stringstream message;
     message << "Sum of VdaggerV elements: " << sum << " with real part: " << 
-      (ssize_t)(sum.real()) << " is not correct, should be: " << (ssize_t)(V[t].cols());
+      (ssize_t)(sum.real()) << " is not correct, should be: " << (size_t)(V[t].cols());
+    printf("Real part of the sum is %20.20e and its deviation \t%20.20e\n", sum.real(),abs( sum.real() - V[t].cols() ) );
+
     if(do_throw){
       throw std::runtime_error( message.str() );
     } else {
@@ -86,9 +89,9 @@ void EigenVector::read_eigen_vector(const std::string &filename,
         infile.read((char *)&(eigen_vec[0]), 2 * V[t].rows() * sizeof(double));
         if (!infile) {
           throw std::runtime_error("Problem while reading Eigenvectors!");
-        }
+        } 
         for (ssize_t nrow = 0; nrow < V[t].rows(); ++nrow) {
-          (V[t])(nrow, ncol) = eigen_vec[nrow];
+          (V[t])(nrow, ncol) = eigen_vec[nrow]; 
         }
       }
     } else {
