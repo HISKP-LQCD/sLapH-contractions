@@ -219,6 +219,69 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
   std::cout << "\tMeson operators initialised" << std::endl;
 }
 
+
+// now we perform the highly parallel dense momentum projection and matrix multiplications
+// Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
+// For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
+// no matter what has been set of nb_vdaggerv_eigen_threads
+// on large lattices, however, allowing all cores to be used leads to lower total time
+// for build_vdaggerv
+
+static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
+                                           const ssize_t nb_ev,
+                                           const int config, 
+                                           const int t_start,
+                                           EigenVector &V_t, 
+                                           const array_cd_d2 &momentum, 
+                                           const GlobalData & gd, 
+                                           const OperatorLookup &operator_lookuptable, 
+                                           array_Xcd_d2_eigen vdaggerv, 
+                                           GaugeField const &gauge ){
+
+  Eigen::MatrixXcd W_t;
+  Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
+
+  const int id_unity = operator_lookuptable.index_of_unity;
+  const int old_eigen_threads = Eigen::nbThreads();
+  ssize_t n_read_threads = gd.nb_evec_read_threads;
+  Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
+
+  StopWatch vdaggerv_check_watch("VdaggerV check (note: nb_vdagger_eigen_threads used)", 1);
+  vdaggerv_check_watch.start();
+  for(ssize_t i = 0; i < n_read_threads; ++i){
+    bool test_fail = V_t.test_trace_sum(i, false);
+    if(test_fail){
+      std::stringstream message;
+      message << "Eigenvector verification failed at config: " << config << " time slice: " <<
+         t_start + i << std::endl;
+      throw std::runtime_error( message.str() );
+    }
+  }
+  vdaggerv_check_watch.stop();
+  vdaggerv_check_watch.print();
+  for(ssize_t i = 0; i < n_read_threads; ++i){
+    ssize_t t = t_start + i;
+    for(const auto &op : operator_lookuptable.vdaggerv_lookup){
+      if( op.id != id_unity ){
+       if(!op.displacement.empty()){
+         W_t.noalias() = displace_eigenvectors(V_t[i], gauge, t, op.displacement, 1);
+         vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
+       } else {
+         // depending on the compiler and how well threading is done, this simple
+         // operation can be up to a factor 100 slower with dynamic scheduling
+         # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
+         for(ssize_t x = 0; x < dim_row; ++x){
+           mom(x) = momentum[op.id][x / 3];
+         }
+         vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V_t[i];
+       }
+      } else {
+         vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
+      }
+    }
+  }
+  Eigen::setNbThreads(old_eigen_threads);
+}
 void OperatorFactory::build_vdaggerv(const std::string &filename, const int config, const GlobalData & gd) {
   const ssize_t dim_row = 3 * Lx * Ly * Lz;
   const int id_unity = operator_lookuptable.index_of_unity;
@@ -228,7 +291,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       (boost::format("/%s/cnfg%04d/") % path_vdaggerv % config).str();
 
   // check if directory exists
-  if (handling_vdaggerv == "write" && access(full_path.c_str(), 0) != 0) {
+  if (( (handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" ) )&& access(full_path.c_str(), 0) != 0) {
     std::cout << "\tdirectory " << full_path.c_str()
               << " does not exist and will be created";
     boost::filesystem::path dir(full_path.c_str());
@@ -304,64 +367,40 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
         // we call with verbose=0 because we want to run verification in the more efficient mode
         // down below, when 'nb_vdaggerv_eigen_threads' are in use to perform VdV.trace and VdV.sum
         V_t.read_eigen_vector(inter_name.c_str(), i, 0, false);
+
+        if (gd.nb_vdaggerv_eigen_threads == 1) {
+          kernel_compute_vdaggerv( dim_row,
+                                   nb_ev,
+                                   config,
+                                   t_start,
+                                   V_t,
+                                   momentum,
+                                   gd,
+                                   operator_lookuptable,
+                                   vdaggerv,
+                                   *gauge );
+        }
+
       }
       ev_io_watch.stop();
     }
     ev_io_watch.print();
-   
-    // now we perform the highly parallel dense momentum projection and matrix multiplications
-    // Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
-    // For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
-    // no matter what has been set of nb_vdaggerv_eigen_threads
-    // on large lattices, however, allowing all cores to be used leads to lower total time
-    // for build_vdaggerv
 
-    Eigen::MatrixXcd W_t;
-    Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
-
-    const int old_eigen_threads = Eigen::nbThreads();
-    Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
-
-    StopWatch vdaggerv_check_watch("VdaggerV check (note: nb_vdagger_eigen_threads used)", 1);
-    vdaggerv_check_watch.start();
-    for(ssize_t i = 0; i < n_read_threads; ++i){
-      bool test_fail = V_t.test_trace_sum(i, false);
-      if(test_fail){
-        std::stringstream message;
-        message << "Eigenvector verification failed at config: " << config << " time slice: " <<
-          t_start + i << std::endl;
-        throw std::runtime_error( message.str() );
-      }
-    }
-    vdaggerv_check_watch.stop();
-    vdaggerv_check_watch.print();
-
-    // VdaggerV is independent of the gamma structure and momenta connected by
-    // sign flip are related by adjoining VdaggerV. Thus the expensive
-    // calculation must only be performed for a subset of quantum numbers given
-    // in op_VdaggerV.
-    for(ssize_t i = 0; i < n_read_threads; ++i){
-      ssize_t t = t_start + i;
-      for(const auto &op : operator_lookuptable.vdaggerv_lookup){
-        if( op.id != id_unity ){
-          if(!op.displacement.empty()){
-            W_t.noalias() = displace_eigenvectors(V_t[i], *gauge, t, op.displacement, 1);
-            vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
-          } else {
-            // depending on the compiler and how well threading is done, this simple
-            // operation can be up to a factor 100 slower with dynamic scheduling
-            # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
-            for(ssize_t x = 0; x < dim_row; ++x){
-              mom(x) = momentum[op.id][x / 3];
-            }
-            vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V_t[i];
-          }
-        } else {
-          vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
+    if (gd.nb_vdaggerv_eigen_threads != 1) {
+          kernel_compute_vdaggerv( dim_row,
+                                   nb_ev,
+                                   config,
+                                   t_start,
+                                   V_t,
+                                   momentum,
+                                   gd,
+                                   operator_lookuptable,
+                                   vdaggerv,
+                                   *gauge );
         }
-      }
-    }
-    Eigen::setNbThreads(old_eigen_threads);
+
+   
+
     
     t_start += n_read_threads;
 
@@ -371,7 +410,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   
 
   // perform thread-parallel I/O to write out VdaggerV
-  if( handling_vdaggerv == "write" ){
+  if( ( handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" )){
     StopWatch vdaggerv_io_watch("VdaggerV thread-parallel writing",
                                 gd.nb_evec_read_threads);
     #pragma omp parallel num_threads(gd.nb_evec_read_threads)
@@ -577,6 +616,7 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
  *                  handling_vdaggerv is "build" or "write"
  *
  *  Behavior of this function depends on handling_vdaggerv flag.
+ *  - "only_vdaggerv_compute_save" Only the vdaggerv objects are construncted and written out
  *  - "read" | "liuming" The operators are read in the corresponding format.
  *  - "build"            The operators are constructed from the eigenvectors
  *  - "write"            The operators are constructed and additionaly written
@@ -587,7 +627,7 @@ void OperatorFactory::create_operators(const std::string &filename,
                                        const int config,
                                        const GlobalData & gd) {
   is_vdaggerv_set = false;
-  if (handling_vdaggerv == "write" || handling_vdaggerv == "build")
+  if (handling_vdaggerv == "write" || handling_vdaggerv == "build" || handling_vdaggerv == "only_vdaggerv_compute_save")
     build_vdaggerv(filename, config, gd);
   else if (handling_vdaggerv == "read")
     read_vdaggerv(config);

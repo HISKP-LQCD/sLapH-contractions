@@ -78,30 +78,33 @@ int main(int ac, char *av[]) {
     std::cout << "\nprocessing configuration: " << config_i << "\n\n" << std::endl;
     // changes all paths and names which depend on the configuration
     build_IO_names(gd, config_i);
-
-    // read perambulators
-    perambulators.read_perambulators_from_separate_files(
-        gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
-    // read random vectors
-    randomvectors.read_random_vectors_from_separate_files(
-        gd.rnd_vec_construct.filename_list);
-    // read eigenvectors and build operators
+    if (gd.handling_vdaggerv != "only_vdaggerv_compute_save"){
+      // read perambulators
+      perambulators.read_perambulators_from_separate_files(
+          gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
+      // read random vectors
+      randomvectors.read_random_vectors_from_separate_files(
+          gd.rnd_vec_construct.filename_list);
+    }
+      // read eigenvectors and build operators
     meson_operators.create_operators(gd.filename_eigenvectors, randomvectors, config_i, gd);
-
+    
     // doing all the contractions
-    contract(gd.Lt,
-             (gd.quarks)[0].number_of_dilution_T,
-             (gd.quarks)[0].number_of_dilution_E,
-             gd.number_of_eigen_vec,
-             meson_operators,
-             randomvectors,
-             perambulators,
-             gd.operator_lookuptable,
-             gd.trace_indices_map,
-             gd.correlator_requests_map,
-             gd.quarkline_lookuptable,
-             gd.path_output,
-             gd.filename_ending_correlators,
-             gd.single_time_slice_combination);
+    if (gd.handling_vdaggerv != "only_vdaggerv_compute_save"){
+      contract(gd.Lt,
+              (gd.quarks)[0].number_of_dilution_T,
+              (gd.quarks)[0].number_of_dilution_E,
+              gd.number_of_eigen_vec,
+              meson_operators,
+              randomvectors,
+              perambulators,
+              gd.operator_lookuptable,
+              gd.trace_indices_map,
+              gd.correlator_requests_map,
+              gd.quarkline_lookuptable,
+              gd.path_output,
+              gd.filename_ending_correlators,
+              gd.single_time_slice_combination);
+    }
   }
 }

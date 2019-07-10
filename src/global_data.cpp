@@ -153,10 +153,12 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
       po::value<std::string>(&gd.name_eigenvectors)->default_value("eigenvector"),
       "name of eigenvectors\nThe full name is internally created to:\n"
       "\"name_of_eigenvectors.configuration.time_slice\"");
+
   config.add_options()(
       "handling_vdaggerv",
       po::value<std::string>(&gd.handling_vdaggerv)->default_value("build"),
       "The options are:\n"
+      "only_vdaggerv_compute_save: Only VdaggerV is build for all operators and saved on disk\n"
       "build: VdaggerV is build for all operators but not written to disk\n"
       "write: VdaggerV is build for all operators and written to disk\n"
       "read: VdaggerV was previously constructed and is read from disk");
