@@ -40,7 +40,7 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
   const std::complex<double> trace = VdV.trace();
   const std::complex<double> sum = VdV.sum();
   // we allow for some deviation
-  if( abs( trace.real() - V[t].cols() ) > 2*V[t].cols()*DBL_EPSILON ){
+  if( abs( trace.real() - V[t].cols() ) > 32*V[t].cols()*DBL_EPSILON ){
     fail = true;
     std::stringstream message;
     // when printing the error, make sure to print exactly what is above in the if statement
@@ -53,7 +53,7 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
       std::cout << message.str() << std::endl;
     }
   }
-  if( abs( sum.real() - V[t].cols() ) > 2*V[t].cols()*DBL_EPSILON ){
+  if( abs( sum.real() - V[t].cols() ) > 32*V[t].cols()*DBL_EPSILON ){
     fail = true;
     std::stringstream message;
     message << "Sum of VdaggerV elements: " << sum << " with real part: " << 
