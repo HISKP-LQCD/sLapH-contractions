@@ -3,6 +3,7 @@
 #include <boost/format.hpp>
 #include <sstream>
 #include <cfloat>
+#include <iomanip>
 
 void EigenVector::write_eigen_vector(const std::string &filename,
                                      const ssize_t t,
@@ -34,31 +35,31 @@ void EigenVector::write_eigen_vector(const std::string &filename,
   }
 }
 
-bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) {
+bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) const {
   bool fail = false;
   Eigen::MatrixXcd VdV = V[t].adjoint() * V[t];
   const std::complex<double> trace = VdV.trace();
   const std::complex<double> sum = VdV.sum();
   // we allow for some deviation
-  if( abs( trace.real() - V[t].cols() ) > 32*V[t].cols()*DBL_EPSILON ){
+  if( abs( trace.real() - (double)V[t].cols() ) > (double)V[t].cols()*DBL_EPSILON ){
     fail = true;
     std::stringstream message;
     // when printing the error, make sure to print exactly what is above in the if statement
-    message << "Trace of VdaggerV: " << trace << " with real part: " << (ssize_t)(trace.real()) <<
-      " is not correct, should be: " << (ssize_t)(V[t].cols());
-    printf("Real part of the trace %20.20e and its deviation \t%20.20e\n", trace.real(),abs( trace.real() - V[t].cols() ) );
+    message << "Trace of VdaggerV: " << std::setprecision(20) <<
+      trace << " deviates from expectation by " << std::setprecision(20) <<
+      abs( trace.real() - (double)V[t].cols() ) << std::endl;
     if(do_throw){
       throw std::runtime_error( message.str() );
     } else {
       std::cout << message.str() << std::endl;
     }
   }
-  if( abs( sum.real() - V[t].cols() ) > 32*V[t].cols()*DBL_EPSILON ){
+  if( abs( sum.real() - (double)V[t].cols() ) > (double)V[t].cols()*DBL_EPSILON ){
     fail = true;
     std::stringstream message;
-    message << "Sum of VdaggerV elements: " << sum << " with real part: " << 
-      (ssize_t)(sum.real()) << " is not correct, should be: " << (size_t)(V[t].cols());
-    printf("Real part of the sum is %20.20e and its deviation \t%20.20e\n", sum.real(),abs( sum.real() - V[t].cols() ) );
+    message << "Sum of VdaggerV elements: " << std::setprecision(20) <<
+      trace << " deviates from expectation by " << std::setprecision(20) <<
+      abs( sum.real() - (double)V[t].cols() ) << std::endl;
 
     if(do_throw){
       throw std::runtime_error( message.str() );

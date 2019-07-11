@@ -219,48 +219,42 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
   std::cout << "\tMeson operators initialised" << std::endl;
 }
 
-
-// now we perform the highly parallel dense momentum projection and matrix multiplications
-// Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
-// For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
-// no matter what has been set of nb_vdaggerv_eigen_threads
-// on large lattices, however, allowing all cores to be used leads to lower total time
-// for build_vdaggerv
-
 static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const ssize_t nb_ev,
                                            const int config, 
-                                           const int t_start,
-                                           EigenVector &V_t, 
+                                           const int phase_t_start_idx,
+                                           const int phase_nb_t_slices,
+                                           const EigenVector &V_t, 
                                            const array_cd_d2 &momentum, 
                                            const GlobalData & gd, 
                                            const OperatorLookup &operator_lookuptable, 
-                                           array_Xcd_d2_eigen vdaggerv, 
-                                           GaugeField const &gauge ){
+                                           array_Xcd_d2_eigen & vdaggerv, 
+                                           const GaugeField &gauge ){
 
   Eigen::MatrixXcd W_t;
   Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
 
   const int id_unity = operator_lookuptable.index_of_unity;
+  
   const int old_eigen_threads = Eigen::nbThreads();
-  ssize_t n_read_threads = gd.nb_evec_read_threads;
   Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
 
   StopWatch vdaggerv_check_watch("VdaggerV check (note: nb_vdagger_eigen_threads used)", 1);
   vdaggerv_check_watch.start();
-  for(ssize_t i = 0; i < n_read_threads; ++i){
+  for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
     bool test_fail = V_t.test_trace_sum(i, false);
     if(test_fail){
       std::stringstream message;
       message << "Eigenvector verification failed at config: " << config << " time slice: " <<
-         t_start + i << std::endl;
+         phase_t_start_idx + i << std::endl;
       throw std::runtime_error( message.str() );
     }
   }
   vdaggerv_check_watch.stop();
   vdaggerv_check_watch.print();
-  for(ssize_t i = 0; i < n_read_threads; ++i){
-    ssize_t t = t_start + i;
+
+  for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
+    const ssize_t t = phase_t_start_idx + i;
     for(const auto &op : operator_lookuptable.vdaggerv_lookup){
       if( op.id != id_unity ){
        if(!op.displacement.empty()){
@@ -282,6 +276,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
   }
   Eigen::setNbThreads(old_eigen_threads);
 }
+
 void OperatorFactory::build_vdaggerv(const std::string &filename, const int config, const GlobalData & gd) {
   const ssize_t dim_row = 3 * Lx * Ly * Lz;
   const int id_unity = operator_lookuptable.index_of_unity;
@@ -339,7 +334,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   const ssize_t nphases = (ssize_t)ceil((double)Lt / gd.nb_evec_read_threads);
  
   // starting time slice 
-  ssize_t t_start = 0;
+  ssize_t phase_t_start_idx = 0;
  
   // loop over the phases
   StopWatch phase_watch("Outer loop phase", 1);
@@ -347,38 +342,42 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
     phase_watch.start();
     std::cout << "Phase " << iphase+1 << " of " << nphases << std::endl;
 
-    ssize_t t_end = t_start + gd.nb_evec_read_threads;
-    ssize_t n_read_threads = gd.nb_evec_read_threads;
+    ssize_t t_end = phase_t_start_idx + gd.nb_evec_read_threads;
+    ssize_t phase_nb_t_slices = gd.nb_evec_read_threads;
     if( t_end >= Lt ){
-      n_read_threads = Lt - t_start;
+      phase_nb_t_slices = Lt - phase_t_start_idx;
       t_end = Lt;
     }
 
-    StopWatch ev_io_watch("Threaded Eigenvector I/O", n_read_threads);
+    StopWatch ev_io_watch("Threaded Eigenvector I/O", phase_nb_t_slices);
     // perform thread-parallel I/O with the thread number chosen so as to not exceed node
     // memory limits
-    #pragma omp parallel num_threads(n_read_threads)
+    #pragma omp parallel num_threads(phase_nb_t_slices)
     {
       ev_io_watch.start();
       #pragma omp for schedule(static)
-      for(ssize_t i = 0; i < n_read_threads; ++i){
-        ssize_t t = t_start + i;
+      for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
+        ssize_t t = phase_t_start_idx + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
         // we call with verbose=0 because we want to run verification in the more efficient mode
         // down below, when 'nb_vdaggerv_eigen_threads' are in use to perform VdV.trace and VdV.sum
         V_t.read_eigen_vector(inter_name.c_str(), i, 0, false);
 
+        // for small lattices, it is most efficient to trivially parallelize the
+        // computation of vdaggerv, running with 'nb_vdaggerv_eigen_threads == 1'
+        // and as many reading threads as is efficient
         if (gd.nb_vdaggerv_eigen_threads == 1) {
-          kernel_compute_vdaggerv( dim_row,
-                                   nb_ev,
-                                   config,
-                                   t_start,
-                                   V_t,
-                                   momentum,
-                                   gd,
-                                   operator_lookuptable,
-                                   vdaggerv,
-                                   *gauge );
+          kernel_compute_vdaggerv(dim_row,
+                                  nb_ev,
+                                  config,
+                                  phase_t_start_idx,
+                                  phase_nb_t_slices,
+                                  V_t,
+                                  momentum,
+                                  gd,
+                                  operator_lookuptable,
+                                  vdaggerv,
+                                  *gauge);
         }
 
       }
@@ -387,22 +386,28 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
     ev_io_watch.print();
 
     if (gd.nb_vdaggerv_eigen_threads != 1) {
-          kernel_compute_vdaggerv( dim_row,
-                                   nb_ev,
-                                   config,
-                                   t_start,
-                                   V_t,
-                                   momentum,
-                                   gd,
-                                   operator_lookuptable,
-                                   vdaggerv,
-                                   *gauge );
-        }
-
-   
-
+      // for larget lattices, one can avoid exceeding memory limits by doing threaded I/O above
+      // with 'nb_evec_read_threads' while doing the dense linear algebra with 'nb_vdaggerv_eigen_threads'
+      // down here, probably reasonably efficiently.
+      // Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
+      // For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
+      // no matter what has been set of nb_vdaggerv_eigen_threads
+      // On large lattices, however, allowing all cores to be used leads to lower total time
+      // for build_vdaggerv
+      kernel_compute_vdaggerv(dim_row,
+                              nb_ev,
+                              config,
+                              phase_t_start_idx,
+                              phase_nb_t_slices,
+                              V_t,
+                              momentum,
+                              gd,
+                              operator_lookuptable,
+                              vdaggerv,
+                              *gauge );
+    }
     
-    t_start += n_read_threads;
+    phase_t_start_idx += phase_nb_t_slices;
 
     phase_watch.stop();
     phase_watch.print();
