@@ -235,7 +235,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const array_cd_d2 &momentum, 
                                            const GlobalData & gd, 
                                            const OperatorLookup &operator_lookuptable, 
-                                           array_Xcd_d2_eigen vdaggerv, 
+                                           array_Xcd_d2_eigen & vdaggerv, 
                                            GaugeField const &gauge ){
 
   Eigen::MatrixXcd W_t;
