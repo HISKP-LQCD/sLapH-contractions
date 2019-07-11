@@ -222,8 +222,9 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
 static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const ssize_t nb_ev,
                                            const int config, 
-                                           const int phase_t_start_idx,
-                                           const int phase_nb_t_slices,
+                                           const ssize_t kernel_t_start_idx,
+                                           const ssize_t kernel_nb_t_slices,
+                                           const ssize_t V_t_idx_offset,
                                            const EigenVector &V_t, 
                                            const array_cd_d2 &momentum, 
                                            const GlobalData & gd, 
@@ -239,27 +240,27 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
   const int old_eigen_threads = Eigen::nbThreads();
   Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
 
-  StopWatch vdaggerv_check_watch("VdaggerV check (note: nb_vdagger_eigen_threads used)", 1);
-  vdaggerv_check_watch.start();
-  for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
-    bool test_fail = V_t.test_trace_sum(i, false);
+  for(ssize_t i = 0; i < kernel_nb_t_slices; ++i){
+    // when the kernel is called inside a parallel region, only a single
+    // iteration of this loop is running with a particular offset passed
+    const ssize_t V_t_idx = i + V_t_idx_offset;
+    bool test_fail = V_t.test_trace_sum(V_t_idx, false);
     if(test_fail){
       std::stringstream message;
       message << "Eigenvector verification failed at config: " << config << " time slice: " <<
-         phase_t_start_idx + i << std::endl;
+         kernel_t_start_idx + V_t_idx << std::endl;
       throw std::runtime_error( message.str() );
     }
   }
-  vdaggerv_check_watch.stop();
-  vdaggerv_check_watch.print();
 
-  for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
-    const ssize_t t = phase_t_start_idx + i;
+  for(ssize_t i = 0; i < kernel_nb_t_slices; ++i){
+    const ssize_t V_t_idx = i + V_t_idx_offset;
+    const ssize_t t = kernel_t_start_idx + V_t_idx;
     for(const auto &op : operator_lookuptable.vdaggerv_lookup){
       if( op.id != id_unity ){
        if(!op.displacement.empty()){
-         W_t.noalias() = displace_eigenvectors(V_t[i], gauge, t, op.displacement, 1);
-         vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
+         W_t.noalias() = displace_eigenvectors(V_t[V_t_idx], gauge, t, op.displacement, 1);
+         vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * W_t;
        } else {
          // depending on the compiler and how well threading is done, this simple
          // operation can be up to a factor 100 slower with dynamic scheduling
@@ -267,7 +268,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
          for(ssize_t x = 0; x < dim_row; ++x){
            mom(x) = momentum[op.id][x / 3];
          }
-         vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V_t[i];
+         vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * mom.asDiagonal() * V_t[V_t_idx];
        }
       } else {
          vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
@@ -286,7 +287,8 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       (boost::format("/%s/cnfg%04d/") % path_vdaggerv % config).str();
 
   // check if directory exists
-  if (( (handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" ) )&& access(full_path.c_str(), 0) != 0) {
+  if (( (handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" ) ) && 
+      access(full_path.c_str(), 0) != 0) {
     std::cout << "\tdirectory " << full_path.c_str()
               << " does not exist and will be created";
     boost::filesystem::path dir(full_path.c_str());
@@ -357,7 +359,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       ev_io_watch.start();
       #pragma omp for schedule(static)
       for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
-        ssize_t t = phase_t_start_idx + i;
+        const ssize_t t = phase_t_start_idx + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
         // we call with verbose=0 because we want to run verification in the more efficient mode
         // down below, when 'nb_vdaggerv_eigen_threads' are in use to perform VdV.trace and VdV.sum
@@ -371,7 +373,8 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
                                   nb_ev,
                                   config,
                                   phase_t_start_idx,
-                                  phase_nb_t_slices,
+                                  1 /* kernel_nb_t_slices */,
+                                  i /* V_t_idx_offset */,
                                   V_t,
                                   momentum,
                                   gd,
@@ -398,7 +401,8 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
                               nb_ev,
                               config,
                               phase_t_start_idx,
-                              phase_nb_t_slices,
+                              phase_nb_t_slices /* kernel_n_t_slices */,
+                              0 /* V_t_idx_offset */,
                               V_t,
                               momentum,
                               gd,
