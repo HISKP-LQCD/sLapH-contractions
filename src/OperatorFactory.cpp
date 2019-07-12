@@ -253,6 +253,17 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
   vdaggerv_check_watch.stop();
   vdaggerv_check_watch.print();
 
+  //Look up table for the off-diagonal part
+  //in order to efficiently parallelize te
+  //loop over the off diagonal entries of vdaggerv
+  std::vector<int> looplookuptable;
+  for (ssize_t ncol1=0; ncol1<(V_t[0]).cols(); ++ncol1) {
+    for (ssize_t ncol2=ncol1+1; ncol2<(V_t[0]).cols(); ++ncol2) {
+      looplookuptable.push_back(ncol2+(V_t[0]).cols()*ncol1);
+    }
+  }
+
+
   for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
     const ssize_t t = phase_t_start_idx + i;
     for(const auto &op : operator_lookuptable.vdaggerv_lookup){
@@ -260,17 +271,54 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
        if(!op.displacement.empty()){
          W_t.noalias() = displace_eigenvectors(V_t[i], gauge, t, op.displacement, 1);
          vdaggerv[op.id][t] = V_t[i].adjoint() * W_t;
-       } else {
-         // depending on the compiler and how well threading is done, this simple
-         // operation can be up to a factor 100 slower with dynamic scheduling
-         # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
-         for(ssize_t x = 0; x < dim_row; ++x){
-           mom(x) = momentum[op.id][x / 3];
+       } 
+      }
+      if ((op.id == id_unity) && (op.displacement.empty())){
+       vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
+      }
+    }
+    //Computation of Vdaggerv: the main idea is 
+    //     (a) reduce the size of dense matrix multiplication by a factor of three
+    //     (b) parallelize not in the x spatial coordinate, but in the index
+    //         of vdaggerv itself
+    //     (c) taking advantage of the fact that vdaggerv is a symmetric matrix
+    //Computing the diagonal part of VdaggerV
+    # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
+    for(ssize_t ncol = 0; ncol < V_t[i].cols() ; ++ncol){
+      //Trick: reshape the eigenvectors in order to take the scalar products in color space
+      Map<MatrixXd> Reshaped((V_t[i]).col(ncol).data(), 3, ((V_t[i]).col(ncol)).size()/3);
+      //Taking the scalar products
+      MatrixXd xspaceresults=Reshaped.colwise().squaredNorm();
+      //Now we do the multiplication for each possible momentum
+      for(const auto &op : operator_lookuptable.vdaggerv_lookup){
+        if( op.id != id_unity ){
+         if(op.displacement.empty()){
+          vdaggerv[op.id][t](ncol,ncol)=xspaceresults.row(0).dot(momentum[op.id]);
          }
-         vdaggerv[op.id][t] = V_t[i].adjoint() * mom.asDiagonal() * V_t[i];
-       }
-      } else {
-         vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
+        }
+      }
+    }
+    //Computing the off-diagonal part of VdaggerV
+    # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
+    for (ssize_t nindex=0; nindex<(vnew.cols()*vnew.cols()-vnew.cols())/2;++nindex){
+      ssize_t ncol=looplookuptable[nindex]/vnew.cols();
+      ssize_t nrow=looplookuptable[nindex]%vnew.cols();
+      //We apply the same trick as for the diagonal elements: reshape
+      //the eigenvector and then compute elementwise product of the two
+      //matrix
+      Map<MatrixXd> Reshaped1(vnew.col(ncol).data(), 3, (vnew.col(ncol)).size()/3);
+      Map<MatrixXd> Reshaped2(vnew.col(nrow).data(), 3, (vnew.col(nrow)).size()/3);
+      //Taking the elementwise product
+      MatrixXd xspaceresults = (Reshaped2.array().conjugate()*Reshaped1.array());
+      //Here we do not take the SquaredNorm, because the multiplication was
+      //already done
+      for(const auto &op : operator_lookuptable.vdaggerv_lookup){
+        if( op.id != id_unity ){
+         if(op.displacement.empty()){
+          vdaggerv[op.id][t](ncol,nrow)= xspaceresults.colwise().sum().dot(momentum[op.id]);
+          vdaggerv[op.id][t](nrow,ncol)= vdaggerv[op.id][t](ncol, nrow);
+         }
+        }
       }
     }
   }
