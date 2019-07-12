@@ -4,9 +4,12 @@
 
 #include <boost/format.hpp>
 
+#include <Eigen/Dense>
 #include <iomanip>
 #include <cmath>
 #include <sstream>
+
+using namespace Eigen;
 
 static ssize_t map_char_to_dir(const char dir) {
   ssize_t integer_dir;
@@ -232,7 +235,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const GaugeField &gauge ){
 
   Eigen::MatrixXcd W_t;
-  Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
+  Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row/3);
 
   const int id_unity = operator_lookuptable.index_of_unity;
   
@@ -286,36 +289,47 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
     # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
     for(ssize_t ncol = 0; ncol < V_t[i].cols() ; ++ncol){
       //Trick: reshape the eigenvectors in order to take the scalar products in color space
-      Map<MatrixXd> Reshaped((V_t[i]).col(ncol).data(), 3, ((V_t[i]).col(ncol)).size()/3);
+      MatrixXcd vnew=V_t[i];//I would like to avoid this copy, however
+      //Eigen::Map<Eigen::MatrixXcd> Reshaped((V_t)[i].col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
+      //does not work
+      Eigen::Map<Eigen::MatrixXcd> Reshaped(vnew.col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
       //Taking the scalar products
-      MatrixXd xspaceresults=Reshaped.colwise().squaredNorm();
+      MatrixXcd xspaceresults=Reshaped.colwise().squaredNorm();
       //Now we do the multiplication for each possible momentum
       for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
          if(op.displacement.empty()){
-          vdaggerv[op.id][t](ncol,ncol)=xspaceresults.row(0).dot(momentum[op.id]);
+          for (ssize_t x = 0; x < dim_row/3; ++x) {
+            mom(x) = momentum[op.id][x];
+          }
+          vdaggerv[op.id][t](ncol,ncol)=xspaceresults.row(0).dot(mom);
          }
         }
       }
     }
     //Computing the off-diagonal part of VdaggerV
     # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
-    for (ssize_t nindex=0; nindex<(vnew.cols()*vnew.cols()-vnew.cols())/2;++nindex){
-      ssize_t ncol=looplookuptable[nindex]/vnew.cols();
-      ssize_t nrow=looplookuptable[nindex]%vnew.cols();
+    for (ssize_t nindex=0; nindex<(V_t[i].cols()*V_t[i].cols()-V_t[i].cols())/2;++nindex){
+      ssize_t ncol=looplookuptable[nindex]/V_t[i].cols();
+      ssize_t nrow=looplookuptable[nindex]%V_t[i].cols();
       //We apply the same trick as for the diagonal elements: reshape
       //the eigenvector and then compute elementwise product of the two
       //matrix
-      Map<MatrixXd> Reshaped1(vnew.col(ncol).data(), 3, (vnew.col(ncol)).size()/3);
-      Map<MatrixXd> Reshaped2(vnew.col(nrow).data(), 3, (vnew.col(nrow)).size()/3);
+      MatrixXcd vnew=V_t[i];
+      Eigen::Map<Eigen::MatrixXcd> Reshaped1(vnew.col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
+      Eigen::Map<Eigen::MatrixXcd> Reshaped2(vnew.col(nrow).data(), 3, (V_t[i].col(nrow)).size()/3);
       //Taking the elementwise product
-      MatrixXd xspaceresults = (Reshaped2.array().conjugate()*Reshaped1.array());
+      MatrixXcd xspaceresults = (Reshaped2.array().conjugate()*Reshaped1.array());
+      //MatrixXcd xspaceresults = Reshaped2.cwiseProduct(Reshaped1);
       //Here we do not take the SquaredNorm, because the multiplication was
-      //already done
+      //already done 
       for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
          if(op.displacement.empty()){
-          vdaggerv[op.id][t](ncol,nrow)= xspaceresults.colwise().sum().dot(momentum[op.id]);
+          for (ssize_t x = 0; x < dim_row/3; ++x) {
+            mom(x) = momentum[op.id][x];
+          }
+          vdaggerv[op.id][t](ncol,nrow)= xspaceresults.colwise().sum().dot(mom);
           vdaggerv[op.id][t](nrow,ncol)= vdaggerv[op.id][t](ncol, nrow);
          }
         }
