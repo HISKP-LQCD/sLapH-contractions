@@ -286,15 +286,16 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
     //         of vdaggerv itself
     //     (c) taking advantage of the fact that vdaggerv is a symmetric matrix
     //Computing the diagonal part of VdaggerV
+
+    MatrixXcd vnew=V_t[i];//I would like to avoid this copy, however
+    //Eigen::Map<Eigen::MatrixXcd> Reshaped((V_t)[i].col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
+    //      //does not work
     # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
     for(ssize_t ncol = 0; ncol < V_t[i].cols() ; ++ncol){
       //Trick: reshape the eigenvectors in order to take the scalar products in color space
-      MatrixXcd vnew=V_t[i];//I would like to avoid this copy, however
-      //Eigen::Map<Eigen::MatrixXcd> Reshaped((V_t)[i].col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
-      //does not work
       Eigen::Map<Eigen::MatrixXcd> Reshaped(vnew.col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
       //Taking the scalar products
-      MatrixXcd xspaceresults=Reshaped.colwise().squaredNorm();
+      MatrixXd xspaceresults=Reshaped.colwise().squaredNorm();
       //Now we do the multiplication for each possible momentum
       for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
@@ -315,7 +316,6 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
       //We apply the same trick as for the diagonal elements: reshape
       //the eigenvector and then compute elementwise product of the two
       //matrix
-      MatrixXcd vnew=V_t[i];
       Eigen::Map<Eigen::MatrixXcd> Reshaped1(vnew.col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
       Eigen::Map<Eigen::MatrixXcd> Reshaped2(vnew.col(nrow).data(), 3, (V_t[i].col(nrow)).size()/3);
       //Taking the elementwise product
