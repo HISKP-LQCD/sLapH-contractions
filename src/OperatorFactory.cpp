@@ -334,8 +334,9 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
           for (ssize_t x = 0; x < dim_row/3; ++x) {
             mom(x) = momentum[op.id][x];
           }
+          //Perhaps here we could store the results and then reuse it
           vdaggerv[op.id][t](ncol,nrow)= xspaceresults.colwise().sum().dot(mom);
-          vdaggerv[op.id][t](nrow,ncol)= vdaggerv[op.id][t](ncol, nrow);
+          vdaggerv[op.id][t](nrow,ncol)= xspaceresults.colwise().sum().conjugate().dot(mom);
          }
         }
       }
