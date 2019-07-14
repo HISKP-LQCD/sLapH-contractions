@@ -235,7 +235,6 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const GaugeField &gauge ){
 
   Eigen::MatrixXcd W_t;
-  Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row/3);
 
   const int id_unity = operator_lookuptable.index_of_unity;
   
@@ -290,6 +289,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
     MatrixXcd vnew=V_t[i];//I would like to avoid this copy, however
     //Eigen::Map<Eigen::MatrixXcd> Reshaped((V_t)[i].col(ncol).data(), 3, (V_t[i].col(ncol)).size()/3);
     //      //does not work
+
     # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
     for(ssize_t ncol = 0; ncol < V_t[i].cols() ; ++ncol){
       //Trick: reshape the eigenvectors in order to take the scalar products in color space
@@ -297,6 +297,8 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
       //Taking the scalar products
       MatrixXd xspaceresults=Reshaped.colwise().squaredNorm();
       //Now we do the multiplication for each possible momentum
+      //This should actually be avoided
+      Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row/3);
       for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
          if(op.displacement.empty()){
@@ -307,6 +309,7 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
          }
         }
       }
+
     }
     //Computing the off-diagonal part of VdaggerV
     # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
@@ -323,6 +326,8 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
       //MatrixXcd xspaceresults = Reshaped2.cwiseProduct(Reshaped1);
       //Here we do not take the SquaredNorm, because the multiplication was
       //already done 
+      //This should be avoided
+      Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row/3);
       for(const auto &op : operator_lookuptable.vdaggerv_lookup){
         if( op.id != id_unity ){
          if(op.displacement.empty()){
