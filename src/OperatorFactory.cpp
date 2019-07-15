@@ -541,7 +541,7 @@ void OperatorFactory::read_vdaggerv(const int config) {
           // creating full filename for vdaggerv and reading them in
           std::string dummy = full_path + ".p_" + std::to_string(op.momentum[0]) +
                               std::to_string(op.momentum[1]) +
-                              std::to_string(op.momentum[2]);
+                              std::to_string(op.momentum[2]) + ".d_" + to_string(op.displacement);
 
           auto const infile = (boost::format("%s_.t_%03d") % dummy % t).str();
 
