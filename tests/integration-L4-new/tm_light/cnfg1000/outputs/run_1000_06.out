@@ -1,0 +1,342 @@
+Mon 27 May 17:00:58 CEST 2019
+omp_num_threads = 1 
+L =4
+T =4
+Enable IO checks (and readback in case of Lemon IO)
+Debug level = 2
+Initial store counter set to 1000
+Nmeas= 1 
+2 kappa mu=0.177 
+kappa=0.177 
+X0 for boundary cond. in t-direction set to 1.000000e+00 times pi
+Gauge Configuration input filename set to /hiskp4/gauges/test/test4x4x4x4/conf
+Use even/odd preconditioning
+Using relative precision
+Not running in 'subprocess' mode
+Not running in 'lowmem' mode
+Using Volume Sources
+Don't read inversion source from file
+Inverting for 1 samples
+RanluxdLevel set to 2 
+Use a different seed for each process in ranlxd!
+initialising operator with type CLOVER (4) line 29
+operator has id 0
+  2KappaMu set to 0.017700 line 30 operator 0
+  Set c_sw set to 1.000000 in line 31 for operator 0
+  kappa set to 0.177000 line 32 operator 0
+  Solver set to CG line 33 operator 0
+  SolverPrecision set to 0.000000 line 34 operator 0
+  EigCGtolsq set to 0.000000 line 34 operator 0
+  MaxSolverIterations set to 25000 line 35 operator 0
+  Use even/odd preconditioning line 36 operator 0
+operator 0 parsed line 37
+
+# Instructing OpenMP to use 1 threads.
+# Creating the following cartesian grid for a 4 dimensional parallelisation:
+# 1 x 1 x 1 x 1
+# Process 0 of 1 on lnode06: cart_id 0, coordinates (0 0 0 0)
+This is the tmLQCD lib-wrapper code for twisted mass Wilson QCD
+
+Version 5.2.0, commit c21ed9222ac9fec7495b2f0153c35482e71a7c22
+# The code is compiled with -D_GAUGE_COPY
+# The code is compiled with -D_USE_HALFSPINOR
+# the code is compiled for non-blocking MPI calls (spinor and gauge)
+# the code is compiled with MPI IO / Lemon
+# the code is compiled with openMP support
+# Non-Schroedinger (anti-periodic, periodic or twisted) boundary conditions are used
+# The lattice size is 4 x 4 x 4 x 4
+# The local lattice size is 4 x 4 x 4 x 4
+# Even/odd preconditioning is used
+# beta = 6.000000000000 , kappa= 0.177000000000
+# boundary conditions for fermion fields (t,x,y,z) * pi: 1.000000 0.000000 0.000000 0.000000 
+Trying input file LapH_1000_06.in
+omp_num_threads = 1
+quda_direct = 0
+config = 1000
+total number of configs = 1
+distance betweeen configs = 4
+Ls = 4
+Lt = 4
+nb_ev = 16
+nb_rnd = 1
+seed for rnd_vec 0 = 54321
+verbose = 0
+endianness = little
+use_zgemm = 0
+quarktype = u
+inversion_source_type_t = B
+inversion_source_number_t = 2
+inversion_source_type_v = I
+inversion_source_number_v = 2
+inversion_source_type_d = F
+inversion_source_number_d = 4
+nb_of_sinks = 1
+nb_of_sink_rnd_vec = 1
+seed = 0
+inversion_sink_type_t = F
+inversion_sink_number_t = 4
+inversion_sink_type_s = F
+inversion_sink_number_s = 4
+inversion_sink_type_d = F
+inversion_sink_number_d = 4
+inversion_sink_type_c = F
+inversion_sink_number_c = 3
+outpath = ./
+inpath_ev = /hiskp4/eigensystems/test/test4x4x4x4/nev_16
+processing config: 1000
+
+#
+# Trying to read gauge field from file /hiskp4/gauges/test/test4x4x4x4/conf.1000.
+# Constructing LEMON reader for file /hiskp4/gauges/test/test4x4x4x4/conf.1000 ...
+found header xlf-info, will now read the message
+found header ildg-format, will now read the message
+found header ildg-binary-data, will now read the message
+# Time spent reading 147 kb was 1.75 ms.
+# Reading speed: 84.2 Mb/s (84.2 Mb/s per MPI process).
+found header scidac-checksum, will now read the message
+# Scidac checksums for gaugefield /hiskp4/gauges/test/test4x4x4x4/conf.1000:
+#   Calculated            : A = 0xef78dfb3 B = 0xba50a396.
+#   Read from LIME headers: A = 0xef78dfb3 B = 0xba50a396.
+# Reading ildg-format record:
+#   Precision = 64 bits (double).
+#   Lattice size: LX = 4, LY = 4, LZ = 4, LT = 4.
+# Input parameters:
+#   Precision = 64 bits (double).
+#   Lattice size: LX = 4, LY = 4, LZ = 4, LT = 4.
+# Finished reading gauge field.
+# The computed plaquette value is 6.0437910940803119e-01.
+	reading eigenvectors
+	Time for eigenvector reading: 0.0344939
+Using ranluxd at level 2
+	writing random vector
+	
+Doing inversions at: t = 0	 e = 0	 d = 0
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.5442e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.5442e-01 mflops_local: 232.4 mflops: 232.4
+# Inversion done in 69 iterations, squared residue = 8.430523e-19!
+# Inversion done in 2.87e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 0	 d = 1
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3009e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3009e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 6.684173e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 0	 d = 2
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.2999e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2999e-01 mflops_local: 257.1 mflops: 257.1
+# Inversion done in 69 iterations, squared residue = 1.002462e-18!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 0	 d = 3
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3002e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3002e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 8.025458e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 1	 d = 0
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 68 eps_sq: 1.0000e-19 t/s: 2.2677e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2677e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 68 iterations, squared residue = 9.696527e-19!
+# Inversion done in 2.50e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 1	 d = 1
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 68 eps_sq: 1.0000e-19 t/s: 2.2676e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2676e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 68 iterations, squared residue = 7.033341e-19!
+# Inversion done in 2.50e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 1	 d = 2
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.2994e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2994e-01 mflops_local: 257.1 mflops: 257.1
+# Inversion done in 69 iterations, squared residue = 4.778586e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 0	 e = 1	 d = 3
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 68 eps_sq: 1.0000e-19 t/s: 2.2682e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2682e-01 mflops_local: 256.9 mflops: 256.9
+# Inversion done in 68 iterations, squared residue = 6.321689e-19!
+# Inversion done in 2.50e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 0	 d = 0
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 68 eps_sq: 1.0000e-19 t/s: 2.2678e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2678e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 68 iterations, squared residue = 1.006816e-18!
+# Inversion done in 2.50e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 0	 d = 1
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.2993e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.2993e-01 mflops_local: 257.1 mflops: 257.1
+# Inversion done in 69 iterations, squared residue = 6.418656e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 0	 d = 2
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3003e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3003e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 5.930554e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 0	 d = 3
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3000e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3000e-01 mflops_local: 257.1 mflops: 257.1
+# Inversion done in 69 iterations, squared residue = 8.183611e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 1	 d = 0
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3025e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3025e-01 mflops_local: 256.8 mflops: 256.8
+# Inversion done in 69 iterations, squared residue = 5.534074e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 1	 d = 1
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3004e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3004e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 6.052428e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 1	 d = 2
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3004e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3004e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 6.154340e-19!
+# Inversion done in 2.53e-01 sec. 
+	
+Doing inversions at: t = 1	 e = 1	 d = 3
+
+#
+# csw = 1.000000000000, computing clover leafs
+#
+# 2 kappa mu = 0.017700000000, kappa = 0.177000000000, c_sw = 1.000000000000
+# Using even/odd preconditioning!
+# mu = 0.050000000000, kappa = 0.177000000000, csw = 1.000000000000
+# Using CG!
+# CG: iter: 69 eps_sq: 1.0000e-19 t/s: 2.3004e-01
+# CG: flopcount (for e/o tmWilson only): t/s: 2.3004e-01 mflops_local: 257.0 mflops: 257.0
+# Inversion done in 69 iterations, squared residue = 5.357966e-19!
+# Inversion done in 2.53e-01 sec. 
+HACK finalize tmLQCD
+HACK clean distillery
+id=0 about to allocate 4096 elements of complex double (0.000061 GiB)
+id=0 about to do MPI reduction on 8192 elements of data, INT_MAX=2147483647, ratio=0.000004
+	writing perambulator
+	Time for perambulator writing: 0.00633746
+Mon 27 May 17:01:13 CEST 2019
