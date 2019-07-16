@@ -1,0 +1,38 @@
+ompnumthreads = 1
+
+L=4
+T=4
+
+DisableIOChecks = no
+DebugLevel = 2
+InitialStoreCounter = NSTORE
+Measurements = 1
+2kappamu = 0.177
+kappa = 0.177
+
+BCAngleT = 1
+
+GaugeConfigInputFile = GCONFBASE
+UseEvenOdd = yes
+UseRelativePrecision = yes
+
+EnableSubProcess = no
+EnableLowmem = no
+
+SourceType = Volume
+ReadSource = no
+NoSamples = 1
+
+ranluxdlevel=2
+reproducerandomnumbers=no
+
+BeginOperator CLOVER
+  2kappamu = 0.0
+  csw = 1.0
+  kappa = 0.155
+  Solver = cg
+  SolverPrecision = 1e-19
+  MaxSolverIterations = 25000
+  useevenodd = yes
+EndOperator
+
