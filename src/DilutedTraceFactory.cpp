@@ -228,17 +228,18 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
     auto const &f4 = m4.at({c_look[5]});
     auto const &f5 = m5.at({c_look[0]});
 
-    auto const &l1 = dpf_.get({b5, t0, b1, t1}, {c_look[1], c_look[2]});
-    auto const &l2 = dpf_.get({b1, t2, b3, t3}, {c_look[3], c_look[4]});
-    auto const &l3 = dpf_.get({b3, t4, b5, t5}, {c_look[5], c_look[0]});
+    auto const &l01 = dpf_.get({b5, t0, b1, t1}, {c_look[1], c_look[2]});
+    auto const &l23 = dpf_.get({b1, t2, b3, t3}, {c_look[3], c_look[4]});
+    auto const &l45 = dpf_.get({b3, t4, b5, t5}, {c_look[5], c_look[0]});
 
-    assert(l1.size() > 0);
-    assert(l2.size() > 0);
-    assert(l3.size() > 0);
+    assert(l01.size() > 0);
+    assert(l23.size() > 0);
+    assert(l45.size() > 0);
 
-    //Tr[time_key][i] = factor_to_trace(l1 * l2, l3);
-    Tr[time_key][i] = factor_to_trace(l1 * f2 * f3 * f4, f5);
-    //Tr[time_key][i] = factor_to_trace(f0 * f1 * f2 * f3 * f4, f5);
+    // Tr[time_key][i] = factor_to_trace(f0 * f1 * f2 * f3 * f4, f5);
+    Tr[time_key][i] = factor_to_trace(l01 * f2 * f3 * f4, f5);
+    // Tr[time_key][i] = factor_to_trace(l01 * l23 * f4, f5);
+    // Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
   }
 }
 
