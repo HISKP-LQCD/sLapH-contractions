@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+set -u
+
+tmp="$(mktemp)"
+
+for path in correlators-reference/*.h5; do
+    basename="${path##*/}"
+
+    echo "$basename"
+
+    target="$path"
+    actual="correlators/$basename"
+
+    if ! h5diff -r -d 1e-12 "$target" "$actual" &> "$tmp"; then
+      cat "$tmp"
+      exit 1
+    fi
+done
+
+rm -f "$tmp"
