@@ -41,7 +41,7 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) const {
   const std::complex<double> trace = VdV.trace();
   const std::complex<double> sum = VdV.sum();
   // we allow for some deviation
-  if( abs( trace.real() - (double)V[t].cols() ) > (double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
+  if( abs( trace.real() - (double)V[t].cols() ) > (double)V[t].rows()*(double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
     fail = true;
     std::stringstream message;
     // when printing the error, make sure to print exactly what is above in the if statement
@@ -54,11 +54,11 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) const {
       std::cout << message.str() << std::endl;
     }
   }
-  if( abs( sum.real() - (double)V[t].cols() ) > (double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
+  if( abs( sum.real() - (double)V[t].cols() ) > (double)V[t].rows()*(double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
     fail = true;
     std::stringstream message;
     message << "Sum of VdaggerV elements: " << std::setprecision(20) <<
-      trace << " deviates from expectation by " << std::setprecision(20) <<
+      sum << " deviates from expectation by " << std::setprecision(20) <<
       abs( sum.real() - (double)V[t].cols() ) << std::endl;
 
     if(do_throw){
