@@ -9,9 +9,12 @@ endif()
 if(${GTEST_FOUND})
   add_executable(main-gtest
     main.cpp
-    gamma.cpp
+
+    associativity.cpp
     create_momenta.cpp
+    gamma.cpp
     KahanAccumulatorTest.cpp
+
     )
 
   target_link_libraries(main-gtest GTest::GTest lcontract)
