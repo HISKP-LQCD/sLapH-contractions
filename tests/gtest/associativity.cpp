@@ -16,7 +16,7 @@ static std::vector<DilutedFactor> make_random_diluted_factor(int seed, ssize_t s
   for (int i = 0; i < size; ++i) {
     Eigen::MatrixXcd m(2, 2);
     m << real_dist(engine), real_dist(engine), real_dist(engine), real_dist(engine);
-    DilutedFactor f{m, {1 << int_dist(engine), 1 << int_dist(engine)}, {}};
+    DilutedFactor f{m, {int_dist(engine), int_dist(engine)}, {}};
     df.push_back(f);
   }
 
@@ -36,8 +36,8 @@ static bool operator<(Eigen::MatrixXcd const &m1, Eigen::MatrixXcd const &m2) {
         return false;
       }
     }
-    return true;
   }
+    return true;
 }
 
 static bool operator<(DilutedFactor const &df1, DilutedFactor const &df2) {
@@ -68,11 +68,11 @@ static std::ostream &operator<<(std::ostream &os, DilutedFactor const &df) {
   int base = 0;
   bool output = false;
   while (used != 0) {
+    if (used % 2 == 1) {
     if (output) {
       os << ", ";
     }
-    if (used % 2 == 1) {
-      os << (1 << base);
+      os << base;
       output = true;
     }
     used /= 2;
