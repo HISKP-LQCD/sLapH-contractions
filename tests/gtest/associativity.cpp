@@ -86,6 +86,7 @@ TEST(DilutedFactor, associativity) {
   auto df1 = make_random_diluted_factor(1);
   auto df2 = make_random_diluted_factor(2);
   auto df3 = make_random_diluted_factor(3);
+  auto df4 = make_random_diluted_factor(4);
 
   EXPECT_NE(df1, df2);
   EXPECT_NE(df1, df3);
@@ -97,10 +98,41 @@ TEST(DilutedFactor, associativity) {
   auto prod_12_3 = (df1 * df2) * df3;
   auto prod_1_23 = df1 * (df2 * df3);
 
-  ASSERT_EQ(ssize(prod_12_3), ssize(prod_1_23));
-
   std::sort(std::begin(prod_12_3), std::end(prod_12_3));
   std::sort(std::begin(prod_1_23), std::end(prod_1_23));
+
+  //if (ssize(prod_12_3) != ssize(prod_1_23)) {
+    std::cout << "df1:\n";
+    for (auto const &elem : df1) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "df2:\n";
+    for (auto const &elem : df2) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "df3:\n";
+    for (auto const &elem : df3) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "1 * 2:\n";
+    for (auto const &elem : df1 * df2) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "2 * 3:\n";
+    for (auto const &elem : df2 * df3) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "(1 * 2) * 3\n";
+    for (auto const &elem : prod_12_3) {
+      std::cout << elem << "\n";
+    }
+    std::cout << "1 * (2 * 3)\n";
+    for (auto const &elem : prod_1_23) {
+      std::cout << elem << "\n";
+    }
+  //}
+
+  ASSERT_EQ(ssize(prod_12_3), ssize(prod_1_23));
 
   for (int i = 0; i < ssize(prod_1_23); ++i) {
     auto const &a = prod_1_23[i];
