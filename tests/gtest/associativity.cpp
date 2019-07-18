@@ -97,10 +97,29 @@ TEST(DilutedFactor, associativity) {
   auto prod_12_3 = (df1 * df2) * df3;
   auto prod_1_23 = df1 * (df2 * df3);
 
-  EXPECT_EQ(ssize(prod_12_3), ssize(prod_1_23));
+  ASSERT_EQ(ssize(prod_12_3), ssize(prod_1_23));
 
   std::sort(std::begin(prod_12_3), std::end(prod_12_3));
   std::sort(std::begin(prod_1_23), std::end(prod_1_23));
 
-  EXPECT_EQ(prod_12_3, prod_1_23);
+  for (int i = 0; i < ssize(prod_1_23); ++i) {
+    auto const &a = prod_1_23[i];
+    auto const &b = prod_12_3[i];
+
+    auto const &m1 = a.data;
+    auto const &m2 = b.data;
+
+    for (int row = 0; row < m1.rows(); ++row) {
+      for (int col = 0; col < m1.cols(); ++col) {
+        auto const &c1 = m1(row, col);
+        auto const &c2 = m2(row, col);
+        EXPECT_NEAR(c1.real(), c2.real(), 1e-10);
+        EXPECT_NEAR(c1.imag(), c2.imag(), 1e-10);
+      }
+    }
+
+    EXPECT_EQ(a.ric.first, b.ric.first);
+    EXPECT_EQ(a.ric.second, b.ric.second);
+    EXPECT_EQ(a.used_rnd_ids, b.used_rnd_ids);
+  }
 }
