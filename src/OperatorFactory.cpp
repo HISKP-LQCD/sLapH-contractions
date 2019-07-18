@@ -501,7 +501,7 @@ void OperatorFactory::read_vdaggerv(const int config) {
             if (!file.good()) {
               std::ostringstream oss;
               oss << "Problems while reading from " << infile;
-              std::runtime_error(oss.str());
+              throw std::runtime_error(oss.str());
             }
             file.close();
           } else {
