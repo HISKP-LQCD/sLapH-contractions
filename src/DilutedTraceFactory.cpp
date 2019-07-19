@@ -236,11 +236,17 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
     assert(l23.size() > 0);
     assert(l45.size() > 0);
 
-     Tr[time_key][i] = factor_to_trace(f0 * f1 * f2 * f3 * f4, f5);
-    //Tr[time_key][i] = factor_to_trace(f0 * (f1 * f2) * f3 * f4, f5);
-    //Tr[time_key][i] = factor_to_trace(l01 * f2 * f3, f4 * f5);
+    auto const &p1 = f0 * f1 * f2 * f3 * f4;
+    auto const &p2 = f5;
+
+#pragma omp critical(cout)
+    std::cout << "sizes: " << ssize(p1) << " " << ssize(p2) << "\n";
+
+    Tr[time_key][i] = factor_to_trace(p1, p2);
+    // Tr[time_key][i] = factor_to_trace(f0 * (f1 * f2) * f3 * f4, f5);
+    // Tr[time_key][i] = factor_to_trace(l01 * f2 * f3, f4 * f5);
     // Tr[time_key][i] = factor_to_trace(l01 * l23 * f4, f5);
-    //Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
+    // Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
   }
 }
 

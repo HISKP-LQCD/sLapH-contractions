@@ -112,6 +112,15 @@ std::vector<DilutedTrace> factor_to_trace(std::vector<DilutedFactor> const &left
         continue;
       }
 
+      /*
+      if (((1u << left.ric.first) & right.used_rnd_ids) != 0) {
+        continue;
+      }
+      if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
+        continue;
+      }
+      */
+
       // We want to keep track of the indices that have been contracted away. These are
       // all the ones from the left factor, all the ones from the right factor and the one
       // that we are contracting over right now.
