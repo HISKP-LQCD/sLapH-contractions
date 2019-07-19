@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <random>
 
-static std::vector<DilutedFactor> make_random_diluted_factor(int seed, ssize_t size = 5) {
+static std::vector<DilutedFactor> make_random_diluted_factor(int seed, ssize_t size = 50) {
   std::vector<DilutedFactor> df;
   df.reserve(size);
 
@@ -41,11 +41,13 @@ static bool operator<(Eigen::MatrixXcd const &m1, Eigen::MatrixXcd const &m2) {
 }
 
 static bool operator<(DilutedFactor const &df1, DilutedFactor const &df2) {
-  return df1.data < df2.data && df1.ric < df2.ric && df1.used_rnd_ids < df2.used_rnd_ids;
+  return df1.ric.first < df2.ric.first || df1.ric.second < df2.ric.second ||
+         df1.used_rnd_ids < df2.used_rnd_ids || df1.data < df2.data;
 }
 
 static bool operator==(DilutedFactor const &df1, DilutedFactor const &df2) {
-  return df1.data == df2.data && df1.ric == df2.ric && df1.used_rnd_ids == df2.used_rnd_ids;
+  return df1.data == df2.data && df1.ric.first == df2.ric.first &&
+         df1.ric.second == df2.ric.second && df1.used_rnd_ids == df2.used_rnd_ids;
 }
 
 static std::ostream &operator<<(std::ostream &os, DilutedFactor const &df) {
@@ -88,6 +90,11 @@ TEST(DilutedFactor, associativity) {
   auto df3 = make_random_diluted_factor(3);
   auto df4 = make_random_diluted_factor(4);
 
+  //std::sort(std::begin(df1), std::end(df1));
+  //std::sort(std::begin(df2), std::end(df2));
+  //std::sort(std::begin(df3), std::end(df3));
+  //std::sort(std::begin(df4), std::end(df4));
+
   EXPECT_NE(df1, df2);
   EXPECT_NE(df1, df3);
   EXPECT_NE(df2, df3);
@@ -98,8 +105,8 @@ TEST(DilutedFactor, associativity) {
   auto prod_12_3 = (df1 * df2) * df3;
   auto prod_1_23 = df1 * (df2 * df3);
 
-  std::sort(std::begin(prod_12_3), std::end(prod_12_3));
-  std::sort(std::begin(prod_1_23), std::end(prod_1_23));
+  //std::sort(std::begin(prod_12_3), std::end(prod_12_3));
+  //std::sort(std::begin(prod_1_23), std::end(prod_1_23));
 
   //if (ssize(prod_12_3) != ssize(prod_1_23)) {
     std::cout << "df1:\n";

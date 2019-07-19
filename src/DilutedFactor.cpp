@@ -16,11 +16,26 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
     auto const inner_rnd_id = left.ric.second;
 
     for (auto const &right : right_vec) {
-      // We want to make the inner and outer indices differ. The inner indices need to
-      // match because the product would not make sense otherwise.
+      // The inner indices need to match because the product would not make
+      // sense otherwise.
       bool const is_allowed =
           inner_rnd_id == right.ric.first && left.ric.first != right.ric.second;
       if (!is_allowed) {
+        continue;
+      }
+
+      if (left.ric.first == left.ric.second) {
+        continue;
+      }
+
+      if (right.ric.first == right.ric.second) {
+        continue;
+      }
+
+      if (((1u << left.ric.first) & right.used_rnd_ids) != 0) {
+        continue;
+      }
+      if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
         continue;
       }
 
