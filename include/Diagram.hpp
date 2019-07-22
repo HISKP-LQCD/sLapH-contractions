@@ -103,6 +103,7 @@ struct DiagramParts {
     q0.clear();
     q1.clear();
     q2.clear();
+    q0q2.clear();
 
     for (auto const &elem : trace_factories) {
       elem.second->clear();
