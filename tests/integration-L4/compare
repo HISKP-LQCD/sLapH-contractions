@@ -18,9 +18,9 @@ for path in correlators-reference/*.h5; do
 
     if ! h5diff -r -d 1e-12 "$target" "$actual" &> "$tmp"; then
       cat "$tmp"
-      bad=( "${bad[@]}" "$basename" )
+      bad+=( "$basename" )
     else
-      good=( "${good[@]}" "$basename" )
+      good+=( "$basename" )
     fi
 done
 
