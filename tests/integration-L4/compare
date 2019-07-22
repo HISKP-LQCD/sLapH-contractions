@@ -27,16 +27,18 @@ done
 rm -f -- "$tmp"
 
 echo -e "\nSummary\n"
-echo -e "No differences found in:\n"
-for path in "${good[@]}"; do
-  echo "  - $path"
-done
+if [[ -n "${good-}" ]]; then
+  echo -e "No differences found in:\n"
+  for path in "${good[@]}"; do
+    echo "  - $path"
+  done
+fi
 
-echo -e "\nDifferences found in:\n"
-for path in "${bad[@]}"; do
-  echo "  - $path"
-done
+if [[ -n "${bad-}" ]]; then
+  echo -e "\nDifferences found in:\n"
+  for path in "${bad[@]}"; do
+    echo "  - $path"
+  done
 
-if [[ ${bad[@]} > 0 ]]; then
   exit 1
 fi
