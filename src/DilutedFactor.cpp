@@ -24,7 +24,6 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
         continue;
       }
 
-      /*
       if (left.ric.first == left.ric.second) {
         continue;
       }
@@ -39,7 +38,6 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
       if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
         continue;
       }
-      */
 
       // We also need to be careful to not combine factors which have common used random
       // vector indices.
