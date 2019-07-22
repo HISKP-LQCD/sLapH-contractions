@@ -214,20 +214,6 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
 
-    auto const &m0 = df1[{b5, t0, b1}];
-    auto const &m1 = df2[{t1}];
-    auto const &m2 = df3[{b1, t2, b3}];
-    auto const &m3 = df4[{t3}];
-    auto const &m4 = df5[{b3, t4, b5}];
-    auto const &m5 = df6[{t5}];
-
-    auto const &f0 = m0.at({c_look[1]});
-    auto const &f1 = m1.at({c_look[2]});
-    auto const &f2 = m2.at({c_look[3]});
-    auto const &f3 = m3.at({c_look[4]});
-    auto const &f4 = m4.at({c_look[5]});
-    auto const &f5 = m5.at({c_look[0]});
-
     auto const &l01 = dpf_.get({b5, t0, b1, t1}, {c_look[1], c_look[2]});
     auto const &l23 = dpf_.get({b1, t2, b3, t3}, {c_look[3], c_look[4]});
     auto const &l45 = dpf_.get({b3, t4, b5, t5}, {c_look[5], c_look[0]});
