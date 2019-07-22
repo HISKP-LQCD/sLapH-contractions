@@ -74,7 +74,7 @@ TEST(DilutedFactor, associativity) {
   //std::sort(std::begin(prod_12_3), std::end(prod_12_3));
   //std::sort(std::begin(prod_1_23), std::end(prod_1_23));
 
-  //if (ssize(prod_12_3) != ssize(prod_1_23)) {
+  if (ssize(prod_12_3) != ssize(prod_1_23)) {
     std::cout << "df1:\n";
     for (auto const &elem : df1) {
       std::cout << elem << "\n";
@@ -103,7 +103,7 @@ TEST(DilutedFactor, associativity) {
     for (auto const &elem : prod_1_23) {
       std::cout << elem << "\n";
     }
-  //}
+  }
 
   ASSERT_EQ(ssize(prod_12_3), ssize(prod_1_23));
 
