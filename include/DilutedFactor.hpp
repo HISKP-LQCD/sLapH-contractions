@@ -181,3 +181,5 @@ void multiply(DilutedFactorsMap<n1 + n2> &L,
     L[key] = f0 * f1;
   }
 }
+
+std::ostream &operator<<(std::ostream &os, DilutedFactor const &df);

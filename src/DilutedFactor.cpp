@@ -24,6 +24,7 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
         continue;
       }
 
+      /*
       if (left.ric.first == left.ric.second) {
         continue;
       }
@@ -38,6 +39,7 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
       if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
         continue;
       }
+      */
 
       // We also need to be careful to not combine factors which have common used random
       // vector indices.
@@ -126,4 +128,38 @@ Complex trace(std::vector<DilutedFactor> const &left_vec,
   }
 
   return result.value() / static_cast<double>(num_summands);
+}
+
+std::ostream &operator<<(std::ostream &os, DilutedFactor const &df) {
+  os << "DilutedFactor{{";
+  auto const &m = df.data;
+  for (int row = 0; row < m.rows(); ++row) {
+    if (row != 0) {
+      os << "; ";
+    }
+    for (int col = 0; col < m.cols(); ++col) {
+      if (col != 0) {
+        os << ", ";
+      }
+      os << m(row, col);
+    }
+  }
+  os << "}, {" << static_cast<int>(df.ric.first) << ", " << static_cast<int>(df.ric.second)
+     << "}, {";
+  auto used = df.used_rnd_ids;
+  int base = 0;
+  bool output = false;
+  while (used != 0) {
+    if (used % 2 == 1) {
+    if (output) {
+      os << ", ";
+    }
+      os << base;
+      output = true;
+    }
+    used /= 2;
+    ++base;
+  }
+  os << "}}";
+  return os;
 }
