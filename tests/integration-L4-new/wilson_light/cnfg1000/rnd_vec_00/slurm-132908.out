@@ -1,0 +1,22 @@
++ LD_LIBRARY_PATH=/opt/openmpi-2.0.2a1-with-pmi/lib:/opt/gcc-5.4.0/lib64:/qbigwork/bartek/libs/bleeding_edge/kepler/quda_develop/lib
++ rundir=/hiskp4/bartek/peram_generation/nf211/A60.24s_1/light/cnfg1000/rnd_vec_00
++ exe=/qbigwork/bartek/build/bleeding_edge/kepler/peram_gen_multigpu.tmLQCD.etmc.quda_develop/main/main
++ outfile=../outputs/run_1000_00.out
++ infile=LapH_1000_00.in
++ export QUDA_RESOURCE_PATH=/qbigwork/bartek/quda_resources/kepler_405d5bf1ac9cdbccbc11ac957e07d822065ac36e
++ QUDA_RESOURCE_PATH=/qbigwork/bartek/quda_resources/kepler_405d5bf1ac9cdbccbc11ac957e07d822065ac36e
++ '[' '!' -d /qbigwork/bartek/quda_resources/kepler_405d5bf1ac9cdbccbc11ac957e07d822065ac36e ']'
++ cd /hiskp4/bartek/peram_generation/nf211/A60.24s_1/light/cnfg1000/rnd_vec_00
+/var/spool/slurmd/job132908/slurm_script: line 27: cd: /hiskp4/bartek/peram_generation/nf211/A60.24s_1/light/cnfg1000/rnd_vec_00: No such file or directory
++ date
++ tee -a ../outputs/run_1000_00.out
++ QUDA_RESOURCE_PATH=/qbigwork/bartek/quda_resources/kepler_405d5bf1ac9cdbccbc11ac957e07d822065ac36e
++ OMP_NUM_THREADS=2
++ QUDA_ENABLE_GDR=1
++ QUDA_ENABLE_P2P=1
++ QUDA_ENABLE_TUNING=1
++ QUDA_ENABLE_DEVICE_MEMORY_POOL=0
++ srun /qbigwork/bartek/build/bleeding_edge/kepler/peram_gen_multigpu.tmLQCD.etmc.quda_develop/main/main -LapHsin LapH_1000_00.in
+/qbigwork/bartek/build/bleeding_edge/kepler/peram_gen_multigpu.tmLQCD.etmc.quda_develop/main/main: error while loading shared libraries: libcudart.so.8.0: cannot open shared object file: No such file or directory
+srun: error: lnode06: task 0: Exited with exit code 127
++ date

@@ -128,23 +128,8 @@ if(has_diagnostics_color)
   endif()
 endif()
 
-option(SLAPH_TIMING_CORRELATOR "Timing of correlator building (per thread)" OFF)
-option(SLAPH_TIMING_DIAGRAMS "Timing of individual diagram multiplies and traces" OFF)
-option(SLAPH_TIMING_ULTRA_FINE "Timing of DilutedFactor components" OFF)
-option(SLAPH_TIMING_FINE "Timing of QuarkLineBlock constructions" OFF)
-
-if(SLAPH_TIMING_CORRELATOR)
-  add_definitions("-DSLAPH_TIMING_CORRELATOR")
-endif()
-if(SLAPH_TIMING_DIAGRAMS)
-  add_definitions("-DSLAPH_TIMING_DIAGRAMS")
-endif()
-if(SLAPH_TIMING_ULTRA_FINE)
-  add_definitions("-DSLAPH_TIMING_ULTRA_FINE")
-endif()
-if(SLAPH_TIMING_FINE)
-  add_definitions("-DSLAPH_TIMING_FINE")
-endif()
+set(SLAPH_TIMING_LEVEL 0 CACHE INT "Granularity of time measurements")
+add_definitions("-DSLAPH_TIMING_LEVEL=${SLAPH_TIMING_LEVEL}")
 
 # Default to “Release” build type.
 message(STATUS "Build Type: '${CMAKE_BUILD_TYPE}'")
@@ -215,6 +200,10 @@ add_test(NAME "integration_L4_charged_diagrams"
 add_test(NAME "integration_L4_neutral_diagrams"
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/contract" -i test_neutral.ini --start_config 1000 --end_config 1000
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration-L4")
+
+add_test(NAME "integration_L4_new_all_diagrams"
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration-L4-new/run-integration-test" "${CMAKE_CURRENT_BINARY_DIR}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration-L4-new")
 
 add_test(NAME unit-dilution-iterator
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tests/dilution-iterator/run-test" "${CMAKE_CURRENT_SOURCE_DIR}")

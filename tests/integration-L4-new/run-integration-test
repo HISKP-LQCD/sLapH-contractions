@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# This integration test computes a large number of contractions on a 4^4 test
+# lattice and compares the data to some reference result.
+
+set -e
+set -u
+set -x
+
+# Delete the old files. In case they care not there, the glob is not matched and that file
+# cannot be found. Ignore that error/
+rm correlators/*.h5 || true
+
+"$1/contract" -i test_all.ini --start_config 1000 --end_config 1000
+
+./compare
