@@ -1,0 +1,43 @@
+omp_num_threads = 1
+quda_direct = 0
+
+config = 1000
+total number of configs = 1
+distance between configs = 4
+
+Ls = 4
+Lt = 4
+
+nb_ev = 16
+
+nb_rnd = 1
+id 6 seed 54321
+
+verbose = 0
+endianness = little
+use_zgemm = 0
+
+quarktype = u
+
+inversion_source_type_t   = B
+inversion_source_number_t = 2
+inversion_source_type_v   = I
+inversion_source_number_v = 2
+inversion_source_type_d   = F
+inversion_source_number_d = 4
+
+nb_of_sinks = 1
+nb_of_sink_rnd_vec = 1
+seed = 0
+
+inversion_sink_type_t   = F
+inversion_sink_number_t = 4
+inversion_sink_type_s   = F
+inversion_sink_number_s = 4
+inversion_sink_type_d   = F
+inversion_sink_number_d = 4
+inversion_sink_type_c   = F
+inversion_sink_number_c = 3
+
+outpath = ./
+inpath_ev = /hiskp4/eigensystems/test/test4x4x4x4/nev_16
