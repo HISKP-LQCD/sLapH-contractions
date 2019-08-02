@@ -1,15 +1,3 @@
-#include "Correlators.hpp"
-#include "git.hpp"
-#include "global_data.hpp"
-#include "global_data_build_IO_names.hpp"
-#include "timings.hpp"
-
-#include <omp.h>
-
-#include <iostream>
-#include "OperatorsForMesons.hpp"
-
-/*
 #include "EigenVector.hpp"
 #include "typedefs.hpp"
 
@@ -183,39 +171,39 @@ void build_and_write_vdaggerv(const ssize_t Lt,
   std::cout << std::setprecision(1) << "\t\t\tSUCCESS - " << std::fixed
             << ((float)t2) / CLOCKS_PER_SEC << " seconds" << std::endl;
 }
-*/
+
 int main(int ac, char *av[]) {
   // Some variables definitions which should be read from infile!
-  //
-   std::cout << "This is sLapH-contractions:\n"
-            << "  git branch " << git_refspec << "\n"
-            << "  git revision " << git_sha1 << "\n"
-            << "  git state " << git_changes << "\n"
-            << "  compiled by " << git_user << " on " << git_host << "\n"
-            << "  running with up to " << omp_get_max_threads() << " OpenMP threads\n";
+  const int Lt = 48;
+  const int Lx = 24;
+  const int Ly = 24;
+  const int Lz = 24;
 
-  // reading global parameters from input file
-  GlobalData gd;
-  read_parameters(gd, ac, av);
-  std::cout<<"Parameters are read"<<std::endl;
-    
+  const ssize_t nb_ev = 120;
+  const ssize_t nb_dil_E = 6;
+
+  const ssize_t start_config = 714;
+  const ssize_t end_config = 714;
+  const ssize_t delta_config = 1;
 
   // initialization of OMP paralization
+  const ssize_t nb_omp_threads = 4;
+  const ssize_t nb_eigen_threads = 1;
   Eigen::initParallel();
-  Eigen::setNbThreads(gd.nb_eigen_threads);
-  
+  omp_set_dynamic(0);
+  omp_set_num_threads(nb_omp_threads);
+  Eigen::setNbThreads(nb_eigen_threads);
+
   // Creating lookuptable for Operator construction by hand. TODO: Include
   // this in input file handling!
   std::vector<VdaggerVQuantumNumbers> vdaggerv_lookup;
   // emplacing back all the momenta
-  //std::array<int, 3> displacement = {0, 0, 0};
-  std::vector<std::pair<char, char>> displacement;
+  std::array<int, 3> displacement = {0, 0, 0};
   ssize_t id = 0;
-  for (int p1 = gd.max_momentum; p1 >= -gd.max_momentum; p1--)
-    for (int p2 = gd.max_momentum; p2 >= -gd.max_momentum; p2--)
-      for (int p3 = gd.max_momentum; p3 >= -gd.max_momentum; p3--){
-        int maxQsq=gd.max_momentum*gd.max_momentum;
-        if (p1 * p1 + p2 * p2 + p3 * p3 <= maxQsq && !(p1 == 0 && p2 == 0 && p3 == 0)) {
+  for (int p1 = 2; p1 >= -2; p1--)
+    for (int p2 = 2; p2 >= -2; p2--)
+      for (int p3 = 2; p3 >= -2; p3--)
+        if (p1 * p1 + p2 * p2 + p3 * p3 <= 4 && !(p1 == 0 && p2 == 0 && p3 == 0)) {
           std::array<int, 3> momentum = {p1, p2, p3};
           std::cout << p1 << "\t" << p2 << "\t" << p3 << std::endl;
           auto it = std::find_if(
@@ -230,34 +218,36 @@ int main(int ac, char *av[]) {
               });
           if (!(it != vdaggerv_lookup.end())) {
             vdaggerv_lookup.emplace_back(
-                id, momentum, displacement);
+                VdaggerVQuantumNumbers(id, momentum, displacement));
             id++;
           }
         }
-  }
   OperatorLookup operator_lookuptable;
   operator_lookuptable.vdaggerv_lookup = vdaggerv_lookup;
   operator_lookuptable.index_of_unity = 0;
 
-
   // Loop over all configurations stated in the infile -------------------------
-  for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
-       config_i += gd.delta_config) {
+  for (ssize_t config_i = start_config; config_i <= end_config;
+       config_i += delta_config) {
     std::cout << "\nprocessing configuration: " << config_i << "\n\n";
-    OperatorFactory meson_operators(gd.Lt,
-                                  gd.Lx,
-                                  gd.Ly,
-                                  gd.Lz,
-                                  gd.number_of_eigen_vec,
-                                  (gd.quarks)[0].number_of_dilution_E,
-                                  gd.operator_lookuptable,
-                                  gd.handling_vdaggerv,
-                                  gd.path_vdaggerv,
-                                  gd.path_config,
-                                  gd.hyp_parameters);
 
-    meson_operators.build_vdaggerv(gd.filename_eigenvectors, config_i, gd);
-
-
+    // read eigenvectors, build operators, and write them to disk
+    char cnfg[20];
+    sprintf(cnfg, "%04zu", config_i);
+    const std::string filename_ev =
+        "/data/LapHs/contraction_Markus/test_data/ev/eigenvectors." + std::string(cnfg);
+    const std::string pathname_vdaggerv =
+        "/data/LapHs/contraction_Markus/test_data/operators/cnfg" + std::string(cnfg) +
+        "/";
+    const std::string filename_vdaggerv = "operators." + std::string(cnfg);
+    build_and_write_vdaggerv(Lt,
+                             Lx,
+                             Ly,
+                             Lz,
+                             nb_ev,
+                             operator_lookuptable,
+                             filename_ev,
+                             pathname_vdaggerv,
+                             filename_vdaggerv);
   }
 }

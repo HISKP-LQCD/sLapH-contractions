@@ -61,6 +61,8 @@ class OperatorFactory {
                         const RandomVector &rnd_vec,
                         const int config,
                         const GlobalData &gd);
+
+  void build_vdaggerv(const std::string &filename, const int config, const GlobalData &gd);
   /** Free memory of vdaggerv */
   void free_memory_vdaggerv();
 
@@ -70,6 +72,7 @@ class OperatorFactory {
     return vdaggerv[index][t];
   }
 
+  
  private:
   // Containers for operators which are accessible from outside
   array_Xcd_d2_eigen vdaggerv;
@@ -92,7 +95,6 @@ class OperatorFactory {
   // Internal functions to build individual operators --> The interface to these
   // functions is 'create_Operators'
   // input -> filename: name and path of eigenvectors
-  void build_vdaggerv(const std::string &filename, const int config, const GlobalData &gd);
   void read_vdaggerv(const int config);
   void read_vdaggerv_liuming(const int config);
 };

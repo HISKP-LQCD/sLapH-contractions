@@ -176,6 +176,10 @@ endif()
 add_executable(contract main/contract.cpp)
 target_link_libraries(contract lcontract)
 
+add_executable(vdaggerv main/VdaggerV.cpp)
+target_link_libraries(vdaggerv lcontract)
+
+
 install(TARGETS contract DESTINATION bin)
 
 ### test-iterator

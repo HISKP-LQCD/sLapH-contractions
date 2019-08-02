@@ -56,6 +56,7 @@ struct GlobalData {
   int number_of_inversions;
   int start_config, end_config, delta_config;
   int verbose;
+  int max_momentum;
   ssize_t nb_eigen_threads;
 
   ssize_t nb_evec_read_threads;
