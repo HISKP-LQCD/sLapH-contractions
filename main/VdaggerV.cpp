@@ -244,6 +244,8 @@ int main(int ac, char *av[]) {
   for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
        config_i += gd.delta_config) {
     std::cout << "\nprocessing configuration: " << config_i << "\n\n";
+
+    build_IO_names(gd, config_i);
     OperatorFactory meson_operators(gd.Lt,
                                   gd.Lx,
                                   gd.Ly,
