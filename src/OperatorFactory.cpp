@@ -269,6 +269,9 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
            mom(x) = momentum[op.id][x / 3];
          }
          vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * mom.asDiagonal() * V_t[V_t_idx];
+       //  std::cout<<op.id<<std::endl;
+       //  std::cout<<vdaggerv[op.id][t] <<std::endl;
+       //  exit(1);
        }
       } else {
          vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
@@ -287,8 +290,8 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       (boost::format("/%s/cnfg%04d/") % path_vdaggerv % config).str();
 
   // check if directory exists
-  if (( (handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" ) ) && 
-      access(full_path.c_str(), 0) != 0) {
+  if (( handling_vdaggerv == "write")   &&( 
+      access(full_path.c_str(), 0) != 0)) {
     std::cout << "\tdirectory " << full_path.c_str()
               << " does not exist and will be created";
     boost::filesystem::path dir(full_path.c_str());
@@ -419,9 +422,10 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   
 
   // perform thread-parallel I/O to write out VdaggerV
-  if( ( handling_vdaggerv == "write") || ( handling_vdaggerv == "only_vdaggerv_compute_save" )){
+  if(handling_vdaggerv == "write"){
     StopWatch vdaggerv_io_watch("VdaggerV thread-parallel writing",
                                 gd.nb_evec_read_threads);
+    std::cout<<"Number of threads"<<gd.nb_evec_read_threads<<std::endl;
     #pragma omp parallel num_threads(gd.nb_evec_read_threads)
     {
       vdaggerv_io_watch.start();
@@ -432,6 +436,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
             std::string momentum_string = std::to_string(op.momentum[0]) +
                                           std::to_string(op.momentum[1]) +
                                           std::to_string(op.momentum[2]);
+            
             std::string displacement_string = to_string(op.displacement);
             std::string outfile =
                 (boost::format("operators.%04d.p_%s.d_%s.t_%03d") % config %
@@ -637,7 +642,7 @@ void OperatorFactory::create_operators(const std::string &filename,
                                        const int config,
                                        const GlobalData & gd) {
   is_vdaggerv_set = false;
-  if (handling_vdaggerv == "write" || handling_vdaggerv == "build" || handling_vdaggerv == "only_vdaggerv_compute_save")
+  if (handling_vdaggerv == "write" || handling_vdaggerv == "build")
     build_vdaggerv(filename, config, gd);
   else if (handling_vdaggerv == "read")
     read_vdaggerv(config);

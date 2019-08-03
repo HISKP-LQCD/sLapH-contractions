@@ -81,21 +81,20 @@ int main(int ac, char *av[]) {
     // read eigenvectors and build operators
     meson_operators.create_operators(gd.filename_eigenvectors, randomvectors, config_i, gd);
 
-    // only now that VdaggerV has been created / loaded do we allocate memory for the
     // perambulators, the allocation overhead is negligible
     Perambulator perambulators(gd.peram_construct.nb_entities,
                                gd.peram_construct.size_rows,
                                gd.peram_construct.size_cols);
 
-    if (gd.handling_vdaggerv != "only_vdaggerv_compute_save"){
-      // read perambulators
-      perambulators.read_perambulators_from_separate_files(
-          gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
-      // read random vectors
-      randomvectors.read_random_vectors_from_separate_files(
-          gd.rnd_vec_construct.filename_list);
+    
+    // read perambulators
+    perambulators.read_perambulators_from_separate_files(
+        gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
+    // read random vectors
+    randomvectors.read_random_vectors_from_separate_files(
+        gd.rnd_vec_construct.filename_list);
       
-      contract(gd.Lt,
+    contract(gd.Lt,
               (gd.quarks)[0].number_of_dilution_T,
               (gd.quarks)[0].number_of_dilution_E,
               gd.number_of_eigen_vec,
@@ -109,6 +108,6 @@ int main(int ac, char *av[]) {
               gd.path_output,
               gd.filename_ending_correlators,
               gd.single_time_slice_combination);
-    }
+    
   }
 }
