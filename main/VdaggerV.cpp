@@ -34,9 +34,10 @@ int main(int ac, char *av[]) {
   
   // Creating lookuptable for Operator construction by hand. TODO: Include
   // this in input file handling!
+  
   std::vector<VdaggerVQuantumNumbers> vdaggerv_lookup;
 
-
+  
   std::vector<std::pair<char, char>> displacement;
   ssize_t id = 0;
   for (int p1 = -gd.max_momentum; p1 <= gd.max_momentum; p1++)
@@ -65,6 +66,7 @@ int main(int ac, char *av[]) {
           }
         }
   }
+  std::cout<<"sasas "<<std::endl;
 
   // Loop over all configurations stated in the infile -------------------------
   for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
@@ -72,12 +74,12 @@ int main(int ac, char *av[]) {
     std::cout << "\nprocessing configuration: " << config_i << "\n\n";
 
     build_IO_names(gd, config_i);
+    
     OperatorFactory meson_operators(gd.Lt,
                                   gd.Lx,
                                   gd.Ly,
                                   gd.Lz,
                                   gd.number_of_eigen_vec,
-                                  (gd.quarks)[0].number_of_dilution_E,
                                   gd.operator_lookuptable,
                                   gd.handling_vdaggerv,
                                   gd.path_vdaggerv,
@@ -85,7 +87,7 @@ int main(int ac, char *av[]) {
                                   gd.hyp_parameters);
 
 
-//    gd.operator_lookuptable=operator_lookuptable;
+//  gd.operator_lookuptable=operator_lookuptable;
     meson_operators.build_vdaggerv(gd.filename_eigenvectors, config_i, gd);
 
   }

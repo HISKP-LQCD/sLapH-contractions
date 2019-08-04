@@ -219,6 +219,40 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
   std::cout << "\tMeson operators initialised" << std::endl;
 }
 
+OperatorFactory::OperatorFactory(const ssize_t Lt,
+                                 const ssize_t Lx,
+                                 const ssize_t Ly,
+                                 const ssize_t Lz,
+                                 const ssize_t nb_ev,
+                                 const OperatorLookup &operator_lookuptable,
+                                 const std::string &handling_vdaggerv,
+                                 const std::string &path_vdaggerv,
+                                 const std::string &path_config,
+                                 const HypPars &hyp_parameters)
+    : vdaggerv(),
+      momentum(),
+      operator_lookuptable(operator_lookuptable),
+      Lt(Lt),
+      Lx(Lx),
+      Ly(Ly),
+      Lz(Lz),
+      nb_ev(nb_ev),
+      handling_vdaggerv(handling_vdaggerv),
+      path_vdaggerv(path_vdaggerv),
+      path_config(path_config),
+      hyp_parameters(hyp_parameters) {
+  // resizing containers to their correct size
+  vdaggerv.resize(boost::extents[operator_lookuptable.vdaggerv_lookup.size()][Lt]);
+  
+  // the momenta only need to be calculated for a subset of quantum numbers
+  // (see VdaggerV::build_vdaggerv)
+  momentum.resize(
+      boost::extents[operator_lookuptable.vdaggerv_lookup.size()][Lx * Ly * Lz]);
+  create_momenta(Lx, Ly, Lz, operator_lookuptable.vdaggerv_lookup, momentum);
+
+  std::cout << "\tMeson operators initialised" << std::endl;
+}
+
 static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const ssize_t nb_ev,
                                            const int config, 
