@@ -66,7 +66,6 @@ int main(int ac, char *av[]) {
           }
         }
   }
-  std::cout<<"sasas "<<std::endl;
 
   // Loop over all configurations stated in the infile -------------------------
   for (ssize_t config_i = gd.start_config; config_i <= gd.end_config;
@@ -80,6 +79,7 @@ int main(int ac, char *av[]) {
                                   gd.Ly,
                                   gd.Lz,
                                   gd.number_of_eigen_vec,
+                                  0, //We set the eigenvector dilution argument to zero
                                   gd.operator_lookuptable,
                                   gd.handling_vdaggerv,
                                   gd.path_vdaggerv,

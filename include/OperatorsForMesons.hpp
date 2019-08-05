@@ -48,16 +48,6 @@ class OperatorFactory {
                   const std::string &path_vdaggerv,
                   const std::string &path_config,
                   const HypPars &hyp_parameters);
-  OperatorFactory(const ssize_t Lt,
-                  const ssize_t Lx,
-                  const ssize_t Ly,
-                  const ssize_t Lz,
-                  const ssize_t nb_ev,
-                  const OperatorLookup &operator_lookuptable,
-                  const std::string &handling_vdaggerv,
-                  const std::string &path_vdaggerv,
-                  const std::string &path_config,
-                  const HypPars &hyp_parameters);
   /** Standard Destructor
    *
    *  Everything should be handled by Eigen, std::vector, and boost::multi_array
