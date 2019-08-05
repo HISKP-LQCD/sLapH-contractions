@@ -16,8 +16,6 @@ cd ..
 ###############################################################################
 
 ubuntu_packages=(
-    gcc-7 g++-7
-    ccache
     cmake
     libhdf5-dev 
     hdf5-tools
@@ -25,7 +23,8 @@ ubuntu_packages=(
     libboost-filesystem-dev libboost-system-dev libboost-program-options-dev
     libgtest-dev
 )
-sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+#sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install -y "${ubuntu_packages[@]}"
 
@@ -33,11 +32,11 @@ sudo apt-get install -y "${ubuntu_packages[@]}"
 #                              Fix Eigen Library                              #
 ###############################################################################
 
-sudo updatedb
-locate FindEigen3.cmake
-
-mkdir cmake-module
-cp $(locate FindEigen3.cmake) cmake-module
+#sudo updatedb
+#locate FindEigen3.cmake
+#
+#mkdir cmake-module
+#cp $(locate FindEigen3.cmake) cmake-module
 
 ###############################################################################
 #                               Install C-LIME                                #
@@ -73,7 +72,7 @@ rm -rf "$builddir"
 mkdir -p "$builddir"
 pushd "$builddir"
 
-CXX=$(which g++-7)
+CXX=$(which g++)
 
 # Compile gtest
 # Modified from https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/
