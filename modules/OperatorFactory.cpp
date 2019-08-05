@@ -383,13 +383,13 @@ void OperatorFactory::read_vdaggerv(const int config) {
             if (!file.good()) {
               std::ostringstream oss;
               oss << "Problems while reading from " << infile;
-              std::runtime_error(oss.str());
+              throw std::runtime_error(oss.str());
             }
             file.close();
           } else {
             std::ostringstream oss;
             oss << "Can't open " << infile;
-            std::runtime_error(oss.str());
+            throw std::runtime_error(oss.str());
           }
         } else  // zero momentum
           vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
