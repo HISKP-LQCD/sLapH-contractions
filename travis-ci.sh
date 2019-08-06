@@ -1,6 +1,4 @@
 #!/bin/bash
-# Copyright © 2017-2018 Martin Ueding <dev@martin-ueding.de>
-# Licensed under the MIT/Expat license.
 
 set -e
 set -u
@@ -23,7 +21,6 @@ ubuntu_packages=(
     libboost-filesystem-dev libboost-system-dev libboost-program-options-dev
     libgtest-dev
 )
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 762E3157
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
 #sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
@@ -33,11 +30,11 @@ sudo apt-get install -y "${ubuntu_packages[@]}"
 #                              Fix Eigen Library                              #
 ###############################################################################
 
-sudo updatedb
-locate FindEigen3.cmake
+#sudo updatedb
+#locate FindEigen3.cmake
 #
-mkdir cmake-module
-cp $(locate FindEigen3.cmake) cmake-module
+#mkdir cmake-module
+#cp $(locate FindEigen3.cmake) cmake-module
 
 ###############################################################################
 #                               Install C-LIME                                #
