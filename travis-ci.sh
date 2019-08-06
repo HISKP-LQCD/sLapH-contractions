@@ -33,11 +33,11 @@ sudo apt-get install -y "${ubuntu_packages[@]}"
 #                              Fix Eigen Library                              #
 ###############################################################################
 
-sudo updatedb
-locate FindEigen3.cmake
+#sudo updatedb
+#locate FindEigen3.cmake
 #
-mkdir cmake-module
-cp $(locate FindEigen3.cmake) cmake-module
+#mkdir cmake-module
+#cp $(locate FindEigen3.cmake) cmake-module
 
 ###############################################################################
 #                               Install C-LIME                                #

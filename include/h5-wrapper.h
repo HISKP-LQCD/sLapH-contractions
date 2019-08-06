@@ -159,7 +159,7 @@ class WriteHDF5Correlator {
       auto dset = file.createDataSet(dataset_name, comp_type, dspace);
       dset.write(&corr[0], comp_type);
     } catch (H5::Exception &e) {
-      e.printError();
+      e.printErrorStack();
     }
   }
 
