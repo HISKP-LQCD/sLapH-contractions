@@ -3,7 +3,7 @@
 
 language: cpp
 script: ./travis-ci.sh
-dist: trusty
+dist: xenial
 sudo: true
 
-cache: ccache
+#cache: ccache
