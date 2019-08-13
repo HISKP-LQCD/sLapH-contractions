@@ -44,7 +44,6 @@ int main(int ac, char *av[]) {
         int maxQsq = gd.max_momentum * gd.max_momentum;
         if (p1 * p1 + p2 * p2 + p3 * p3 <= maxQsq && !(p1 == 0 && p2 == 0 && p3 == 0)) {
           std::array<int, 3> momentum = {p1, p2, p3};
-          // std::cout << p1 << "\t" << p2 << "\t" << p3 << std::endl;
           auto it = std::find_if(
               gd.operator_lookuptable.vdaggerv_lookup.begin(),
               gd.operator_lookuptable.vdaggerv_lookup.end(),

@@ -269,9 +269,6 @@ static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
             mom(x) = momentum[op.id][x / 3];
           }
           vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * mom.asDiagonal() * V_t[V_t_idx];
-          //  std::cout<<op.id<<std::endl;
-          //  std::cout<<vdaggerv[op.id][t] <<std::endl;
-          //  exit(1);
         }
       } else {
         vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
