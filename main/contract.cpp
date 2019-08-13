@@ -44,7 +44,6 @@ int main(int ac, char *av[]) {
   Eigen::initParallel();
   Eigen::setNbThreads(gd.nb_eigen_threads);
 
-
   OperatorFactory meson_operators(gd.Lt,
                                   gd.Lx,
                                   gd.Ly,
@@ -79,35 +78,34 @@ int main(int ac, char *av[]) {
                                gd.rnd_vec_construct.length);
 
     // read eigenvectors and build operators
-    meson_operators.create_operators(gd.filename_eigenvectors, randomvectors, config_i, gd);
+    meson_operators.create_operators(
+        gd.filename_eigenvectors, randomvectors, config_i, gd);
 
     // perambulators, the allocation overhead is negligible
     Perambulator perambulators(gd.peram_construct.nb_entities,
                                gd.peram_construct.size_rows,
                                gd.peram_construct.size_cols);
 
-    
     // read perambulators
     perambulators.read_perambulators_from_separate_files(
         gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
     // read random vectors
     randomvectors.read_random_vectors_from_separate_files(
         gd.rnd_vec_construct.filename_list);
-      
+
     contract(gd.Lt,
-              (gd.quarks)[0].number_of_dilution_T,
-              (gd.quarks)[0].number_of_dilution_E,
-              gd.number_of_eigen_vec,
-              meson_operators,
-              randomvectors,
-              perambulators,
-              gd.operator_lookuptable,
-              gd.trace_indices_map,
-              gd.correlator_requests_map,
-              gd.quarkline_lookuptable,
-              gd.path_output,
-              gd.filename_ending_correlators,
-              gd.single_time_slice_combination);
-    
+             (gd.quarks)[0].number_of_dilution_T,
+             (gd.quarks)[0].number_of_dilution_E,
+             gd.number_of_eigen_vec,
+             meson_operators,
+             randomvectors,
+             perambulators,
+             gd.operator_lookuptable,
+             gd.trace_indices_map,
+             gd.correlator_requests_map,
+             gd.quarkline_lookuptable,
+             gd.path_output,
+             gd.filename_ending_correlators,
+             gd.single_time_slice_combination);
   }
 }
