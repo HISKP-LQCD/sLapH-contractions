@@ -4,8 +4,8 @@
 
 #include <boost/format.hpp>
 
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 
 static ssize_t map_char_to_dir(const char dir) {
@@ -219,70 +219,71 @@ OperatorFactory::OperatorFactory(const ssize_t Lt,
   std::cout << "\tMeson operators initialised" << std::endl;
 }
 
-
 static inline void kernel_compute_vdaggerv(const ssize_t dim_row,
                                            const ssize_t nb_ev,
-                                           const int config, 
+                                           const int config,
                                            const ssize_t kernel_t_start_idx,
                                            const ssize_t kernel_nb_t_slices,
                                            const ssize_t V_t_idx_offset,
-                                           const EigenVector &V_t, 
-                                           const array_cd_d2 &momentum, 
-                                           const GlobalData & gd, 
-                                           const OperatorLookup &operator_lookuptable, 
-                                           array_Xcd_d2_eigen & vdaggerv, 
-                                           const GaugeField &gauge ){
-
+                                           const EigenVector &V_t,
+                                           const array_cd_d2 &momentum,
+                                           const GlobalData &gd,
+                                           const OperatorLookup &operator_lookuptable,
+                                           array_Xcd_d2_eigen &vdaggerv,
+                                           const GaugeField &gauge) {
   Eigen::MatrixXcd W_t;
   Eigen::VectorXcd mom = Eigen::VectorXcd::Zero(dim_row);
 
   const int id_unity = operator_lookuptable.index_of_unity;
-  
+
   const int old_eigen_threads = Eigen::nbThreads();
   Eigen::setNbThreads(gd.nb_vdaggerv_eigen_threads);
 
-  for(ssize_t i = 0; i < kernel_nb_t_slices; ++i){
+  for (ssize_t i = 0; i < kernel_nb_t_slices; ++i) {
     // when the kernel is called inside a parallel region, only a single
     // iteration of this loop is running with a particular offset passed
     const ssize_t V_t_idx = i + V_t_idx_offset;
     bool test_fail = V_t.test_trace_sum(V_t_idx, false);
-    if(test_fail){
+    if (test_fail) {
       std::stringstream message;
-      message << "Eigenvector verification failed at config: " << config << " time slice: " <<
-         kernel_t_start_idx + V_t_idx << std::endl;
-      throw std::runtime_error( message.str() );
+      message << "Eigenvector verification failed at config: " << config
+              << " time slice: " << kernel_t_start_idx + V_t_idx << std::endl;
+      throw std::runtime_error(message.str());
     }
   }
 
-  for(ssize_t i = 0; i < kernel_nb_t_slices; ++i){
+  for (ssize_t i = 0; i < kernel_nb_t_slices; ++i) {
     const ssize_t V_t_idx = i + V_t_idx_offset;
     const ssize_t t = kernel_t_start_idx + V_t_idx;
-    for(const auto &op : operator_lookuptable.vdaggerv_lookup){
-      if( op.id != id_unity ){
-       if(!op.displacement.empty()){
-         W_t.noalias() = displace_eigenvectors(V_t[V_t_idx], gauge, t, op.displacement, 1);
-         vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * W_t;
-       } else {
-         // depending on the compiler and how well threading is done, this simple
-         // operation can be up to a factor 100 slower with dynamic scheduling
-         # pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
-         for(ssize_t x = 0; x < dim_row; ++x){
-           mom(x) = momentum[op.id][x / 3];
-         }
-         vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * mom.asDiagonal() * V_t[V_t_idx];
-       //  std::cout<<op.id<<std::endl;
-       //  std::cout<<vdaggerv[op.id][t] <<std::endl;
-       //  exit(1);
-       }
+    for (const auto &op : operator_lookuptable.vdaggerv_lookup) {
+      if (op.id != id_unity) {
+        if (!op.displacement.empty()) {
+          W_t.noalias() =
+              displace_eigenvectors(V_t[V_t_idx], gauge, t, op.displacement, 1);
+          vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * W_t;
+        } else {
+// depending on the compiler and how well threading is done, this simple
+// operation can be up to a factor 100 slower with dynamic scheduling
+#pragma omp parallel for num_threads(gd.nb_vdaggerv_eigen_threads) schedule(static)
+          for (ssize_t x = 0; x < dim_row; ++x) {
+            mom(x) = momentum[op.id][x / 3];
+          }
+          vdaggerv[op.id][t] = V_t[V_t_idx].adjoint() * mom.asDiagonal() * V_t[V_t_idx];
+          //  std::cout<<op.id<<std::endl;
+          //  std::cout<<vdaggerv[op.id][t] <<std::endl;
+          //  exit(1);
+        }
       } else {
-         vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
+        vdaggerv[op.id][t] = Eigen::MatrixXcd::Identity(nb_ev, nb_ev);
       }
     }
   }
   Eigen::setNbThreads(old_eigen_threads);
 }
 
-void OperatorFactory::build_vdaggerv(const std::string &filename, const int config, const GlobalData & gd) {
+void OperatorFactory::build_vdaggerv(const std::string &filename,
+                                     const int config,
+                                     const GlobalData &gd) {
   const ssize_t dim_row = 3 * Lx * Ly * Lz;
   const int id_unity = operator_lookuptable.index_of_unity;
 
@@ -291,8 +292,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       (boost::format("/%s/cnfg%04d/") % path_vdaggerv % config).str();
 
   // check if directory exists
-  if (( handling_vdaggerv == "write")   &&( 
-      access(full_path.c_str(), 0) != 0)) {
+  if ((handling_vdaggerv == "write") && (access(full_path.c_str(), 0) != 0)) {
     std::cout << "\tdirectory " << full_path.c_str()
               << " does not exist and will be created";
     boost::filesystem::path dir(full_path.c_str());
@@ -302,8 +302,10 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
       std::cout << "\tFailure" << std::endl;
   }
 
-  StopWatch swatch("Eigenvector and Gauge I/O and VdaggerV construction (note: various thread numbers used)",
-                   1);
+  StopWatch swatch(
+      "Eigenvector and Gauge I/O and VdaggerV construction (note: various thread numbers "
+      "used)",
+      1);
   swatch.start();
   // resizing each matrix in vdaggerv
   // TODO: check if it is better to use for_each and resize instead of std::fill
@@ -335,38 +337,39 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
   malloc_watch.stop();
   malloc_watch.print();
 
-  // how many outer iterations do we need to work off all time slices in a stepping 
+  // how many outer iterations do we need to work off all time slices in a stepping
   // of 'nb_evec_read_threads'
   const ssize_t nphases = (ssize_t)ceil((double)Lt / gd.nb_evec_read_threads);
- 
-  // starting time slice 
+
+  // starting time slice
   ssize_t phase_t_start_idx = 0;
- 
+
   // loop over the phases
   StopWatch phase_watch("Outer loop phase", 1);
-  for(ssize_t iphase = 0; iphase < nphases; iphase++){
+  for (ssize_t iphase = 0; iphase < nphases; iphase++) {
     phase_watch.start();
-    std::cout << "Phase " << iphase+1 << " of " << nphases << std::endl;
+    std::cout << "Phase " << iphase + 1 << " of " << nphases << std::endl;
 
     ssize_t t_end = phase_t_start_idx + gd.nb_evec_read_threads;
     ssize_t phase_nb_t_slices = gd.nb_evec_read_threads;
-    if( t_end >= Lt ){
+    if (t_end >= Lt) {
       phase_nb_t_slices = Lt - phase_t_start_idx;
       t_end = Lt;
     }
 
     StopWatch ev_io_watch("Threaded Eigenvector I/O", phase_nb_t_slices);
-    // perform thread-parallel I/O with the thread number chosen so as to not exceed node
-    // memory limits
-    #pragma omp parallel num_threads(phase_nb_t_slices)
+// perform thread-parallel I/O with the thread number chosen so as to not exceed node
+// memory limits
+#pragma omp parallel num_threads(phase_nb_t_slices)
     {
       ev_io_watch.start();
-      #pragma omp for schedule(static)
-      for(ssize_t i = 0; i < phase_nb_t_slices; ++i){
+#pragma omp for schedule(static)
+      for (ssize_t i = 0; i < phase_nb_t_slices; ++i) {
         const ssize_t t = phase_t_start_idx + i;
         auto const inter_name = (boost::format("%s%03d") % filename % t).str();
-        // we call with verbose=0 because we want to run verification in the more efficient mode
-        // down below, when 'nb_vdaggerv_eigen_threads' are in use to perform VdV.trace and VdV.sum
+        // we call with verbose=0 because we want to run verification in the more
+        // efficient mode down below, when 'nb_vdaggerv_eigen_threads' are in use to
+        // perform VdV.trace and VdV.sum
         V_t.read_eigen_vector(inter_name.c_str(), i, 0, false);
 
         // for small lattices, it is most efficient to trivially parallelize the
@@ -386,20 +389,19 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
                                   vdaggerv,
                                   *gauge);
         }
-
       }
       ev_io_watch.stop();
     }
     ev_io_watch.print();
 
     if (gd.nb_vdaggerv_eigen_threads != 1) {
-      // for larget lattices, one can avoid exceeding memory limits by doing threaded I/O above
-      // with 'nb_evec_read_threads' while doing the dense linear algebra with 'nb_vdaggerv_eigen_threads'
-      // down here, probably reasonably efficiently.
-      // Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV computation
-      // For instance, on a 32c64 lattice with 220 eigenvectors, it will limit itself to six threads
-      // no matter what has been set of nb_vdaggerv_eigen_threads
-      // On large lattices, however, allowing all cores to be used leads to lower total time
+      // for larget lattices, one can avoid exceeding memory limits by doing threaded I/O
+      // above with 'nb_evec_read_threads' while doing the dense linear algebra with
+      // 'nb_vdaggerv_eigen_threads' down here, probably reasonably efficiently.
+      // Unfortunately, Eigen self-limits the level of parallelism in the VdaggerV
+      // computation For instance, on a 32c64 lattice with 220 eigenvectors, it will limit
+      // itself to six threads no matter what has been set of nb_vdaggerv_eigen_threads On
+      // large lattices, however, allowing all cores to be used leads to lower total time
       // for build_vdaggerv
       kernel_compute_vdaggerv(dim_row,
                               nb_ev,
@@ -412,32 +414,31 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
                               gd,
                               operator_lookuptable,
                               vdaggerv,
-                              *gauge );
+                              *gauge);
     }
-    
+
     phase_t_start_idx += phase_nb_t_slices;
 
     phase_watch.stop();
     phase_watch.print();
-  } // for(iphase)
-  
+  }  // for(iphase)
 
   // perform thread-parallel I/O to write out VdaggerV
-  if(handling_vdaggerv == "write"){
+  if (handling_vdaggerv == "write") {
     StopWatch vdaggerv_io_watch("VdaggerV thread-parallel writing",
                                 gd.nb_evec_read_threads);
-    std::cout<<"Number of threads"<<gd.nb_evec_read_threads<<std::endl;
-    #pragma omp parallel num_threads(gd.nb_evec_read_threads)
+    std::cout << "Number of threads" << gd.nb_evec_read_threads << std::endl;
+#pragma omp parallel num_threads(gd.nb_evec_read_threads)
     {
       vdaggerv_io_watch.start();
-      #pragma omp for schedule(dynamic)
-      for(ssize_t t = 0; t < Lt; ++t){
-        for(const auto &op : operator_lookuptable.vdaggerv_lookup){
-          if( op.id != id_unity ){
+#pragma omp for schedule(dynamic)
+      for (ssize_t t = 0; t < Lt; ++t) {
+        for (const auto &op : operator_lookuptable.vdaggerv_lookup) {
+          if (op.id != id_unity) {
             std::string momentum_string = std::to_string(op.momentum[0]) +
                                           std::to_string(op.momentum[1]) +
                                           std::to_string(op.momentum[2]);
-            
+
             std::string displacement_string = to_string(op.displacement);
             std::string outfile =
                 (boost::format("operators.%04d.p_%s.d_%s.t_%03d") % config %
@@ -448,7 +449,7 @@ void OperatorFactory::build_vdaggerv(const std::string &filename, const int conf
         }
       }
       vdaggerv_io_watch.stop();
-    } // pragma omp parallel
+    }  // pragma omp parallel
     vdaggerv_io_watch.print();
   }
 
@@ -483,8 +484,8 @@ void OperatorFactory::read_vdaggerv(const int config) {
           // creating full filename for vdaggerv and reading them in
           std::string dummy = full_path + ".p_" + std::to_string(op.momentum[0]) +
                               std::to_string(op.momentum[1]) +
-                              std::to_string(op.momentum[2]) + ".d_" + to_string(op.displacement);
-
+                              std::to_string(op.momentum[2]) + ".d_" +
+                              to_string(op.displacement);
 
           auto const infile = (boost::format("%s.t_%03d") % dummy % t).str();
 
@@ -632,7 +633,8 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
  *                  handling_vdaggerv is "build" or "write"
  *
  *  Behavior of this function depends on handling_vdaggerv flag.
- *  - "only_vdaggerv_compute_save" Only the vdaggerv objects are construncted and written out
+ *  - "only_vdaggerv_compute_save" Only the vdaggerv objects are construncted and written
+ * out
  *  - "read" | "liuming" The operators are read in the corresponding format.
  *  - "build"            The operators are constructed from the eigenvectors
  *  - "write"            The operators are constructed and additionaly written
@@ -641,7 +643,7 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
 void OperatorFactory::create_operators(const std::string &filename,
                                        const RandomVector &rnd_vec,
                                        const int config,
-                                       const GlobalData & gd) {
+                                       const GlobalData &gd) {
   is_vdaggerv_set = false;
   if (handling_vdaggerv == "write" || handling_vdaggerv == "build")
     build_vdaggerv(filename, config, gd);

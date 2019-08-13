@@ -4,9 +4,9 @@
 #include "GaugeField.hpp"
 #include "RandomVector.hpp"
 #include "boost_multi_array.hpp"
+#include "global_data.hpp"
 #include "global_data_typedefs.hpp"
 #include "typedefs.hpp"
-#include "global_data.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
@@ -62,7 +62,9 @@ class OperatorFactory {
                         const int config,
                         const GlobalData &gd);
 
-  void build_vdaggerv(const std::string &filename, const int config, const GlobalData &gd);
+  void build_vdaggerv(const std::string &filename,
+                      const int config,
+                      const GlobalData &gd);
   /** Free memory of vdaggerv */
   void free_memory_vdaggerv();
 
@@ -72,7 +74,6 @@ class OperatorFactory {
     return vdaggerv[index][t];
   }
 
-  
  private:
   // Containers for operators which are accessible from outside
   array_Xcd_d2_eigen vdaggerv;
@@ -85,7 +86,7 @@ class OperatorFactory {
   /** @TODO comment private members */
   const OperatorLookup operator_lookuptable;
   const ssize_t Lt, Lx, Ly, Lz;
-  const ssize_t nb_ev, dilE=0;
+  const ssize_t nb_ev, dilE = 0;
   bool is_vdaggerv_set = false;
   std::string handling_vdaggerv;
   std::string path_vdaggerv;

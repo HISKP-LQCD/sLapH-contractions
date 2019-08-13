@@ -100,14 +100,16 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   config.add_options()("nb_evec_read_threads",
                        po::value<ssize_t>(&gd.nb_evec_read_threads)->default_value(1),
-                       "nb_evec_read_threads: number of threads used for reading eigenvector files in parallel");
+                       "nb_evec_read_threads: number of threads used for reading "
+                       "eigenvector files in parallel");
 
-  config.add_options()("nb_vdaggerv_eigen_threads",
-                       po::value<ssize_t>(&gd.nb_vdaggerv_eigen_threads)->default_value(1),
-                       "nb_vdaggerv_eigen_threads: number of Eigen threads to be used "
-                       "for dense matrix multiplication for VdaggerV construction "
-                       "(should equal the number of cores");
-  //vdaggerv options
+  config.add_options()(
+      "nb_vdaggerv_eigen_threads",
+      po::value<ssize_t>(&gd.nb_vdaggerv_eigen_threads)->default_value(1),
+      "nb_vdaggerv_eigen_threads: number of Eigen threads to be used "
+      "for dense matrix multiplication for VdaggerV construction "
+      "(should equal the number of cores");
+  // vdaggerv options
 
   config.add_options()("max_momentum",
                        po::value<int>(&gd.max_momentum)->default_value(1),
@@ -163,7 +165,8 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
       "handling_vdaggerv",
       po::value<std::string>(&gd.handling_vdaggerv)->default_value("build"),
       "The options are:\n"
-      "only_vdaggerv_compute_save: Only VdaggerV is build for all operators and saved on disk\n"
+      "only_vdaggerv_compute_save: Only VdaggerV is build for all operators and saved on "
+      "disk\n"
       "build: VdaggerV is build for all operators but not written to disk\n"
       "write: VdaggerV is build for all operators and written to disk\n"
       "read: VdaggerV was previously constructed and is read from disk");
@@ -319,7 +322,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
             << peram_matrix_size_sum * sizeof(Complex) / std::pow(2, 30) << " Gb"
             << std::endl;
 
-  if (!gd.quarks.empty()){
+  if (!gd.quarks.empty()) {
     std::cout << "\tDiagramParts:" << std::endl;
 
     int total_number_of_random_combinations_in_Q0 = 0;
@@ -327,47 +330,50 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
       total_number_of_random_combinations_in_Q0 += q.rnd_vec_ids.size();
     }
 
-    int Q0_matrix_size=gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
-      std::cout << "\t\tQ0:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt / gd.quarks[0].number_of_dilution_T *
-                   (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
-                   total_number_of_random_combinations_in_Q0 * Q0_matrix_size *
-                   sizeof(Complex) / std::pow(2, 30)
-            << " Gb" << std::endl;
+    int Q0_matrix_size =
+        gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
+    std::cout << "\t\tQ0:\t" << std::fixed << std::setprecision(2)
+              << gd.Lt / gd.quarks[0].number_of_dilution_T *
+                     (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
+                     total_number_of_random_combinations_in_Q0 * Q0_matrix_size *
+                     sizeof(Complex) / std::pow(2, 30)
+              << " Gb" << std::endl;
     int total_number_of_random_combinations_in_Q1 = 0;
     for (auto const &q : gd.quarkline_lookuptable.at("Q1")) {
       total_number_of_random_combinations_in_Q1 += q.rnd_vec_ids.size();
     }
-    int Q1_matrix_size=gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
-      std::cout << "\t\tQ1:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt / gd.quarks[0].number_of_dilution_T *
-                   (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
-                   total_number_of_random_combinations_in_Q1 * Q1_matrix_size *
-                   sizeof(Complex) / std::pow(2, 30)
-            << " Gb" << std::endl;
+    int Q1_matrix_size =
+        gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
+    std::cout << "\t\tQ1:\t" << std::fixed << std::setprecision(2)
+              << gd.Lt / gd.quarks[0].number_of_dilution_T *
+                     (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
+                     total_number_of_random_combinations_in_Q1 * Q1_matrix_size *
+                     sizeof(Complex) / std::pow(2, 30)
+              << " Gb" << std::endl;
 
     int total_number_of_random_combinations_in_Q2 = 0;
     for (auto const &q : gd.quarkline_lookuptable.at("Q2")) {
       total_number_of_random_combinations_in_Q2 += q.rnd_vec_ids.size();
     }
-  
-    int Q2_matrix_size=gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
-      std::cout << "\t\tQ2:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt / gd.quarks[0].number_of_dilution_T *
-                   (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
-                   total_number_of_random_combinations_in_Q2 * Q2_matrix_size *
-                   sizeof(Complex) / std::pow(2, 30)
-            << " Gb" << std::endl;
+
+    int Q2_matrix_size =
+        gd.quarks[0].number_of_dilution_D * gd.quarks[0].number_of_dilution_E;
+    std::cout << "\t\tQ2:\t" << std::fixed << std::setprecision(2)
+              << gd.Lt / gd.quarks[0].number_of_dilution_T *
+                     (gd.Lt / gd.quarks[0].number_of_dilution_T - 1) / 2 *
+                     total_number_of_random_combinations_in_Q2 * Q2_matrix_size *
+                     sizeof(Complex) / std::pow(2, 30)
+              << " Gb" << std::endl;
     int total_number_of_random_combinations_in_trQ1Q1 = 0;
     for (auto const &q : gd.trace_indices_map.at("trQ1Q1")) {
       total_number_of_random_combinations_in_trQ1Q1 +=
-        gd.quarkline_lookuptable.at("Q1").at(q[0]).rnd_vec_ids.size() *
-        gd.quarkline_lookuptable.at("Q1").at(q[1]).rnd_vec_ids.size();
+          gd.quarkline_lookuptable.at("Q1").at(q[0]).rnd_vec_ids.size() *
+          gd.quarkline_lookuptable.at("Q1").at(q[1]).rnd_vec_ids.size();
     }
     std::cout << "\ttrQ1Q1:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ1Q1 *
-                   sizeof(Complex) / std::pow(2, 30)
-            << " Gb" << std::endl;
+              << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ1Q1 *
+                     sizeof(Complex) / std::pow(2, 30)
+              << " Gb" << std::endl;
 
     int total_number_of_random_combinations_in_trQ0Q2 = 0;
     for (auto const &q : gd.trace_indices_map.at("trQ0Q2")) {
@@ -376,19 +382,19 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
       total_number_of_random_combinations_in_trQ0Q2 += size1 * size2;
     }
     std::cout << "\ttrQ0Q2:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ0Q2 *
-                   sizeof(Complex) / std::pow(2, 30)
-            << " Gb" << std::endl;
+              << gd.Lt * gd.Lt * total_number_of_random_combinations_in_trQ0Q2 *
+                     sizeof(Complex) / std::pow(2, 30)
+              << " Gb" << std::endl;
 
     int total_number_of_random_combinations_in_trQ1 = 0;
     for (auto const &q : gd.trace_indices_map.at("trQ1")) {
       total_number_of_random_combinations_in_trQ1 +=
-        gd.quarkline_lookuptable.at("Q1").at(q[0]).rnd_vec_ids.size();
+          gd.quarkline_lookuptable.at("Q1").at(q[0]).rnd_vec_ids.size();
     }
     std::cout << "\ttrQ1:\t" << std::fixed << std::setprecision(2)
-            << gd.Lt * total_number_of_random_combinations_in_trQ1 * sizeof(Complex) /
-                   std::pow(2, 30)
-            << " Gb" << std::endl;
+              << gd.Lt * total_number_of_random_combinations_in_trQ1 * sizeof(Complex) /
+                     std::pow(2, 30)
+              << " Gb" << std::endl;
 
     std::cout << "\tDiagrams:" << std::endl;
   }

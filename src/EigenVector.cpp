@@ -1,9 +1,9 @@
 #include "EigenVector.hpp"
 
 #include <boost/format.hpp>
-#include <sstream>
-#include <limits>
 #include <iomanip>
+#include <limits>
+#include <sstream>
 
 void EigenVector::write_eigen_vector(const std::string &filename,
                                      const ssize_t t,
@@ -41,28 +41,33 @@ bool EigenVector::test_trace_sum(const ssize_t t, const bool do_throw) const {
   const std::complex<double> trace = VdV.trace();
   const std::complex<double> sum = VdV.sum();
   // we allow for some deviation
-  if( abs( trace.real() - (double)V[t].cols() ) > (double)V[t].rows()*(double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
+  if (abs(trace.real() - (double)V[t].cols()) >
+      (double)V[t].rows() * (double)V[t].cols() *
+          std::numeric_limits<double>::epsilon()) {
     fail = true;
     std::stringstream message;
-    // when printing the error, make sure to print exactly what is above in the if statement
-    message << "Trace of VdaggerV: " << std::setprecision(20) <<
-      trace << " deviates from expectation by " << std::setprecision(20) <<
-      abs( trace.real() - (double)V[t].cols() ) << std::endl;
-    if(do_throw){
-      throw std::runtime_error( message.str() );
+    // when printing the error, make sure to print exactly what is above in the if
+    // statement
+    message << "Trace of VdaggerV: " << std::setprecision(20) << trace
+            << " deviates from expectation by " << std::setprecision(20)
+            << abs(trace.real() - (double)V[t].cols()) << std::endl;
+    if (do_throw) {
+      throw std::runtime_error(message.str());
     } else {
       std::cout << message.str() << std::endl;
     }
   }
-  if( abs( sum.real() - (double)V[t].cols() ) > (double)V[t].rows()*(double)V[t].cols()*std::numeric_limits<double>::epsilon() ){
+  if (abs(sum.real() - (double)V[t].cols()) >
+      (double)V[t].rows() * (double)V[t].cols() *
+          std::numeric_limits<double>::epsilon()) {
     fail = true;
     std::stringstream message;
-    message << "Sum of VdaggerV elements: " << std::setprecision(20) <<
-      sum << " deviates from expectation by " << std::setprecision(20) <<
-      abs( sum.real() - (double)V[t].cols() ) << std::endl;
+    message << "Sum of VdaggerV elements: " << std::setprecision(20) << sum
+            << " deviates from expectation by " << std::setprecision(20)
+            << abs(sum.real() - (double)V[t].cols()) << std::endl;
 
-    if(do_throw){
-      throw std::runtime_error( message.str() );
+    if (do_throw) {
+      throw std::runtime_error(message.str());
     } else {
       std::cout << message.str() << std::endl;
     }
@@ -90,9 +95,9 @@ void EigenVector::read_eigen_vector(const std::string &filename,
         infile.read((char *)&(eigen_vec[0]), 2 * V[t].rows() * sizeof(double));
         if (!infile) {
           throw std::runtime_error("Problem while reading Eigenvectors!");
-        } 
+        }
         for (ssize_t nrow = 0; nrow < V[t].rows(); ++nrow) {
-          (V[t])(nrow, ncol) = eigen_vec[nrow]; 
+          (V[t])(nrow, ncol) = eigen_vec[nrow];
         }
       }
     } else {
@@ -100,7 +105,7 @@ void EigenVector::read_eigen_vector(const std::string &filename,
     }
     infile.close();
 
-    if( verbose ){
+    if (verbose) {
       test_trace_sum(t);
     }
   } else {
