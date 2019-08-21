@@ -630,8 +630,6 @@ void OperatorFactory::read_vdaggerv_liuming(const int config) {
  *                  handling_vdaggerv is "build" or "write"
  *
  *  Behavior of this function depends on handling_vdaggerv flag.
- *  - "only_vdaggerv_compute_save" Only the vdaggerv objects are construncted and written
- * out
  *  - "read" | "liuming" The operators are read in the corresponding format.
  *  - "build"            The operators are constructed from the eigenvectors
  *  - "write"            The operators are constructed and additionaly written
