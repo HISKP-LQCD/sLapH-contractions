@@ -86,7 +86,7 @@ class OperatorFactory {
   /** @TODO comment private members */
   const OperatorLookup operator_lookuptable;
   const ssize_t Lt, Lx, Ly, Lz;
-  const ssize_t nb_ev, dilE = 0;
+  const ssize_t nb_ev, dilE;
   bool is_vdaggerv_set = false;
   std::string handling_vdaggerv;
   std::string path_vdaggerv;
