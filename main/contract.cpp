@@ -44,14 +44,6 @@ int main(int ac, char *av[]) {
   Eigen::initParallel();
   Eigen::setNbThreads(gd.nb_eigen_threads);
 
-  // Creating instances of perambulators, random vectors, operators, and
-  // correlators. The eigenvectors are read from disc in the operator class.
-  Perambulator perambulators(gd.peram_construct.nb_entities,
-                             gd.peram_construct.size_rows,
-                             gd.peram_construct.size_cols);
-  RandomVector randomvectors(gd.rnd_vec_construct.nb_entities,
-                             gd.rnd_vec_construct.length);
-
   OperatorFactory meson_operators(gd.Lt,
                                   gd.Lx,
                                   gd.Ly,
@@ -79,16 +71,28 @@ int main(int ac, char *av[]) {
     // changes all paths and names which depend on the configuration
     build_IO_names(gd, config_i);
 
+    // with this odd ordering we can optimize memory usage. Operator creation below
+    // will incur a significant temporary memory cost, so we only allocate the bare
+    // minimum here (the random vectors)
+    RandomVector randomvectors(gd.rnd_vec_construct.nb_entities,
+                               gd.rnd_vec_construct.length);
+
+    // read eigenvectors and build operators
+    meson_operators.create_operators(
+        gd.filename_eigenvectors, randomvectors, config_i, gd);
+
+    // perambulators, the allocation overhead is negligible
+    Perambulator perambulators(gd.peram_construct.nb_entities,
+                               gd.peram_construct.size_rows,
+                               gd.peram_construct.size_cols);
+
     // read perambulators
     perambulators.read_perambulators_from_separate_files(
         gd.Lt, gd.number_of_eigen_vec, gd.quarks, gd.peram_construct.filename_list);
     // read random vectors
     randomvectors.read_random_vectors_from_separate_files(
         gd.rnd_vec_construct.filename_list);
-    // read eigenvectors and build operators
-    meson_operators.create_operators(gd.filename_eigenvectors, randomvectors, config_i);
 
-    // doing all the contractions
     contract(gd.Lt,
              (gd.quarks)[0].number_of_dilution_T,
              (gd.quarks)[0].number_of_dilution_E,

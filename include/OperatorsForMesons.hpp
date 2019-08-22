@@ -4,6 +4,7 @@
 #include "GaugeField.hpp"
 #include "RandomVector.hpp"
 #include "boost_multi_array.hpp"
+#include "global_data.hpp"
 #include "global_data_typedefs.hpp"
 #include "typedefs.hpp"
 
@@ -58,7 +59,12 @@ class OperatorFactory {
 
   void create_operators(const std::string &filename,
                         const RandomVector &rnd_vec,
-                        const int config);
+                        const int config,
+                        const GlobalData &gd);
+
+  void build_vdaggerv(const std::string &filename,
+                      const int config,
+                      const GlobalData &gd);
   /** Free memory of vdaggerv */
   void free_memory_vdaggerv();
 
@@ -90,7 +96,6 @@ class OperatorFactory {
   // Internal functions to build individual operators --> The interface to these
   // functions is 'create_Operators'
   // input -> filename: name and path of eigenvectors
-  void build_vdaggerv(const std::string &filename, const int config);
   void read_vdaggerv(const int config);
   void read_vdaggerv_liuming(const int config);
 };

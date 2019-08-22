@@ -92,7 +92,6 @@ if(NOT DEFINED EIGEN3_INCLUDE_DIR)
   find_package(Eigen3 REQUIRED)
 endif()
 target_include_directories(lcontract SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
-target_compile_definitions(lcontract PUBLIC EIGEN_DONT_PARALLELIZE)
 
 # Lime
 if(NOT DEFINED LIME_INCLUDE_DIRS)
@@ -161,6 +160,10 @@ endif()
 
 add_executable(contract main/contract.cpp)
 target_link_libraries(contract lcontract)
+
+add_executable(vdaggerv main/VdaggerV.cpp)
+target_link_libraries(vdaggerv lcontract)
+
 
 install(TARGETS contract DESTINATION bin)
 
