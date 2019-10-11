@@ -16,6 +16,7 @@
 
 #include "CartesianProduct.hpp"
 #include "DiagramSpec.hpp"
+#include "typedefs.hpp"
 
 #include <iostream>
 
