@@ -90,7 +90,7 @@ void build_quantum_numbers_from_correlator_list(
   std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
 
   std::cout << "Sizes of product source and sink are: " <<
-    ssize(product_source) << ", " << ssize(product_sink) << std::endl;
+    product_source.size() << ", " << product_sink.size() << std::endl;
 
   // We iterate over all source index combinations.
   for (auto const &indices_source : product_source) {
