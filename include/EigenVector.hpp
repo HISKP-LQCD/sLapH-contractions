@@ -48,5 +48,9 @@ class EigenVector {
                          const ssize_t t,
                          const ssize_t verbose,
                          const bool mock = false);
+
+  // compute trace and sum of VdaggerV at zero momentum
+  bool test_trace_sum(const ssize_t t, const bool do_throw = true) const;
+
   void set_V(Eigen::MatrixXcd &v, const ssize_t t);
 };

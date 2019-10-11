@@ -93,7 +93,6 @@ if(NOT DEFINED EIGEN3_INCLUDE_DIR)
   find_package(Eigen3 REQUIRED)
 endif()
 target_include_directories(lcontract SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
-target_compile_definitions(lcontract PUBLIC EIGEN_DONT_PARALLELIZE)
 
 # Lime
 if(NOT DEFINED LIME_INCLUDE_DIRS)
@@ -129,23 +128,8 @@ if(has_diagnostics_color)
   endif()
 endif()
 
-option(SLAPH_TIMING_CORRELATOR "Timing of correlator building (per thread)" OFF)
-option(SLAPH_TIMING_DIAGRAMS "Timing of individual diagram multiplies and traces" OFF)
-option(SLAPH_TIMING_ULTRA_FINE "Timing of DilutedFactor components" OFF)
-option(SLAPH_TIMING_FINE "Timing of QuarkLineBlock constructions" OFF)
-
-if(SLAPH_TIMING_CORRELATOR)
-  add_definitions("-DSLAPH_TIMING_CORRELATOR")
-endif()
-if(SLAPH_TIMING_DIAGRAMS)
-  add_definitions("-DSLAPH_TIMING_DIAGRAMS")
-endif()
-if(SLAPH_TIMING_ULTRA_FINE)
-  add_definitions("-DSLAPH_TIMING_ULTRA_FINE")
-endif()
-if(SLAPH_TIMING_FINE)
-  add_definitions("-DSLAPH_TIMING_FINE")
-endif()
+set(SLAPH_TIMING_LEVEL 0 CACHE INT "Granularity of time measurements")
+add_definitions("-DSLAPH_TIMING_LEVEL=${SLAPH_TIMING_LEVEL}")
 
 # Default to “Release” build type.
 message(STATUS "Build Type: '${CMAKE_BUILD_TYPE}'")
@@ -177,6 +161,10 @@ endif()
 
 add_executable(contract main/contract.cpp)
 target_link_libraries(contract lcontract)
+
+add_executable(vdaggerv main/VdaggerV.cpp)
+target_link_libraries(vdaggerv lcontract)
+
 
 install(TARGETS contract DESTINATION bin)
 

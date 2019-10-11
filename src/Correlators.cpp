@@ -109,7 +109,7 @@ void contract(const ssize_t Lt,
 
           diagram.assemble(t, slice_pair, q);
         }  // End of slice pair loop.
-      }  // End of diagram loop.
+      }    // End of diagram loop.
 
       q.clear();
     }  // End of block pair loop.

@@ -39,7 +39,6 @@ void DilutedFactorFactory<DilutedFactorType::Q0>::build(Key const &time_key) {
   auto const t1 = time_key[0];
 
   for (int operator_key = 0; operator_key < ssize(quarkline_indices); ++operator_key) {
-
     auto const &op = quarkline_indices[operator_key];
     const ssize_t gamma_id = op.gamma[0];
 

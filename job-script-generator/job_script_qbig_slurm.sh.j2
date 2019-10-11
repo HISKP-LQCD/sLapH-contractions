@@ -21,7 +21,7 @@ cd {{ rundir }}
 date
 
 {% for config_id in config_ids_for_one_job %}
-(../contract -i {{ config_path }} --start_config {{ config_id }} --end_config {{ config_id }} || exit 1) &
+(/usr/bin/time ../contract -i {{ config_path }} --start_config {{ config_id }} --end_config {{ config_id }} || exit 1) &
 {% endfor %}
 
 wait

@@ -66,7 +66,7 @@ template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace2Factory<Q1, Q1, Q1>::build");
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q1, Q1>::build");
 
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
@@ -96,7 +96,7 @@ template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace2Factory<Q1, Q0, Q2>::build");
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2>::build");
 
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
@@ -127,7 +127,7 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace2Factory<Q1, Q1, Q1, Q1>::build");
+  TimingScope<3> timing_scope("DilutedTrace4Factory<Q1, Q1, Q1, Q1>::build");
 
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
@@ -163,7 +163,7 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace2Factory<Q2, Q0, Q2, Q0>::build");
+  TimingScope<3> timing_scope("DilutedTrace4Factory<Q2, Q0, Q2, Q0>::build");
 
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
@@ -196,7 +196,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace2Factory<Q2, Q0, Q2, Q0, Q2, Q0>::build");
+  TimingScope<3> timing_scope("DilutedTrace6Factory<Q2, Q0, Q2, Q0, Q2, Q0>::build");
 
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
