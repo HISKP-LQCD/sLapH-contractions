@@ -206,8 +206,20 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
                        "Stepsize between two configurations");
 
   config.add_options()("momentum_cutoff_0",
-                       po::value<int>(&gd.momentum_cutoff[0])->default_value(4),
-                       "Cutoff for |p₁|² + |p₂|² when |P|² = 0");
+                       po::value<int>(&gd.momentum_cutoff[0])->default_value(gd.momentum_cutoff[0]),
+                       "Cutoff for \\sum_i |pi|² when |P|² = 0");
+  config.add_options()("momentum_cutoff_1",
+                       po::value<int>(&gd.momentum_cutoff[1])->default_value(gd.momentum_cutoff[1]),
+                       "Cutoff for \\sum_i |pi|² when |P|² = 1");
+  config.add_options()("momentum_cutoff_2",
+                       po::value<int>(&gd.momentum_cutoff[2])->default_value(gd.momentum_cutoff[2]),
+                       "Cutoff for \\sum_i |pi|² when |P|² = 2");
+  config.add_options()("momentum_cutoff_3",
+                       po::value<int>(&gd.momentum_cutoff[3])->default_value(gd.momentum_cutoff[3]),
+                       "Cutoff for \\sum_i |pi|² when |P|² = 3");
+  config.add_options()("momentum_cutoff_4",
+                       po::value<int>(&gd.momentum_cutoff[4])->default_value(gd.momentum_cutoff[4]),
+                       "Cutoff for \\sum_i |pi|² when |P|² = 4");
 
   //////////////////////////////////////////////////////////////////////////////
 
