@@ -1,0 +1,27 @@
+
+
+#lattice parameters:
+Lt = 48
+Lx = 24
+Ly = 24
+Lz = 24
+
+handling_vdaggerv = write
+
+path_vdaggerv = /hiskp4/pittler/vdaggerv/nf211/A60.24s_1/
+
+nb_evec_read_threads = 1
+
+nb_vdaggerv_eigen_threads = 1
+
+# eigenvector handling: path not neede right now
+number_of_eigen_vec = 120
+
+max_momentum = 2
+
+name_eigenvectors = eigenvectors
+path_eigenvectors =  /hiskp4/eigensystems/nf211/A60.24s_1/data
+
+# output path
+output_path = /hiskp4/pittler/contractions/A60.24s_1
+
