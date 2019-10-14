@@ -7,7 +7,7 @@ Ly = 24
 Lz = 24
 
 # this should be write, this part of the code
-# do not perform any contraction at all.
+# does not perform any contraction at all.
 handling_vdaggerv = write
 
 path_vdaggerv = /hiskp4/pittler/vdaggerv/nf211/A60.24s_1/
