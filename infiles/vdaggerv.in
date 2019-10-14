@@ -6,17 +6,22 @@ Lx = 24
 Ly = 24
 Lz = 24
 
+# this should be write, this part of the code
+# do not perform any contraction at all.
 handling_vdaggerv = write
 
 path_vdaggerv = /hiskp4/pittler/vdaggerv/nf211/A60.24s_1/
 
+# Number of threads for reading the eigensystems
 nb_evec_read_threads = 1
 
+# Number of threads for eigen parallelization
 nb_vdaggerv_eigen_threads = 1
 
 # eigenvector handling: path not neede right now
 number_of_eigen_vec = 120
 
+# Momentum cutoff for generating vdaggerv objects
 max_momentum = 2
 
 name_eigenvectors = eigenvectors
