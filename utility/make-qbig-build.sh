@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
+# Licensed under The MIT/Expat License
 
 # Sets up a debug and a release build outside of the source code with the paths
 # that are needed on QBiG. The debug build will automatically set the `-g` flag
@@ -21,8 +23,8 @@ for buildtype in release debug; do
         "$sourcedir" \
         -DCMAKE_MODULE_PATH=/usr/share/cmake-3.0/Modules/ \
         -DCMAKE_BUILD_TYPE=$buildtype \
-        -DLIME_INCLUDE_DIRS='/hadron/helmes/libraries/lime-1.3.2/include' \
-        -DLIME_LIBRARIES='-L /hadron/helmes/libraries/lime-1.3.2/lib -llime' 
+        -DLIME_INCLUDE_DIRS="$HOME/Code/c-lime/include" \
+        -DLIME_LIBRARIES="-L $HOME/Code/c-lime/lib -llime"
 
     make -j $(nproc)
     popd
