@@ -32,7 +32,3 @@ max_momentum = 2
 name_eigenvectors = eigenvectors
 # directory where the LapH eigensystems reside
 path_eigenvectors =  /hiskp4/eigensystems/nf211/A60.24s_1/data
-
-# output path
-output_path = /hiskp4/pittler/contractions/A60.24s_1
-
