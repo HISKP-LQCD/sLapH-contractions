@@ -6,25 +6,31 @@ Lx = 24
 Ly = 24
 Lz = 24
 
-# this should be write, this part of the code
+# this should be set to "write", this part of the code
 # does not perform any contraction at all.
 handling_vdaggerv = write
 
+# storage path for output VdaggerV files, path must exist
 path_vdaggerv = /hiskp4/pittler/vdaggerv/nf211/A60.24s_1/
 
 # Number of threads for reading the eigensystems
-nb_evec_read_threads = 1
+# as one read buffer per thread is required, this is limited by the amount of
+# available memory
+# also, setting it too high may result in lower throughput due to resource contention
+nb_evec_read_threads = 4
 
-# Number of threads for eigen parallelization
-nb_vdaggerv_eigen_threads = 1
+# Number of threads for eigen parallelization in the computation of VdaggerV
+# this should be set to the number cores 
+nb_vdaggerv_eigen_threads = 16
 
-# eigenvector handling: path not neede right now
 number_of_eigen_vec = 120
 
-# Momentum cutoff for generating vdaggerv objects
+# Momentum cutoff for generating vdaggerv objects (maximal p^2 used in momentum projection)
 max_momentum = 2
 
+# basename of the files containing eigenvectors
 name_eigenvectors = eigenvectors
+# directory where the LapH eigensystems reside
 path_eigenvectors =  /hiskp4/eigensystems/nf211/A60.24s_1/data
 
 # output path
