@@ -48,10 +48,10 @@ void build_quantum_numbers_from_correlator_list(
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
 
-for (auto const &elem : correlator_list) {
-  auto const &corr_string = elem.second.data();
-  std::cout << corr_string << std::endl;
-}
+  for (auto const &elem : correlator_list) {
+    auto const &corr_string = elem.second.data();
+    std::cout << corr_string << std::endl;
+  }
 
   std::vector<Operators> qn_op;
 
