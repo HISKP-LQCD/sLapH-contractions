@@ -47,7 +47,15 @@ void build_quantum_numbers_from_correlator_list(
     pt::ptree const &correlator_list,
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
+
+for (auto const &elem : correlator_list) {
+  auto const &corr_string = elem.second.data();
+  std::cout << corr_string << std::endl;
+}
+
   std::vector<Operators> qn_op;
+
+  /*
 
   for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
@@ -162,6 +170,7 @@ void build_quantum_numbers_from_correlator_list(
       }
     }
   }
+*/
 }
 
 /** Makes a string object of a displacement vector */
@@ -485,8 +494,10 @@ void init_lookup_tables(GlobalData &gd) {
 
     // Build the correlator and dataset names for hdf5 output files
     std::vector<std::string> quark_types;
+    /*
     for (auto const &id : correlator.quark_numbers)
       quark_types.emplace_back(gd.quarks[id].type);
+      */
 
     // Build the lookuptable for VdaggerV and return an array of indices
     // corresponding to @em quantum_numbers computed in step 1. In @em
@@ -497,7 +508,7 @@ void init_lookup_tables(GlobalData &gd) {
         quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
     std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
 
-    auto const &spec = diagram_specs.at(correlator.type);
+    auto const &spec = diagram_specs.at(correlator_name);
 
     size_t ql_size = 0;
     for (auto const &trace : spec.traces) {
@@ -510,8 +521,9 @@ void init_lookup_tables(GlobalData &gd) {
         for (auto const &quarkline_spec : trace_spec) {
           auto const ric_ids =
               create_rnd_vec_id(gd.quarks,
-                                correlator.quark_numbers[quarkline_spec.q1],
-                                correlator.quark_numbers[quarkline_spec.q2],
+                                //correlator.quark_numbers[quarkline_spec.q1],
+                                //correlator.quark_numbers[quarkline_spec.q2],
+                                0, 0,
                                 quarkline_spec.is_loop());
           build_Quarkline_lookup_one_qn(quarkline_spec.q2,
                                         quantum_numbers[d],
@@ -522,7 +534,7 @@ void init_lookup_tables(GlobalData &gd) {
         }
       }
 
-      std::string hdf5_dataset_name = build_hdf5_dataset_name(correlator.type,
+      std::string hdf5_dataset_name = build_hdf5_dataset_name(correlator_name,
                                                               gd.start_config,
                                                               gd.path_output,
                                                               quark_types,
@@ -538,7 +550,7 @@ void init_lookup_tables(GlobalData &gd) {
             gd.trace_indices_map[trace_request_factory.name()], ql_ids);
         correlator_request.trace_requests.push_back(trace_request);
       }
-      unique_push_back(gd.correlator_requests_map[correlator.type], correlator_request);
+      unique_push_back(gd.correlator_requests_map[correlator_name], correlator_request);
     }
   }
 
