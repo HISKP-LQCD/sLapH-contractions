@@ -32,8 +32,6 @@ using Vector = QuantumNumbers::VectorData;
  * processed into Operators struct
  * @param[out] quantum_numbers A list of all physical quantum numbers as
  * specified in the QuantumNumbers struct that are possible for @em correlator
- * @param[in] momentum_cutoff Cutoffs for sum of momenta squared, see
- * GlobalData::momentum_cutoff.
  *
  * \p correlator contains multiple operator_numbers. From combinatorics a
  * large number of combinations arise. In general only a subset of them are
@@ -43,8 +41,7 @@ using Vector = QuantumNumbers::VectorData;
 void build_quantum_numbers_from_correlator_list(
     Correlators_2 const &correlator,
     Operator_list const &operator_list,
-    std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
-    std::map<int, int> const &momentum_cutoff) {
+    std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
   std::vector<Operators> qn_op;
   for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
@@ -128,11 +125,6 @@ void build_quantum_numbers_from_correlator_list(
     if (!correlator.tot_mom.empty() &&
         std::find(correlator.tot_mom.begin(), correlator.tot_mom.end(), p_so) ==
             correlator.tot_mom.end()) {
-      continue;
-    }
-
-    // Also discard when we are beyond the momentum cutoff.
-    if (sum_norm_sq > momentum_cutoff.at(p_so.squaredNorm())) {
       continue;
     }
 
@@ -477,7 +469,7 @@ void init_lookup_tables(GlobalData &gd) {
     // this particular correlation function.
     std::vector<std::vector<QuantumNumbers>> quantum_numbers;
     build_quantum_numbers_from_correlator_list(
-        correlator, gd.operator_list, quantum_numbers, gd.momentum_cutoff);
+        correlator, gd.operator_list, quantum_numbers);
 
     // Build the correlator and dataset names for hdf5 output files
     std::vector<std::string> quark_types;

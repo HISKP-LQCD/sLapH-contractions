@@ -73,6 +73,7 @@ struct GlobalData {
   std::string path_config;
   std::string handling_vdaggerv;
   std::string path_vdaggerv;
+  std::string path_correlator_list;
 
   RandomVectorConstruction rnd_vec_construct;
   PerambulatorConstruction peram_construct;
@@ -84,22 +85,6 @@ struct GlobalData {
   OperatorLookup operator_lookuptable;
   TraceIndicesCollection trace_indices_map;
   CorrelatorRequestsMap correlator_requests_map;
-
-  /**
-   * Cutoff for the sum of individual momenta.
-   *
-   * The index is the total momentum squared, @f$ |P|^2 @f$, the value the sum
-   * of the individual momenta squared, @f$ |p_1|^2 + |p_2|^2 @f$. The values
-   * are chosen by hand from a feeling about the signal quality. When building
-   * momentum combinations to compute, the condition @f$ |p_1|^2 + |p_2|^2 \le
-   * c(|P|^2) @f$ will be enforced.
-   *
-   * Signal quality gets worse with large individual momenta, therefore it does
-   * not make sense to include a very large @f$ p_1 @f$ in the @f$ |P|^2 = 0
-   * @f$ case (with @f$ p_2 = - p_1 @f$). The current cutoff of 4 means that
-   * only individual momenta up to @f$ (0, 0, 2) @f$ are computed.
-   */
-  std::map<int, int> momentum_cutoff;
 
   HypPars hyp_parameters;
 
