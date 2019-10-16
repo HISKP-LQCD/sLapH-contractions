@@ -18,12 +18,15 @@
 #include "DiagramSpec.hpp"
 #include "typedefs.hpp"
 
-#include <boost/property_tree/ptree.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <iostream>
 
-  namespace pt = boost::property_tree;
+namespace pt = boost::property_tree;
 
 using Vector = QuantumNumbers::VectorData;
 
@@ -47,13 +50,33 @@ void build_quantum_numbers_from_correlator_list(
     pt::ptree const &correlator_list,
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
+  boost::regex const momentum_regex("p(-?\\d)(-?\\d)(-?\\d)\\.d000\\.g(\\d)");
 
   for (auto const &elem : correlator_list) {
     auto const &corr_string = elem.second.data();
-    std::cout << corr_string << std::endl;
-  }
+    std::vector<std::string> parts;
+    boost::split(parts, corr_string, boost::is_any_of("_"));
+    auto const &corr_type = parts[0];
+    auto const &quarks_string = parts[1];
 
-  std::vector<Operators> qn_op;
+    std::vector<QuantumNumbers> qns;
+
+    for (int i = 2; i < ssize(parts); ++i) {
+      auto const &part = parts[i];
+      boost::smatch match;
+      boost::regex_match(part, match, momentum_regex);
+
+      QuantumNumbers qn = {{boost::lexical_cast<int>(match[4].str())},
+                           {},
+                           {boost::lexical_cast<int>(match[1].str()),
+                            boost::lexical_cast<int>(match[2].str()),
+                            boost::lexical_cast<int>(match[3].str())}};
+
+      qns.push_back(qn);
+    }
+
+    quantum_numbers.push_back(qns);
+  }
 
   /*
 
@@ -521,9 +544,10 @@ void init_lookup_tables(GlobalData &gd) {
         for (auto const &quarkline_spec : trace_spec) {
           auto const ric_ids =
               create_rnd_vec_id(gd.quarks,
-                                //correlator.quark_numbers[quarkline_spec.q1],
-                                //correlator.quark_numbers[quarkline_spec.q2],
-                                0, 0,
+                                // correlator.quark_numbers[quarkline_spec.q1],
+                                // correlator.quark_numbers[quarkline_spec.q2],
+                                0,
+                                0,
                                 quarkline_spec.is_loop());
           build_Quarkline_lookup_one_qn(quarkline_spec.q2,
                                         quantum_numbers[d],
