@@ -18,7 +18,12 @@
 #include "DiagramSpec.hpp"
 #include "typedefs.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 #include <iostream>
+
+  namespace pt = boost::property_tree;
 
 using Vector = QuantumNumbers::VectorData;
 
@@ -39,10 +44,11 @@ using Vector = QuantumNumbers::VectorData;
  * conservation is enforced and multiple cutoffs introduced.
  */
 void build_quantum_numbers_from_correlator_list(
-    Correlators_2 const &correlator,
+    pt::ptree const &correlator_list,
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
   std::vector<Operators> qn_op;
+
   for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
       std::ostringstream oss;
@@ -464,12 +470,18 @@ Factories make_trace_request_factories(DiagramSpec const &spec) {
  *  @bug In build_Q1_lookup the order of quarks given is consistently switched.
  */
 void init_lookup_tables(GlobalData &gd) {
-  for (auto const &correlator : gd.correlator_list) {
+  pt::ptree tree;
+  pt::read_json(gd.path_correlator_list, tree);
+
+  for (auto const &node : tree) {
+    auto const &correlator_name = node.first;
+    auto const &correlator_list = node.second;
+
     // Build an array (quantum_numbers) with all the quantum numbers needed for
     // this particular correlation function.
     std::vector<std::vector<QuantumNumbers>> quantum_numbers;
     build_quantum_numbers_from_correlator_list(
-        correlator, gd.operator_list, quantum_numbers);
+        correlator_list, gd.operator_list, quantum_numbers);
 
     // Build the correlator and dataset names for hdf5 output files
     std::vector<std::string> quark_types;
