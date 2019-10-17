@@ -50,7 +50,7 @@ void build_quantum_numbers_from_correlator_list(
     pt::ptree const &correlator_list,
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
-  boost::regex const momentum_regex("p(-?\\d)(-?\\d)(-?\\d)\\.d000\\.g(\\d)");
+  boost::regex const momentum_regex("p(-?\\d)(-?\\d)(-?\\d)\\.d000\\.g(\\d+)");
 
   for (auto const &elem : correlator_list) {
     auto const &corr_string = elem.second.data();
@@ -65,6 +65,16 @@ void build_quantum_numbers_from_correlator_list(
       auto const &part = parts[i];
       boost::smatch match;
       boost::regex_match(part, match, momentum_regex);
+
+      bool matched = true;
+      for (int j = 1; j < 4; ++j) {
+        matched &= match[j].matched;
+      }
+
+      if (!matched) {
+        std::cout << "The following correlator string could not be parsed: " << corr_string << std::endl;
+        exit(1)
+      }
 
       QuantumNumbers qn = {{boost::lexical_cast<int>(match[4].str())},
                            {},
