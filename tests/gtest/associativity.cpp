@@ -5,7 +5,8 @@
 #include <iomanip>
 #include <random>
 
-static std::vector<DilutedFactor> make_random_diluted_factor(int seed, ssize_t size = 50) {
+static std::vector<DilutedFactor> make_random_diluted_factor(int seed,
+                                                             ssize_t size = 50) {
   std::vector<DilutedFactor> df;
   df.reserve(size);
 
@@ -37,7 +38,7 @@ static bool operator<(Eigen::MatrixXcd const &m1, Eigen::MatrixXcd const &m2) {
       }
     }
   }
-    return true;
+  return true;
 }
 
 static bool operator<(DilutedFactor const &df1, DilutedFactor const &df2) {
@@ -56,10 +57,10 @@ TEST(DilutedFactor, associativity) {
   auto df3 = make_random_diluted_factor(3);
   auto df4 = make_random_diluted_factor(4);
 
-  //std::sort(std::begin(df1), std::end(df1));
-  //std::sort(std::begin(df2), std::end(df2));
-  //std::sort(std::begin(df3), std::end(df3));
-  //std::sort(std::begin(df4), std::end(df4));
+  // std::sort(std::begin(df1), std::end(df1));
+  // std::sort(std::begin(df2), std::end(df2));
+  // std::sort(std::begin(df3), std::end(df3));
+  // std::sort(std::begin(df4), std::end(df4));
 
   EXPECT_NE(df1, df2);
   EXPECT_NE(df1, df3);
@@ -71,8 +72,8 @@ TEST(DilutedFactor, associativity) {
   auto prod_12_3 = (df1 * df2) * df3;
   auto prod_1_23 = df1 * (df2 * df3);
 
-  //std::sort(std::begin(prod_12_3), std::end(prod_12_3));
-  //std::sort(std::begin(prod_1_23), std::end(prod_1_23));
+  // std::sort(std::begin(prod_12_3), std::end(prod_12_3));
+  // std::sort(std::begin(prod_1_23), std::end(prod_1_23));
 
   if (ssize(prod_12_3) != ssize(prod_1_23)) {
     std::cout << "df1:\n";
@@ -88,11 +89,11 @@ TEST(DilutedFactor, associativity) {
       std::cout << elem << "\n";
     }
     std::cout << "1 * 2:\n";
-    for (auto const &elem : df1 * df2) {
+    for (auto const &elem : df1 *df2) {
       std::cout << elem << "\n";
     }
     std::cout << "2 * 3:\n";
-    for (auto const &elem : df2 * df3) {
+    for (auto const &elem : df2 *df3) {
       std::cout << elem << "\n";
     }
     std::cout << "(1 * 2) * 3\n";

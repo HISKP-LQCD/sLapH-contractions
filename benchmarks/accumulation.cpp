@@ -18,7 +18,7 @@ static std::vector<double> make_numbers() {
   return numbers;
 }
 
-template<typename TestAccumulator>
+template <typename TestAccumulator>
 static void bm_accumulate(benchmark::State &state) {
   auto const &numbers = make_numbers();
 
