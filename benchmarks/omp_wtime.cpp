@@ -5,7 +5,7 @@ static void BM_omp_wtime(benchmark::State &state) {
   volatile double time;
 
   for (auto _ : state) {
-    time = omp_get_wtime();
+    time __attribute__((unused)) = omp_get_wtime();
   }
 }
 

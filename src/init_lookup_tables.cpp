@@ -491,7 +491,6 @@ void init_lookup_tables(GlobalData &gd) {
       auto const &corr_string = elem.second.data();
       std::vector<std::string> parts;
       boost::split(parts, corr_string, boost::is_any_of("_"));
-      auto const &corr_type = parts[0];
       auto const &quarks_string = parts[1];
 
       std::vector<QuantumNumbers> quantum_numbers;
