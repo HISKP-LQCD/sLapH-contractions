@@ -256,9 +256,9 @@ void build_VdaggerV_lookup(std::vector<QuantumNumbers> const &qn_vec,
       // that if we we encounter a momentum which is positive in the first
       // non-zero component we need to dagger that as well already.
       bool const ref_dagger =
-          qn.momentum[0] < 0 || (qn.momentum[0] == 0 && qn.momentum[1] < 0) ||
-          (qn.momentum[0] == 0 && qn.momentum[1] == 0 && qn.momentum[2] < 0);
-      auto const momentum = (ref_dagger ? +1 : -1) * qn.momentum;
+          qn.momentum[0] > 0 || (qn.momentum[0] == 0 && qn.momentum[1] > 0) ||
+          (qn.momentum[0] == 0 && qn.momentum[1] == 0 && qn.momentum[2] > 0);
+      auto const momentum = (ref_dagger ? -1 : +1) * qn.momentum;
 
       vdaggerv_lookup.emplace_back(
           VdaggerVQuantumNumbers(ssize(vdaggerv_lookup),
