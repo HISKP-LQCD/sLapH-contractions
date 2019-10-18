@@ -248,12 +248,22 @@ void build_VdaggerV_lookup(std::vector<QuantumNumbers> const &qn_vec,
                               (Vector(vdv_qn.momentum.data()) == qn.momentum ||
                                Vector(vdv_qn.momentum.data()) == (-1) * qn.momentum);
                      });
+
     if (it == vdaggerv_lookup.end()) {
+      // For some reason that Martin does not fully understand yet the VdaggerV
+      // objects that are stored for the cA2.09.48 ensemble always have a
+      // negative sign for the first non-zero momentum component. This means
+      // that if we we encounter a momentum which is positive in the first
+      // non-zero component we need to dagger that as well already.
+      bool const ref_dagger =
+          qn.momentum[0] < 0 || qn.momentum[1] < 0 || qn.momentum[2] < 0;
+      auto const momentum = (ref_dagger ? +1 : -1) * qn.momentum;
+
       vdaggerv_lookup.emplace_back(
           VdaggerVQuantumNumbers(ssize(vdaggerv_lookup),
-                                 {qn.momentum[0], qn.momentum[1], qn.momentum[2]},
+                                 {momentum[0], momentum[1], momentum[2]},
                                  qn.displacement));
-      vdv_indices_row.emplace_back(ssize(vdaggerv_lookup) - 1, false);
+      vdv_indices_row.emplace_back(ssize(vdaggerv_lookup) - 1, ref_dagger);
     } else {
       bool const dagger = qn.momentum != Vector(0, 0, 0) &&
                           Vector(it->momentum.data()) == (-1) * qn.momentum;
@@ -540,11 +550,10 @@ void init_lookup_tables(GlobalData &gd) {
 
       for (auto const &trace_spec : spec.traces) {
         for (auto const &quarkline_spec : trace_spec) {
-          auto const ric_ids =
-              create_rnd_vec_id(gd.quarks,
-                                quark_numbers[quarkline_spec.q1],
-                                quark_numbers[quarkline_spec.q2],
-                                quarkline_spec.is_loop());
+          auto const ric_ids = create_rnd_vec_id(gd.quarks,
+                                                 quark_numbers[quarkline_spec.q1],
+                                                 quark_numbers[quarkline_spec.q2],
+                                                 quarkline_spec.is_loop());
           build_Quarkline_lookup_one_qn(quarkline_spec.q2,
                                         quantum_numbers,
                                         vdv_indices,
