@@ -182,6 +182,10 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
 
     Tr[time_key][i] = factor_to_trace(l1, l2);
   }
+
+#ifdef SLAPH_CLEAR_QQ_CACHE
+  dpf_.clear();
+#endif
 }
 
 template class DilutedTrace4Factory<DilutedFactorType::Q2,
@@ -224,6 +228,10 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
 
     Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
   }
+
+#ifdef SLAPH_CLEAR_QQ_CACHE
+  dpf_.clear();
+#endif
 }
 
 template class DilutedTrace6Factory<DilutedFactorType::Q2,
