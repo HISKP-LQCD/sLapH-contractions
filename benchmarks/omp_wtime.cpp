@@ -2,10 +2,10 @@
 #include <omp.h>
 
 static void BM_omp_wtime(benchmark::State &state) {
-  volatile double time;
+  volatile double time __attribute__((unused));
 
   for (auto _ : state) {
-    time __attribute__((unused)) = omp_get_wtime();
+    time = omp_get_wtime();
   }
 }
 

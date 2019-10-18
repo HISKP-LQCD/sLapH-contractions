@@ -24,28 +24,6 @@ static std::vector<DilutedFactor> make_random_diluted_factor(int seed,
   return df;
 }
 
-static bool operator<(Eigen::MatrixXcd const &m1, Eigen::MatrixXcd const &m2) {
-  assert(m1.rows() == m2.rows());
-  assert(m2.cols() == m2.cols());
-
-  for (int row = 0; row < m1.rows(); ++row) {
-    for (int col = 0; col < m1.cols(); ++col) {
-      if (m1(row, col).real() >= m2(row, col).real()) {
-        return false;
-      }
-      if (m1(row, col).imag() >= m2(row, col).imag()) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-static bool operator<(DilutedFactor const &df1, DilutedFactor const &df2) {
-  return df1.ric.first < df2.ric.first || df1.ric.second < df2.ric.second ||
-         df1.used_rnd_ids < df2.used_rnd_ids || df1.data < df2.data;
-}
-
 static bool operator==(DilutedFactor const &df1, DilutedFactor const &df2) {
   return df1.data == df2.data && df1.ric.first == df2.ric.first &&
          df1.ric.second == df2.ric.second && df1.used_rnd_ids == df2.used_rnd_ids;
