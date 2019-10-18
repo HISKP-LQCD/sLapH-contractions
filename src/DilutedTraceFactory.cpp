@@ -205,11 +205,11 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   auto const t4 = time_key[4];
   auto const t5 = time_key[5];
   auto const b0 = dilution_scheme.time_to_block(t0);
-  auto const b1 = dilution_scheme.time_to_block(t1);
+  //auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
-  auto const b3 = dilution_scheme.time_to_block(t3);
+  //auto const b3 = dilution_scheme.time_to_block(t3);
   auto const b4 = dilution_scheme.time_to_block(t4);
-  auto const b5 = dilution_scheme.time_to_block(t5);
+  //auto const b5 = dilution_scheme.time_to_block(t5);
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
