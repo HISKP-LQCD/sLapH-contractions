@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ComplexProduct.hpp"
+
+#include <atomic>
 #include <cmath>
 
 /**
@@ -47,9 +50,11 @@ class KahanAccumulator {
   Numeric c_ = 0.0;
 };
 
-template <typename Numeric>
+template <typename Numeric, typename Internal = Numeric>
 class NativeAccumulator {
  public:
+  NativeAccumulator() : sum_(0.0) {}
+
   Numeric value() const { return sum_; }
 
   NativeAccumulator operator+=(Numeric const right) {
@@ -68,12 +73,30 @@ class NativeAccumulator {
   }
 
  private:
-  Numeric sum_ = 0.0;
+  Internal sum_;
 };
 
-template <typename Numeric>
+template <typename Numeric, typename Internal = Numeric>
 #ifdef SLAPH_KAHAN
-using Accumulator = KahanAccumulator<Numeric>;
+using Accumulator = KahanAccumulator<Numeric, Internal>;
 #else
-using Accumulator = NativeAccumulator<Numeric>;
+using Accumulator = NativeAccumulator<Numeric, Internal>;
 #endif
+
+class AtomicAccumulator {
+ public:
+  AtomicAccumulator() : real_(0.0), imag_(0.0) {}
+
+  Complex value() const { return {real_, imag_}; }
+
+  void operator+=(Complex const right) {
+#pragma omp atomic
+    real_ += right.real();
+#pragma omp atomic
+    imag_ += right.imag();
+  }
+
+ private:
+  double real_;
+  double imag_;
+};

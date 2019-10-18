@@ -96,31 +96,16 @@ Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
 void Diagram::assemble(int const t, BlockIterator const &slice_pair, DiagramParts &q) {
   TimingScope<1> timing_scope("Diagram::assemble", name());
 
-  int const tid = omp_get_thread_num();
-
-  for (int i = 0; i != ssize(correlator_requests()); ++i) {
-    c_[tid][i] = Accumulator<Complex>{};
-  }
-
-  assemble_impl(c_.at(tid), slice_pair, q);
-
-  {
-    std::lock_guard<std::mutex> lock(mutexes_[t]);
-
-    for (int i = 0; i != ssize(correlator_requests()); ++i) {
-      correlator_[t][i] += c_[tid][i];
-    }
-  }
+  assemble_impl(t, slice_pair, q);
 }
 
-void Diagram::assemble_impl(AccumulatorVector &c,
+void Diagram::assemble_impl(int const t,
                             BlockIterator const &slice_pair,
                             DiagramParts &q) {
   TimingScope<1> timing_scope("Diagram::assemble_impl", name());
 
-  assert(correlator_requests().size() == correlator_requests().size());
   for (auto const &request : correlator_requests() | boost::adaptors::indexed(0)) {
-    c.at(request.index()) +=
+    correlator_.at(t).at(request.index()) +=
         resolve_request(request.value().trace_requests, slice_pair, q);
   }
 }

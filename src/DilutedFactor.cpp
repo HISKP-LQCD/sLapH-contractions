@@ -142,16 +142,16 @@ std::ostream &operator<<(std::ostream &os, DilutedFactor const &df) {
       os << m(row, col);
     }
   }
-  os << "}, {" << static_cast<int>(df.ric.first) << ", " << static_cast<int>(df.ric.second)
-     << "}, {";
+  os << "}, {" << static_cast<int>(df.ric.first) << ", "
+     << static_cast<int>(df.ric.second) << "}, {";
   auto used = df.used_rnd_ids;
   int base = 0;
   bool output = false;
   while (used != 0) {
     if (used % 2 == 1) {
-    if (output) {
-      os << ", ";
-    }
+      if (output) {
+        os << ", ";
+      }
       os << base;
       output = true;
     }

@@ -8,7 +8,7 @@
 
 #include <omp.h>
 
-#include <mutex>
+#include <atomic>
 
 struct DiagramParts {
   DiagramParts(RandomVector const &random_vector,
@@ -121,7 +121,7 @@ struct DiagramParts {
 
 class Diagram {
  public:
-  using AccumulatorVector = std::vector<Accumulator<Complex>>;
+  using AccumulatorVector = std::vector<AtomicAccumulator>;
 
   Diagram(std::vector<CorrelatorRequest> const &correlator_requests,
           std::string const &output_path,
@@ -132,14 +132,14 @@ class Diagram {
         output_path_(output_path),
         output_filename_(output_filename),
         Lt_(Lt),
-        correlator_(
-            Lt, AccumulatorVector(correlator_requests.size(), Accumulator<Complex>{})),
-        c_(omp_get_max_threads(),
-           AccumulatorVector(correlator_requests.size(), Accumulator<Complex>{})),
-        mutexes_(Lt),
+        correlator_(Lt),
         name_(name) {
     assert(output_path_ != "");
     assert(output_filename_ != "");
+
+    for (auto &elem : correlator_) {
+      elem = AccumulatorVector(correlator_requests.size());
+    }
   }
 
   std::vector<CorrelatorRequest> const &correlator_requests() const {
@@ -152,9 +152,7 @@ class Diagram {
 
   std::string const &name() const { return name_; }
 
-  void assemble_impl(AccumulatorVector &c,
-                     BlockIterator const &slice_pair,
-                     DiagramParts &q);
+  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
 
   std::vector<CorrelatorRequest> const &correlator_requests_;
 
@@ -166,11 +164,6 @@ class Diagram {
 
   /** OpenMP-shared correlators, indices are (1) time and (2) correlator id. */
   std::vector<AccumulatorVector> correlator_;
-
-  /** OpenMP-shared correlators, indices are (1) thread id and (2) correlator id. */
-  std::vector<AccumulatorVector> c_;
-
-  std::vector<std::mutex> mutexes_;
 
   std::string name_;
 };

@@ -14,6 +14,5 @@ void DilutedProductFactoryQ0Q2::build(Key const &time_key,
   std::copy_n(std::begin(time_key) + 0, nt1, std::begin(time_key1));
   std::copy_n(std::begin(time_key) + nt1, nt2, std::begin(time_key2));
 
-  multiply<1, 1>(
-      Q0Q2_[time_key], key, factory_q2_[time_key1], factory_q0_[time_key2]);
+  multiply<1, 1>(Q0Q2_[time_key], key, factory_q2_[time_key1], factory_q0_[time_key2]);
 }
