@@ -128,7 +128,7 @@ if(has_diagnostics_color)
   endif()
 endif()
 
-set(SLAPH_TIMING_LEVEL 0 CACHE INT "Granularity of time measurements")
+set(SLAPH_TIMING_LEVEL 0 CACHE STRING "Granularity of time measurements")
 add_definitions("-DSLAPH_TIMING_LEVEL=${SLAPH_TIMING_LEVEL}")
 
 # Default to “Release” build type.
