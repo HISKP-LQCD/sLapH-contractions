@@ -16,11 +16,16 @@ class DilutedProductFactoryQ0Q2 {
                                         std::array<ssize_t, 2> const &key) {
     TimingScope<4> timing_scope("DilutedProductFactoryQ0Q2::get");
 
-    if (Q0Q2_.count(time_key) == 0 || Q0Q2_.at(time_key).count(key) == 0) {
-      build(time_key, key);
-    }
+    std::vector<DilutedFactor> *result;
+#pragma omp critical(DilutedProductFactoryQ0Q1_get)
+    {
+      if (Q0Q2_.count(time_key) == 0 || Q0Q2_.at(time_key).count(key) == 0) {
+        build(time_key, key);
+      }
 
-    return Q0Q2_.at(time_key).at(key);
+      result = &Q0Q2_.at(time_key).at(key);
+    }
+    return *result;
   }
 
   void clear() { Q0Q2_.clear(); }
