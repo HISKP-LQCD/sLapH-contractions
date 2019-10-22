@@ -44,7 +44,7 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
 
   Value const &operator[](Key const &key) {
     Value *result = nullptr;
-#pragma omp critical(DilutedTrace1Factory_operator_square)
+//#pragma omp critical(DilutedTrace1Factory_operator_square)
     {
       if (Tr.count(key) == 0) {
         build(key);
@@ -93,7 +93,7 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
 
   Value const &operator[](Key const &key) {
     Value *result = nullptr;
-#pragma omp critical(DilutedTrace2Factory_operator_square)
+//#pragma omp critical(DilutedTrace2Factory_operator_square)
     {
       if (Tr.count(key) == 0) {
         build(key);
@@ -149,7 +149,7 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
 
   Value const &operator[](Key const &key) {
     Value *result = nullptr;
-#pragma omp critical(DilutedTrace3Factory_operator_square)
+//#pragma omp critical(DilutedTrace3Factory_operator_square)
     {
       if (Tr.count(key) == 0) {
         build(key);
@@ -214,7 +214,7 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
 
   Value const &operator[](Key const &key) {
     Value *result = nullptr;
-#pragma omp critical(DilutedTrace4Factory_operator_square)
+//#pragma omp critical(DilutedTrace4Factory_operator_square)
     {
       if (Tr.count(key) == 0) {
         build(key);
@@ -289,7 +289,7 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
 
   Value const &operator[](Key const &key) {
     Value *result = nullptr;
-#pragma omp critical(DilutedTrace6Factory_operator_square)
+//#pragma omp critical(DilutedTrace6Factory_operator_square)
     {
       if (Tr.count(key) == 0) {
         build(key);
