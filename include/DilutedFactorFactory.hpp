@@ -41,11 +41,16 @@ class DilutedFactorFactory {
       typename DilutedFactorTypeTraits<qlt>::type const &quarkline_indices);
 
   Value const &operator[](Key const &key) {
-    if (Ql.count(key) == 0) {
-      build(key);
-    }
+    Value *result;
+#pragma omp critical(DilutedFactorFactory_operator_square)
+    {
+      if (Ql.count(key) == 0) {
+        build(key);
+      }
 
-    return Ql.at(key);
+      result = &Ql.at(key);
+    }
+    return *result;
   }
 
   void clear() { Ql.clear(); }
