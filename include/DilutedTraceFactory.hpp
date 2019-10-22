@@ -43,11 +43,16 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
       : df(_df), diagram_index_collection(_dic), dilution_scheme(_ds) {}
 
   Value const &operator[](Key const &key) {
-    if (Tr.count(key) == 0) {
-      build(key);
-    }
+    Value *result = nullptr;
+#pragma omp critical(DilutedTrace1Factory_operator_square)
+    {
+      if (Tr.count(key) == 0) {
+        build(key);
+      }
 
-    return Tr.at(key);
+      result = &Tr.at(key);
+    }
+    return *result;
   }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
@@ -87,11 +92,16 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
       : df1(_df1), df2(_df2), diagram_index_collection(_dic), dilution_scheme(_ds) {}
 
   Value const &operator[](Key const &key) {
-    if (Tr.count(key) == 0) {
-      build(key);
-    }
+    Value *result = nullptr;
+#pragma omp critical(DilutedTrace2Factory_operator_square)
+    {
+      if (Tr.count(key) == 0) {
+        build(key);
+      }
 
-    return Tr.at(key);
+      result = &Tr.at(key);
+    }
+    return *result;
   }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
@@ -138,11 +148,16 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
         dilution_scheme(_ds) {}
 
   Value const &operator[](Key const &key) {
-    if (Tr.count(key) == 0) {
-      build(key);
-    }
+    Value *result = nullptr;
+#pragma omp critical(DilutedTrace3Factory_operator_square)
+    {
+      if (Tr.count(key) == 0) {
+        build(key);
+      }
 
-    return Tr.at(key);
+      result = &Tr.at(key);
+    }
+    return *result;
   }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
@@ -198,11 +213,16 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
         dilution_scheme(_ds) {}
 
   Value const &operator[](Key const &key) {
-    if (Tr.count(key) == 0) {
-      build(key);
-    }
+    Value *result = nullptr;
+#pragma omp critical(DilutedTrace4Factory_operator_square)
+    {
+      if (Tr.count(key) == 0) {
+        build(key);
+      }
 
-    return Tr.at(key);
+      result = &Tr.at(key);
+    }
+    return *result;
   }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
@@ -268,11 +288,16 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
         dilution_scheme(_ds) {}
 
   Value const &operator[](Key const &key) {
-    if (Tr.count(key) == 0) {
-      build(key);
-    }
+    Value *result = nullptr;
+#pragma omp critical(DilutedTrace6Factory_operator_square)
+    {
+      if (Tr.count(key) == 0) {
+        build(key);
+      }
 
-    return Tr.at(key);
+      result = &Tr.at(key);
+    }
+    return *result;
   }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
