@@ -66,57 +66,49 @@ void contract(const ssize_t Lt,
 
   StopWatch swatch("All contractions");
 
-#pragma omp parallel
-  {
-    swatch.start();
+  swatch.start();
 
-    DiagramParts q(randomvectors,
-                   perambulators,
-                   meson_operator,
-                   dilution_scheme,
-                   dilT,
-                   dilE,
-                   nev,
-                   Lt,
-                   quark_lookup,
-                   trace_indices_map);
+  DiagramParts q(randomvectors,
+                 perambulators,
+                 meson_operator,
+                 dilution_scheme,
+                 dilT,
+                 dilE,
+                 nev,
+                 Lt,
+                 quark_lookup,
+                 trace_indices_map);
 
-#pragma omp for schedule(dynamic)
-    for (int b = 0; b < dilution_scheme.size(); ++b) {
-      if (single_time_slice_combination >= 0 && single_time_slice_combination != b) {
+  for (int b = 0; b < dilution_scheme.size(); ++b) {
+    if (single_time_slice_combination >= 0 && single_time_slice_combination != b) {
+      continue;
+    }
+
+    std::cout << "Thread " << std::setw(3) << omp_get_thread_num() << " of "
+              << std::setw(3) << omp_get_num_threads() << " starts with block pair "
+              << std::setw(5) << b << " of " << std::setw(5) << dilution_scheme.size()
+              << "." << std::endl;
+
+    auto const block_pair = dilution_scheme[b];
+
+    // Build the diagrams.
+    for (auto &diagram : diagrams) {
+      if (diagram.correlator_requests().empty()) {
         continue;
       }
+      TimingScope<1> timing_scope("contract diagram", diagram.name());
 
-#pragma omp critical(cout)
-      {
-        std::cout << "Thread " << std::setw(3) << omp_get_thread_num() << " of "
-                  << std::setw(3) << omp_get_num_threads() << " starts with block pair "
-                  << std::setw(5) << b << " of " << std::setw(5) << dilution_scheme.size()
-                  << "." << std::endl;
-      }
+      for (auto const slice_pair : block_pair) {
+        int const t = get_time_delta(slice_pair, Lt);
 
-      auto const block_pair = dilution_scheme[b];
+        diagram.assemble(t, slice_pair, q);
+      }  // End of slice pair loop.
+    }    // End of diagram loop.
 
-      // Build the diagrams.
-      for (auto &diagram : diagrams) {
-        if (diagram.correlator_requests().empty()) {
-          continue;
-        }
-        TimingScope<1> timing_scope("contract diagram", diagram.name());
+    q.clear();
+  }  // End of block pair loop.
 
-        for (auto const slice_pair : block_pair) {
-          int const t = get_time_delta(slice_pair, Lt);
-
-          diagram.assemble(t, slice_pair, q);
-        }  // End of slice pair loop.
-      }    // End of diagram loop.
-
-      q.clear();
-    }  // End of block pair loop.
-
-    swatch.stop();
-  }  // End of parallel section.
-
+  swatch.stop();
   swatch.print();
 
   for (auto &diagram : diagrams) {
