@@ -84,10 +84,8 @@ void contract(const ssize_t Lt,
       continue;
     }
 
-    std::cout << "Thread " << std::setw(3) << omp_get_thread_num() << " of "
-              << std::setw(3) << omp_get_num_threads() << " starts with block pair "
-              << std::setw(5) << b << " of " << std::setw(5) << dilution_scheme.size()
-              << "." << std::endl;
+    std::cout << "Starts with block pair " << std::setw(5) << b << " of " << std::setw(5)
+              << dilution_scheme.size() << "." << std::endl;
 
     auto const block_pair = dilution_scheme[b];
 
