@@ -104,11 +104,9 @@ void Diagram::assemble_impl(int const t,
                             DiagramParts &q) {
   TimingScope<1> timing_scope("Diagram::assemble_impl", name());
 
-#pragma omp parallel for
   for (int i = 0; i != ssize(correlator_requests()); ++i) {
     auto const &request = correlator_requests()[i];
     auto const &number = resolve_request(request.trace_requests, slice_pair, q);
-#pragma omp critical(Diagram_assemble_imp)
     correlator_.at(t).at(i) += number;
   }
 }
@@ -125,7 +123,6 @@ void Diagram::write() {
     for (int t = 0; t < Lt_; ++t) {
       one_corr[t] = correlator_[t][i].value() / static_cast<double>(Lt_);
     }
-    // Write data to file.
     filehandle.write(one_corr, correlator_requests()[i].hdf5_dataset_name);
   }
 }
