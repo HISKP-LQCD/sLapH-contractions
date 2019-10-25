@@ -40,32 +40,46 @@ class DilutedFactorFactory {
       ssize_t const nev,
       typename DilutedFactorTypeTraits<qlt>::type const &quarkline_indices);
 
+  void request(Key const &time_key) { requests_.insert(time_key); }
+
   Value const &operator[](Key const &time_key) { return Ql.at(time_key); }
 
   void build_all() {
-    // Populate the whole map with all the keys that are going to be built next. This way
-    // the map does not change any more and concurrent read access is possible.
-    for (auto const time_key : requests_) {
-      Ql[time_key];
+    // The requests have been stored in a set. We need to convert them into a vector such
+    // that we can run them concurrently.
+    std::vector<Key> unique_requests;
+    unique_requests.reserve(requests_.size());
+    for (auto const &key : requests_) {
+      // The map might already contain some elements that have been requested in an
+      // earlier iteration. Therefore we need to see whether it has already been built
+      // before.
+      if (Ql.count(time_key) == 0) {
+        unique_requests.push_back(key);
+
+        // Populate the whole map with all the keys that are going to be built next. This
+        // way the map does not change any more and concurrent read access is possible.
+        Ql[time_key];
+      }
     }
+
+    // We are going to build all the ones that are requested, therefore the list of
+    // requests has to be cleared.
+    requests_.clear();
 
     // Build all the elements. The `build` function will automatically populate the map
     // `Ql`.
-    for (auto i = 0; i < ssize(requests_); ++i) {
-      auto const &time_key = requests_[i];
-      build(time_key);
+    for (auto i = 0; i < ssize(unique_requests); ++i) {
+      build(unique_requests[i]);
     }
   }
 
   void clear() { Ql.clear(); }
 
-  void request(Key const &time_key) { requests_.push_back(time_key); }
-
  private:
   void build(Key const &time_key);
 
   std::map<Key, Value> Ql;
-  std::vector<Key> requests_;
+  std::set<Key> requests_;
 
   Perambulator const &peram;
   RandomVector const &rnd_vec;

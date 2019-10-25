@@ -38,6 +38,12 @@ void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
   auto b1 = dilution_scheme.time_to_block(t1);
   auto b2 = dilution_scheme.time_to_block(t2);
 
+  df1.request({t1, b2});
+  df2.request({t2, b1});
+
+  df1.build_all();
+  df2.build_all();
+
 #pragma omp parallel for
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
