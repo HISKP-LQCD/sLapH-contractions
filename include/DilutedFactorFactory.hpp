@@ -59,10 +59,10 @@ class DilutedFactorFactory {
 
   void clear() { Ql.clear(); }
 
-  void request(Key const &time_key) { reqeusts_.push_back(time_key); }
+  void request(Key const &time_key) { requests_.push_back(time_key); }
 
  private:
-  Value build(Key const &time_key);
+  void build(Key const &time_key);
 
   std::map<Key, Value> Ql;
   std::vector<Key> requests_;
