@@ -19,6 +19,16 @@ std::array<int, num_times> make_key(BlockIterator const &slice_pair,
   return key;
 }
 
+template <DilutedFactorType qlt, DilutedFactorType... qlts>
+constexpr int get_num_times() {
+  return DilutedFactorTypeTraits<qlt>::num_times - 1 + get_num_times<qlts...>;
+}
+
+template <DilutedFactorType qlt>
+constexpr int get_num_times() {
+  return DilutedFactorTypeTraits<qlt>::num_times - 1;
+}
+
 class AbstractDilutedTraceFactory {
  public:
   virtual ~AbstractDilutedTraceFactory() {}
