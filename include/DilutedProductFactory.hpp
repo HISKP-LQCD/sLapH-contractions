@@ -24,17 +24,16 @@ class DilutedProductFactoryQ0Q2 {
     std::vector<FullKey> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &request : requests_) {
-      unique_requests.push_back(request);
-      Q0Q2_[request.first];
+      if (Q0Q2_.count(request.first) == 0 ||
+          Q0Q2_.at(request.first).count(request.second) == 0) {
+        unique_requests.push_back(request);
+        Q0Q2_[request.first];
+      }
     }
 
     for (int i = 0; i < ssize(unique_requests); ++i) {
       auto const &request = unique_requests[i];
-
-      if (Q0Q2_.count(request.first) == 0 ||
-          Q0Q2_.at(request.first).count(request.second) == 0) {
-        build(request.first, request.second);
-      }
+      build(request.first, request.second);
     }
 
     requests_.clear();

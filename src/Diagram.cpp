@@ -15,6 +15,15 @@ Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
   dt.reserve(trace_requests.size());
 
   for (auto const &trace_request : trace_requests) {
+    q.trace_factories.at(trace_request.tr_name)
+        ->request(slice_pair, trace_request.locations);
+  }
+
+  for (auto const &trace_request : trace_requests) {
+    q.trace_factories.at(trace_request.tr_name)->build_all();
+  }
+
+  for (auto const &trace_request : trace_requests) {
     auto const &locations = trace_request.locations;
     auto const &x = q.trace_factories.at(trace_request.tr_name)
                         ->get(slice_pair, locations)

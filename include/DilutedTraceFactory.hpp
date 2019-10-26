@@ -23,6 +23,13 @@ class AbstractDilutedTraceFactory {
  public:
   virtual ~AbstractDilutedTraceFactory() {}
 
+  virtual void request(BlockIterator const &slice_pair,
+                       std::vector<Location> const &locations) {
+    abort();
+  }
+
+  virtual void build_all() { abort(); }
+
   virtual DilutedTracesMap const &get(BlockIterator const &slice_pair,
                                       std::vector<Location> const &locations) = 0;
 
@@ -212,18 +219,47 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
         diagram_index_collection(_dic),
         dilution_scheme(_ds) {}
 
-  Value const &operator[](Key const &key) {
-    Value *result = nullptr;
-    //#pragma omp critical(DilutedTrace4Factory_operator_square)
-    {
-      if (Tr.count(key) == 0) {
-        build(key);
-      }
+  void request(Key const &time_key) {
+    // We store the request for the trace.
+    requests_.insert(time_key);
 
-      result = &Tr.at(key);
+    // And we can also schedule the `DilutedFactoryFactory` from here.
+    auto const t0 = time_key[0];
+    auto const t1 = time_key[1];
+    auto const t2 = time_key[2];
+    auto const t3 = time_key[3];
+    auto const b0 = dilution_scheme.time_to_block(t0);
+    auto const b2 = dilution_scheme.time_to_block(t2);
+
+    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+      const auto &c_look = diagram_index_collection[i];
+      dpf_.request({b0, t1, b2, t2}, {c_look[1], c_look[2]});
+      dpf_.request({b2, t3, b0, t0}, {c_look[3], c_look[0]});
     }
-    return *result;
   }
+
+  void build_all() {
+    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
+    // out further such that we can request more before starting to build.
+    dpf_.build_all();
+
+    std::vector<Key> unique_requests;
+    unique_requests.reserve(requests_.size());
+    for (auto const &time_key : requests_) {
+      if (Tr.count(time_key) == 0) {
+        unique_requests.push_back(time_key);
+        Tr[time_key];
+      }
+    }
+
+    requests_.clear();
+
+    for (auto i = 0; i < ssize(unique_requests); ++i) {
+      build(unique_requests[i]);
+    }
+  }
+
+  Value const &operator[](Key const &key) { return Tr.at(key); }
 
   DilutedTracesMap const &get(BlockIterator const &slice_pair,
                               std::vector<Location> const &locations) override {
@@ -232,11 +268,13 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
     return (*this)[key];
   }
 
-  void build(Key const &time_key);
-
   void clear() override { Tr.clear(); }
 
  private:
+  void build(Key const &time_key);
+
+  std::set<Key> requests_;
+
   DilutedFactorFactory<qlt1> &df1;
   DilutedFactorFactory<qlt2> &df2;
   DilutedFactorFactory<qlt3> &df3;
