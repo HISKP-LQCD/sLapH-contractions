@@ -35,10 +35,12 @@ class AbstractDilutedTraceFactory {
 
   virtual void request(BlockIterator const &slice_pair,
                        std::vector<Location> const &locations) {
-    abort();
+    throw std::runtime_error("Not implemented.");
   }
 
-  virtual void build_all() { abort(); }
+  virtual void build_all() {
+    throw std::runtime_error("Not implemented.");
+  }
 
   virtual DilutedTracesMap const &get(BlockIterator const &slice_pair,
                                       std::vector<Location> const &locations) = 0;
