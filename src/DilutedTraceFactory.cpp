@@ -38,7 +38,6 @@ void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
 
   df1.request({t1, b2});
   df2.request({t2, b1});
-
   df1.build_all();
   df2.build_all();
 
@@ -60,6 +59,11 @@ void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
   auto t1 = time_key[0];
   auto t2 = time_key[1];
   auto b2 = dilution_scheme.time_to_block(t2);
+
+  df1.request({t2});
+  df2.request({b2, t1, b2});
+  df1.build_all();
+  df2.build_all();
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
@@ -83,6 +87,13 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b3 = dilution_scheme.time_to_block(t3);
+
+  df1.request({t1, b2});
+  df2.request({t2, b3});
+  df3.request({t3, b1});
+  df1.build_all();
+  df2.build_all();
+  df3.build_all();
 
   DilutedFactorsMap<2> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
@@ -114,6 +125,13 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b3 = dilution_scheme.time_to_block(t3);
+
+  df1.request({t2, b3});
+  df2.request({t1});
+  df3.request({b1, t1, b2});
+  df1.build_all();
+  df2.build_all();
+  df3.build_all();
 
   DilutedFactorsMap<2> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
@@ -148,6 +166,15 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
   auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b3 = dilution_scheme.time_to_block(t3);
+
+  df1.request({t0, b1});
+  df2.request({t1, b2});
+  df3.request({t2, b3});
+  df4.request({t3, b0});
+  df1.build_all();
+  df2.build_all();
+  df3.build_all();
+  df4.build_all();
 
   DilutedFactorsMap<2> L1;
   DilutedFactorsMap<2> L2;
