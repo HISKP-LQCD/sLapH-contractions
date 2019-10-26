@@ -209,9 +209,15 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
   auto const t2 = time_key[2];
   auto const t3 = time_key[3];
   auto const b0 = dilution_scheme.time_to_block(t0);
-  // auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
-  // auto const b3 = dilution_scheme.time_to_block(t3);
+
+  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+    const auto &c_look = diagram_index_collection[i];
+    dpf_.request({b0, t1, b2, t2}, {c_look[1], c_look[2]});
+    dpf_.request({b2, t3, b0, t0}, {c_look[3], c_look[0]});
+  }
+
+  dpf_.build_all();
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
@@ -249,11 +255,18 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   auto const t4 = time_key[4];
   auto const t5 = time_key[5];
   auto const b0 = dilution_scheme.time_to_block(t0);
-  // auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
-  // auto const b3 = dilution_scheme.time_to_block(t3);
   auto const b4 = dilution_scheme.time_to_block(t4);
-  // auto const b5 = dilution_scheme.time_to_block(t5);
+
+  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+    auto const &c_look = diagram_index_collection[i];
+
+    dpf_.request({b0, t1, b2, t2}, {c_look[1], c_look[2]});
+    dpf_.request({b2, t3, b4, t4}, {c_look[3], c_look[4]});
+    dpf_.request({b4, t5, b0, t0}, {c_look[5], c_look[0]});
+  }
+
+  dpf_.build_all();
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];

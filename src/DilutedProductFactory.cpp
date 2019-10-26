@@ -2,8 +2,8 @@
 
 #include "timings.hpp"
 
-void DilutedProductFactoryQ0Q2::build(Key const &time_key,
-                                      std::array<ssize_t, 2> const &key) {
+void DilutedProductFactoryQ0Q2::build(TimeKey const &time_key,
+                                      QnKey const &key) {
   TimingScope<5> timing_scope("DilutedProductFactoryQ0Q2::build");
 
   // Extract time keys.
