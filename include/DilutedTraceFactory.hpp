@@ -23,7 +23,7 @@ std::array<int, num_times> make_key(BlockIterator const &slice_pair,
 // constexpr int get_num_times() {
 //   return DilutedFactorTypeTraits<qlt>::num_times - 1 + get_num_times<qlts...>;
 // }
-// 
+//
 // template <>
 // constexpr int get_num_times<>() {
 //   return 0;
@@ -63,6 +63,7 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
                std::vector<Location> const &locations) override {
     assert(ssize(locations) == num_times);
     auto const &key = make_key<num_times>(slice_pair, locations);
+    requests_.insert(key);
     request_impl(key);
   }
 
@@ -100,6 +101,7 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
 
  private:
   void build(Key const &time_key);
+  void request_impl(Key const &time_key);
 
   std::set<Key> requests_;
 
@@ -131,6 +133,7 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
                std::vector<Location> const &locations) override {
     assert(ssize(locations) == num_times);
     auto const &key = make_key<num_times>(slice_pair, locations);
+    requests_.insert(key);
     request_impl(key);
   }
 
@@ -169,6 +172,7 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
 
  private:
   void build(Key const &time_key);
+  void request_impl(Key const &time_key);
 
   std::set<Key> requests_;
 
@@ -207,6 +211,7 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
                std::vector<Location> const &locations) override {
     assert(ssize(locations) == num_times);
     auto const &key = make_key<num_times>(slice_pair, locations);
+    requests_.insert(key);
     request_impl(key);
   }
 
@@ -245,6 +250,7 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
 
  private:
   void build(Key const &time_key);
+  void request_impl(Key const &time_key);
 
   std::set<Key> requests_;
 
@@ -292,6 +298,7 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
                std::vector<Location> const &locations) override {
     assert(ssize(locations) == num_times);
     auto const &key = make_key<num_times>(slice_pair, locations);
+    requests_.insert(key);
     request_impl(key);
   }
 
@@ -333,6 +340,7 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
 
  private:
   void build(Key const &time_key);
+  void request_impl(Key const &time_key);
 
   std::set<Key> requests_;
 
@@ -390,6 +398,7 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
                std::vector<Location> const &locations) override {
     assert(ssize(locations) == num_times);
     auto const &key = make_key<num_times>(slice_pair, locations);
+    requests_.insert(key);
     request_impl(key);
   }
 
@@ -427,6 +436,7 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
 
  private:
   void build(Key const &time_key);
+  void request_impl(Key const &time_key);
 
   std::set<Key> requests_;
 

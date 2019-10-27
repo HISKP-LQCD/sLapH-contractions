@@ -15,6 +15,13 @@ int get_time(BlockIterator const &slice_pair, Location const loc) {
 /*****************************************************************************/
 
 template <>
+void DilutedTrace1Factory<DilutedFactorType::Q1>::request_impl(Key const &time_key) {
+  auto t = time_key[0];
+  auto b = dilution_scheme.time_to_block(t);
+  df.request({t, b});
+}
+
+template <>
 void DilutedTrace1Factory<DilutedFactorType::Q1>::build(Key const &time_key) {
   TimingScope<3> timing_scope("DilutedTrace1Factory<Q1>::build");
 
@@ -35,6 +42,18 @@ template class DilutedTrace1Factory<DilutedFactorType::Q1>;
 /*****************************************************************************/
 
 template <>
+void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::request_impl(
+    Key const &time_key) {
+  auto t1 = time_key[0];
+  auto t2 = time_key[1];
+  auto b1 = dilution_scheme.time_to_block(t1);
+  auto b2 = dilution_scheme.time_to_block(t2);
+
+  df1.request({t1, b2});
+  df2.request({t2, b1});
+}
+
+template <>
 void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
     Key const &time_key) {
   TimingScope<3> timing_scope("DilutedTrace2Factory<Q1>::build");
@@ -43,11 +62,6 @@ void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
   auto t2 = time_key[1];
   auto b1 = dilution_scheme.time_to_block(t1);
   auto b2 = dilution_scheme.time_to_block(t2);
-
-  df1.request({t1, b2});
-  df2.request({t2, b1});
-  df1.build_all();
-  df2.build_all();
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
@@ -64,6 +78,17 @@ template class DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2
 /*****************************************************************************/
 
 template <>
+void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::request_impl(
+    Key const &time_key) {
+  auto t1 = time_key[0];
+  auto t2 = time_key[1];
+  auto b2 = dilution_scheme.time_to_block(t2);
+
+  df1.request({t2});
+  df2.request({b2, t1, b2});
+}
+
+template <>
 void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
     Key const &time_key) {
   TimingScope<3> timing_scope("DilutedTrace2Factory<Q0, Q2>::build");
@@ -71,11 +96,6 @@ void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
   auto t1 = time_key[0];
   auto t2 = time_key[1];
   auto b2 = dilution_scheme.time_to_block(t2);
-
-  df1.request({t2});
-  df2.request({b2, t1, b2});
-  df1.build_all();
-  df2.build_all();
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
@@ -94,9 +114,7 @@ template class DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1
 template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
-                          DilutedFactorType::Q1>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q1, Q1>::build");
-
+                          DilutedFactorType::Q1>::request_impl(Key const &time_key) {
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
@@ -107,9 +125,20 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   df1.request({t1, b2});
   df2.request({t2, b3});
   df3.request({t3, b1});
-  df1.build_all();
-  df2.build_all();
-  df3.build_all();
+}
+
+template <>
+void DilutedTrace3Factory<DilutedFactorType::Q1,
+                          DilutedFactorType::Q1,
+                          DilutedFactorType::Q1>::build(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q1, Q1>::build");
+
+  auto const t1 = time_key[0];
+  auto const t2 = time_key[1];
+  auto const t3 = time_key[2];
+  auto const b1 = dilution_scheme.time_to_block(t1);
+  auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
@@ -136,9 +165,7 @@ template class DilutedTrace3Factory<DilutedFactorType::Q1,
 template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q0,
-                          DilutedFactorType::Q2>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2>::build");
-
+                          DilutedFactorType::Q2>::request_impl(Key const &time_key) {
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
@@ -149,9 +176,20 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   df1.request({t2, b3});
   df2.request({t1});
   df3.request({b1, t1, b2});
-  df1.build_all();
-  df2.build_all();
-  df3.build_all();
+}
+
+template <>
+void DilutedTrace3Factory<DilutedFactorType::Q1,
+                          DilutedFactorType::Q0,
+                          DilutedFactorType::Q2>::build(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2>::build");
+
+  auto const t1 = time_key[0];
+  auto const t2 = time_key[1];
+  auto const t3 = time_key[2];
+  auto const b1 = dilution_scheme.time_to_block(t1);
+  auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
@@ -179,9 +217,7 @@ template <>
 void DilutedTrace4Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
-                          DilutedFactorType::Q1>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace4Factory<Q1, Q1, Q1, Q1>::build");
-
+                          DilutedFactorType::Q1>::request_impl(Key const &time_key) {
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
   auto const t2 = time_key[2];
@@ -195,10 +231,23 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
   df2.request({t1, b2});
   df3.request({t2, b3});
   df4.request({t3, b0});
-  df1.build_all();
-  df2.build_all();
-  df3.build_all();
-  df4.build_all();
+}
+
+template <>
+void DilutedTrace4Factory<DilutedFactorType::Q1,
+                          DilutedFactorType::Q1,
+                          DilutedFactorType::Q1,
+                          DilutedFactorType::Q1>::build(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace4Factory<Q1, Q1, Q1, Q1>::build");
+
+  auto const t0 = time_key[0];
+  auto const t1 = time_key[1];
+  auto const t2 = time_key[2];
+  auto const t3 = time_key[3];
+  auto const b0 = dilution_scheme.time_to_block(t0);
+  auto const b1 = dilution_scheme.time_to_block(t1);
+  auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
   DilutedFactorsMap<2> L2;
@@ -230,9 +279,6 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0>::request_impl(Key const &time_key) {
-  // We store the request for the trace.
-  requests_.insert(time_key);
-
   // And we can also schedule the `DilutedFactoryFactory` from here.
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
@@ -292,9 +338,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
-                          DilutedFactorType::Q0>::build(Key const &time_key) {
-  TimingScope<3> timing_scope("DilutedTrace6Factory<Q2, Q0, Q2, Q0, Q2, Q0>::build");
-
+                          DilutedFactorType::Q0>::request_impl(Key const &time_key) {
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
   auto const t2 = time_key[2];
@@ -312,8 +356,26 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
     dpf_.request({b2, t3, b4, t4}, {c_look[3], c_look[4]});
     dpf_.request({b4, t5, b0, t0}, {c_look[5], c_look[0]});
   }
+}
 
-  dpf_.build_all();
+template <>
+void DilutedTrace6Factory<DilutedFactorType::Q2,
+                          DilutedFactorType::Q0,
+                          DilutedFactorType::Q2,
+                          DilutedFactorType::Q0,
+                          DilutedFactorType::Q2,
+                          DilutedFactorType::Q0>::build(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace6Factory<Q2, Q0, Q2, Q0, Q2, Q0>::build");
+
+  auto const t0 = time_key[0];
+  auto const t1 = time_key[1];
+  auto const t2 = time_key[2];
+  auto const t3 = time_key[3];
+  auto const t4 = time_key[4];
+  auto const t5 = time_key[5];
+  auto const b0 = dilution_scheme.time_to_block(t0);
+  auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b4 = dilution_scheme.time_to_block(t4);
 
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];

@@ -159,7 +159,7 @@ if(SLAPH_CLEAR_QQ_CACHE)
   add_definitions("-DSLAPH_CLEAR_QQ_CACHE")
   message(STATUS "Clearing the Q2Q0 cache after each trace. Less memory usage, less speed.")
 else()
-  message(STATUS "Clearing the Q2Q0 cache after each trace. More memory usage, more speed.")
+  message(STATUS "Keeping the Q2Q0 cache after each trace. More memory usage, more speed.")
 endif()
 
 ###############################################################################
