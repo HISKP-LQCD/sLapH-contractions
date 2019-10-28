@@ -68,10 +68,6 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
   }
 
   void build_all() {
-    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
-    // out further such that we can request more before starting to build.
-    df.build_all();
-
     std::vector<Key> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &time_key : requests_) {
@@ -138,11 +134,6 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
   }
 
   void build_all() {
-    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
-    // out further such that we can request more before starting to build.
-    df1.build_all();
-    df2.build_all();
-
     std::vector<Key> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &time_key : requests_) {
@@ -216,12 +207,6 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
   }
 
   void build_all() {
-    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
-    // out further such that we can request more before starting to build.
-    df1.build_all();
-    df2.build_all();
-    df3.build_all();
-
     std::vector<Key> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &time_key : requests_) {
@@ -303,14 +288,6 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
   }
 
   void build_all() {
-    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
-    // out further such that we can request more before starting to build.
-    dpf_.build_all();
-    df1.build_all();
-    df2.build_all();
-    df3.build_all();
-    df4.build_all();
-
     std::vector<Key> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &time_key : requests_) {
@@ -403,10 +380,6 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
   }
 
   void build_all() {
-    // We call `build_all` on the `DilutedProductFactory` here, but we want to pull that
-    // out further such that we can request more before starting to build.
-    dpf_.build_all();
-
     std::vector<Key> unique_requests;
     unique_requests.reserve(requests_.size());
     for (auto const &time_key : requests_) {
