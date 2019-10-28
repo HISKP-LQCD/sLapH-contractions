@@ -89,42 +89,50 @@ void contract(const ssize_t Lt,
 
     auto const block_pair = dilution_scheme[b];
 
-    // Build the diagrams.
-    for (auto &diagram : diagrams) {
-      if (diagram.correlator_requests().empty()) {
-        continue;
-      }
-      TimingScope<1> timing_scope("request diagram", diagram.name());
+    {
+      // Build the diagrams.
+      TimingScope<1> timing_scope("contract(): request diagrams");
+      for (auto &diagram : diagrams) {
+        if (diagram.correlator_requests().empty()) {
+          continue;
+        }
 
-      for (auto const slice_pair : block_pair) {
-        int const t = get_time_delta(slice_pair, Lt);
+        for (auto const slice_pair : block_pair) {
+          int const t = get_time_delta(slice_pair, Lt);
 
-        diagram.request(t, slice_pair, q);
-      }  // End of slice pair loop.
-    }    // End of diagram loop.
+          diagram.request(t, slice_pair, q);
+        }  // End of slice pair loop.
+      }    // End of diagram loop.
+    }
 
     q.build_all();
 
-    for (auto &diagram : diagrams) {
-      if (diagram.correlator_requests().empty()) {
-        continue;
-      }
-      TimingScope<1> timing_scope("contract diagram", diagram.name());
+    {
+      TimingScope<1> timing_scope("contract(): assemble diagrams");
+      for (auto &diagram : diagrams) {
+        if (diagram.correlator_requests().empty()) {
+          continue;
+        }
 
-      for (auto const slice_pair : block_pair) {
-        int const t = get_time_delta(slice_pair, Lt);
+        for (auto const slice_pair : block_pair) {
+          int const t = get_time_delta(slice_pair, Lt);
 
-        diagram.assemble(t, slice_pair, q);
-      }  // End of slice pair loop.
-    }    // End of diagram loop.
+          diagram.assemble(t, slice_pair, q);
+        }  // End of slice pair loop.
+      }    // End of diagram loop.
+    }
 
     q.clear();
+
   }  // End of block pair loop.
 
   swatch.stop();
   swatch.print();
 
-  for (auto &diagram : diagrams) {
-    diagram.write();
+  {
+    TimingScope<1> timing_scope("contract(): write diagrams");
+    for (auto &diagram : diagrams) {
+      diagram.write();
+    }
   }
 }

@@ -100,6 +100,8 @@ struct DiagramParts {
   }
 
   void build_all() {
+    TimingScope<1> timing_scope("DiagramParts::build_all");
+
     q0.build_all();
     q1.build_all();
     q2.build_all();
@@ -112,6 +114,8 @@ struct DiagramParts {
   }
 
   void clear() {
+    TimingScope<1> timing_scope("DiagramParts::clear");
+
     q0.clear();
     q1.clear();
     q2.clear();

@@ -16,6 +16,8 @@ int get_time(BlockIterator const &slice_pair, Location const loc) {
 
 template <>
 void DilutedTrace1Factory<DilutedFactorType::Q1>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace1Factory<Q1>::request_impl");
+
   auto t = time_key[0];
   auto b = dilution_scheme.time_to_block(t);
   df.request({t, b});
@@ -44,6 +46,8 @@ template class DilutedTrace1Factory<DilutedFactorType::Q1>;
 template <>
 void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::request_impl(
     Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace2Factory<Q1>::request_impl");
+
   auto t1 = time_key[0];
   auto t2 = time_key[1];
   auto b1 = dilution_scheme.time_to_block(t1);
@@ -80,6 +84,8 @@ template class DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2
 template <>
 void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::request_impl(
     Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace2Factory<Q0, Q2>::request_impl");
+
   auto t1 = time_key[0];
   auto t2 = time_key[1];
   auto b2 = dilution_scheme.time_to_block(t2);
@@ -115,6 +121,8 @@ template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q1, Q1>::request_impl");
+
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
@@ -166,6 +174,8 @@ template <>
 void DilutedTrace3Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2>::request_impl");
+
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
@@ -218,6 +228,8 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1,
                           DilutedFactorType::Q1>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace4Factory<Q1, Q1, Q1, Q1>::request_impl");
+
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
   auto const t2 = time_key[2];
@@ -279,7 +291,8 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0>::request_impl(Key const &time_key) {
-  // And we can also schedule the `DilutedFactoryFactory` from here.
+  TimingScope<3> timing_scope("DilutedTrace4Factory<Q2, Q0, Q2, Q0>::request_impl");
+
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
   auto const t2 = time_key[2];
@@ -339,6 +352,9 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
                           DilutedFactorType::Q0,
                           DilutedFactorType::Q2,
                           DilutedFactorType::Q0>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope(
+      "DilutedTrace6Factory<Q2, Q0, Q2, Q0, Q2, Q0>::request_impl");
+
   auto const t0 = time_key[0];
   auto const t1 = time_key[1];
   auto const t2 = time_key[2];
