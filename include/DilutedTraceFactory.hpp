@@ -82,7 +82,9 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
 #pragma omp parallel
     {
       for (auto i = 0; i < ssize(unique_requests); ++i) {
+#pragma omp barrier
         build(unique_requests[i]);
+#pragma omp barrier
       }
     }
   }

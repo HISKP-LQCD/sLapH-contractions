@@ -105,7 +105,7 @@ void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
 
   // We populate the whole map such that we can change its elements in a parallel way
   // later.
-#pragma omp master
+#pragma omp single
   {
     for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
@@ -333,7 +333,7 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
 
   // We populate the whole map such that we can change its elements in a parallel way
   // later.
-#pragma omp master
+#pragma omp single
   {
     for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
@@ -411,7 +411,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
 
   // We populate the whole map such that we can change its elements in a parallel way
   // later.
-#pragma omp master
+#pragma omp single
   {
     for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
