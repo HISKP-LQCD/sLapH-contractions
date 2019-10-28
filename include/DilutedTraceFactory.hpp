@@ -79,8 +79,11 @@ class DilutedTrace1Factory : public AbstractDilutedTraceFactory {
 
     requests_.clear();
 
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 
@@ -145,8 +148,11 @@ class DilutedTrace2Factory : public AbstractDilutedTraceFactory {
 
     requests_.clear();
 
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 
@@ -218,8 +224,11 @@ class DilutedTrace3Factory : public AbstractDilutedTraceFactory {
 
     requests_.clear();
 
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 
@@ -299,8 +308,11 @@ class DilutedTrace4Factory : public AbstractDilutedTraceFactory {
 
     requests_.clear();
 
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 

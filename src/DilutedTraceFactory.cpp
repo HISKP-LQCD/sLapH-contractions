@@ -103,6 +103,16 @@ void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
   auto t2 = time_key[1];
   auto b2 = dilution_scheme.time_to_block(t2);
 
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp master
+  {
+    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+
+#pragma omp for
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
     auto const &value =
@@ -321,6 +331,16 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
   auto const b0 = dilution_scheme.time_to_block(t0);
   auto const b2 = dilution_scheme.time_to_block(t2);
 
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp master
+  {
+    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+
+#pragma omp for
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
 
@@ -330,10 +350,6 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
 
     Tr[time_key][i] = value;
   }
-
-#ifdef SLAPH_CLEAR_QQ_CACHE
-  dpf_.clear();
-#endif
 }
 
 template class DilutedTrace4Factory<DilutedFactorType::Q2,
@@ -394,7 +410,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   auto const b4 = dilution_scheme.time_to_block(t4);
 
   // We populate the whole map such that we can change its elements in a parallel way
-  // later..
+  // later.
 #pragma omp master
   {
     for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
@@ -413,14 +429,8 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
     assert(l01.size() > 0);
     assert(l23.size() > 0);
     assert(l45.size() > 0);
-    auto const &value = factor_to_trace(l01 * l23, l45);
-    Tr[time_key][i] = value;
+    Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
   }
-
-#ifdef SLAPH_CLEAR_QQ_CACHE
-#pragma omp master
-  dpf_.clear();
-#endif
 }
 
 template class DilutedTrace6Factory<DilutedFactorType::Q2,
