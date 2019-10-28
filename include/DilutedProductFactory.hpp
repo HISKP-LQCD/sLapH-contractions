@@ -19,7 +19,7 @@ class DilutedProductFactoryQ0Q2 {
   }
 
   void build_all() {
-    TimingScope<4> timing_scope("DilutedProductFactoryQ0Q2::build_all");
+    TimingScope<3> timing_scope("DilutedProductFactoryQ0Q2::build_all");
 
     std::vector<FullKey> unique_requests;
     unique_requests.reserve(requests_.size());

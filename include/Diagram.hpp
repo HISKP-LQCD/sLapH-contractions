@@ -102,14 +102,23 @@ struct DiagramParts {
   void build_all() {
     TimingScope<1> timing_scope("DiagramParts::build_all");
 
-    q0.build_all();
-    q1.build_all();
-    q2.build_all();
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all Q");
+      q0.build_all();
+      q1.build_all();
+      q2.build_all();
+    }
 
-    q0q2.build_all();
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all QQ");
+      q0q2.build_all();
+    }
 
-    for (auto &elem : trace_factories) {
-      elem.second->build_all();
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all tr(Q...)");
+      for (auto &elem : trace_factories) {
+        elem.second->build_all();
+      }
     }
   }
 
