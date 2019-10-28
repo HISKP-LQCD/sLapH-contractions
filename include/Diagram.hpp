@@ -100,6 +100,12 @@ struct DiagramParts {
   }
 
   void build_all() {
+    q0.build_all();
+    q1.build_all();
+    q2.build_all();
+
+    q0q2.build_all();
+
     for (auto &elem : trace_factories) {
       elem.second->build_all();
     }
