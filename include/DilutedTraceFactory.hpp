@@ -391,8 +391,11 @@ class DilutedTrace6Factory : public AbstractDilutedTraceFactory {
 
     requests_.clear();
 
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 

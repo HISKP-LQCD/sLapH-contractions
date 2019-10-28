@@ -393,6 +393,16 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b4 = dilution_scheme.time_to_block(t4);
 
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later..
+#pragma omp master
+  {
+    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+
+#pragma omp for
   for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
 
@@ -408,6 +418,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   }
 
 #ifdef SLAPH_CLEAR_QQ_CACHE
+#pragma omp master
   dpf_.clear();
 #endif
 }
