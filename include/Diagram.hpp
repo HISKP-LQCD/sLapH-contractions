@@ -99,6 +99,12 @@ struct DiagramParts {
             dilution_scheme));
   }
 
+  void build_all() {
+    for (auto &elem : trace_factories) {
+      elem.second->build_all();
+    }
+  }
+
   void clear() {
     q0.clear();
     q1.clear();
@@ -146,17 +152,19 @@ class Diagram {
     return correlator_requests_;
   }
 
+  void request(int const t, BlockIterator const &slice_pair, DiagramParts &q);
   void assemble(int const t, BlockIterator const &slice_pair, DiagramParts &q);
 
   void write();
 
   std::string const &name() const { return name_; }
 
-  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
-
   std::vector<CorrelatorRequest> const &correlator_requests_;
 
  private:
+  void request_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+
   std::string const &output_path_;
   std::string const &output_filename_;
 

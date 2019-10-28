@@ -94,6 +94,21 @@ void contract(const ssize_t Lt,
       if (diagram.correlator_requests().empty()) {
         continue;
       }
+      TimingScope<1> timing_scope("request diagram", diagram.name());
+
+      for (auto const slice_pair : block_pair) {
+        int const t = get_time_delta(slice_pair, Lt);
+
+        diagram.request(t, slice_pair, q);
+      }  // End of slice pair loop.
+    }    // End of diagram loop.
+
+    q.build_all();
+
+    for (auto &diagram : diagrams) {
+      if (diagram.correlator_requests().empty()) {
+        continue;
+      }
       TimingScope<1> timing_scope("contract diagram", diagram.name());
 
       for (auto const slice_pair : block_pair) {

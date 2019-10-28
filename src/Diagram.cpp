@@ -6,19 +6,21 @@
 #include <omp.h>
 #include <boost/range/adaptor/indexed.hpp>
 
-Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
-                        BlockIterator const &slice_pair,
-                        DiagramParts &q) {
-  TimingScope<1> timing_scope("resolve_request");
+void request_request(std::vector<TraceRequest> const &trace_requests,
+                     BlockIterator const &slice_pair,
+                     DiagramParts &q) {
+  TimingScope<1> timing_scope("request_request");
 
   for (auto const &trace_request : trace_requests) {
     q.trace_factories.at(trace_request.tr_name)
         ->request(slice_pair, trace_request.locations);
   }
+}
 
-  for (auto const &trace_request : trace_requests) {
-    q.trace_factories.at(trace_request.tr_name)->build_all();
-  }
+Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
+                        BlockIterator const &slice_pair,
+                        DiagramParts &q) {
+  TimingScope<1> timing_scope("resolve_request");
 
   std::vector<DilutedTraces> dt;
   dt.reserve(trace_requests.size());
@@ -43,6 +45,23 @@ Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
     return inner_product(dt[0], dt[1], dt[2]);
   } else {
     throw std::runtime_error("This many traces are not implemented yet.");
+  }
+}
+
+void Diagram::request(int const t, BlockIterator const &slice_pair, DiagramParts &q) {
+  TimingScope<1> timing_scope("Diagram::request", name());
+
+  request_impl(t, slice_pair, q);
+}
+
+void Diagram::request_impl(int const t,
+                           BlockIterator const &slice_pair,
+                           DiagramParts &q) {
+  TimingScope<1> timing_scope("Diagram::request_impl", name());
+
+  for (int i = 0; i != ssize(correlator_requests()); ++i) {
+    auto const &request = correlator_requests()[i];
+    request_request(request.trace_requests, slice_pair, q);
   }
 }
 
