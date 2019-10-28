@@ -11,9 +11,6 @@ Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
                         DiagramParts &q) {
   TimingScope<1> timing_scope("resolve_request");
 
-  std::vector<DilutedTraces> dt;
-  dt.reserve(trace_requests.size());
-
   for (auto const &trace_request : trace_requests) {
     q.trace_factories.at(trace_request.tr_name)
         ->request(slice_pair, trace_request.locations);
@@ -22,6 +19,9 @@ Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
   for (auto const &trace_request : trace_requests) {
     q.trace_factories.at(trace_request.tr_name)->build_all();
   }
+
+  std::vector<DilutedTraces> dt;
+  dt.reserve(trace_requests.size());
 
   for (auto const &trace_request : trace_requests) {
     auto const &locations = trace_request.locations;
