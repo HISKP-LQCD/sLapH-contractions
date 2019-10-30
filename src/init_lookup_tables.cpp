@@ -16,6 +16,7 @@
 
 #include "CartesianProduct.hpp"
 #include "DiagramSpec.hpp"
+#include "timings.hpp"
 
 #include <iostream>
 
@@ -44,6 +45,8 @@ void build_quantum_numbers_from_correlator_list(
     Operator_list const &operator_list,
     std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
     std::map<int, int> const &momentum_cutoff) {
+  TimingScope<1> timing_scope("build_quantum_numbers_from_correlator_list");
+
   std::vector<Operators> qn_op;
   for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
@@ -236,6 +239,8 @@ void build_VdaggerV_lookup(
     std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
     std::vector<VdaggerVQuantumNumbers> &vdaggerv_lookup,
     std::vector<std::vector<std::pair<ssize_t, bool>>> &vdv_indices) {
+  TimingScope<1> timing_scope("build_VdaggerV_lookup");
+
   for (auto const &qn_vec : quantum_numbers) {
     std::vector<std::pair<ssize_t, bool>> vdv_indices_row;
     for (auto const &qn : qn_vec) {
@@ -352,6 +357,8 @@ static void build_Quarkline_lookup_one_qn(
     std::vector<std::pair<ssize_t, ssize_t>> const &rnd_vec_ids,
     std::vector<DilutedFactorIndex> &Ql_lookup,
     std::vector<ssize_t> &Ql_lookup_ids) {
+  TimingScope<1> timing_scope("build_Quarkline_lookup_one_qn");
+
   auto const qn = quantum_numbers[operator_id];
 
   auto const id_vdaggerv = vdv_indices[operator_id].first;
@@ -468,6 +475,8 @@ Factories make_trace_request_factories(DiagramSpec const &spec) {
  *  @bug In build_Q1_lookup the order of quarks given is consistently switched.
  */
 void init_lookup_tables(GlobalData &gd) {
+  TimingScope<1> timing_scope("init_lookup_tables");
+
   for (auto const &correlator : gd.correlator_list) {
     // Build an array (quantum_numbers) with all the quantum numbers needed for
     // this particular correlation function.
