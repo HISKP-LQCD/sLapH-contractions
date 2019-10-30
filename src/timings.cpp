@@ -1,23 +1,9 @@
 #include "timings.hpp"
 
-#include <iostream>
-
 void TimingGraph::push(std::string const &function, std::string const &info) {
-  std::cout << "push " << function << " " << info << std::endl;
-
-  std::cout << "Node Stack: ";
-  for (auto id : node_stack_) {
-    auto const &node = nodes_[id];
-    std::cout << node.function << " " << node.info << " → ";
-  }
-  std::cout << "\n";
-
   if (node_stack_.size() > 0) {
     int const parent_id = node_stack_.back();
     TimingNode const &parent = nodes_[parent_id];
-
-    std::cout << "Parent: " << nodes_[parent_id].function << " " << nodes_[parent_id].info
-              << "\n";
 
     std::string new_info;
     if (parent.info.size() == 0) {
@@ -64,9 +50,6 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 }
 
 void TimingGraph::pop() {
-  std::cout << "pop" << std::endl;
-  // serialize(std::cout);
-
   auto const end = omp_get_wtime();
 
   // We add the time that we have spent since starting with the current node to its
@@ -147,6 +130,8 @@ void TimingGraph::finalize() {
     pop();
   }
 
-  std::ofstream ofs("timings.js");
-  serialize(ofs);
+  if (timing_level > 0) {
+    std::ofstream ofs("timings.js");
+    serialize(ofs);
+  }
 }
