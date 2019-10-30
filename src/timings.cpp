@@ -3,11 +3,21 @@
 #include <iostream>
 
 void TimingGraph::push(std::string const &function, std::string const &info) {
-  // std::cout << "push " << function << " " << info << std::endl;
+  std::cout << "push " << function << " " << info << std::endl;
+
+  std::cout << "Node Stack: ";
+  for (auto id : node_stack_) {
+    auto const &node = nodes_[id];
+    std::cout << node.function << " " << node.info << " → ";
+  }
+  std::cout << "\n";
 
   if (node_stack_.size() > 0) {
-    int const parent_id = node_stack_.size() - 1;
-    TimingNode &parent = nodes_[parent_id];
+    int const parent_id = node_stack_.back();
+    TimingNode const &parent = nodes_[parent_id];
+
+    std::cout << "Parent: " << nodes_[parent_id].function << " " << nodes_[parent_id].info
+              << "\n";
 
     std::string new_info;
     if (parent.info.size() == 0) {
@@ -20,7 +30,7 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
       new_info = parent.info + " " + info;
     }
 
-    auto const &it =
+    auto const it =
         find_if(parent.edges.begin(),
                 parent.edges.end(),
                 [this, function, new_info](int const edge) {
@@ -37,14 +47,15 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 
       nodes_[parent_id].edges.push_back(edge_stack_.back());
     } else {
-      int current_edge = std::distance(parent.edges.begin(), it);
+      int current_edge = *it;
       int current_node = edges_[current_edge].destination;
 
       node_stack_.push_back(current_node);
       edge_stack_.push_back(current_edge);
 
-      nodes_[current_node].start = omp_get_wtime();
-      edges_[current_edge].start = omp_get_wtime();
+      auto const start = omp_get_wtime();
+      nodes_[current_node].start = start;
+      edges_[current_edge].start = start;
     }
   } else {
     nodes_.emplace_back(function, info);
@@ -53,30 +64,38 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 }
 
 void TimingGraph::pop() {
-  // std::cout << "pop" << std::endl;
+  std::cout << "pop" << std::endl;
   // serialize(std::cout);
 
   auto const end = omp_get_wtime();
 
-  double edge_duration = 0;
-  if (edge_stack_.size() > 0) {
-    auto const edge_start = edges_[edge_stack_.back()].start;
-    edge_duration = end - edge_start;
-    edges_[edge_stack_.back()].cumtime += edge_duration;
-    edges_[edge_stack_.back()].calls++;
-    edge_stack_.pop_back();
-  }
-
+  // We add the time that we have spent since starting with the current node to its
+  // cumtime and selftime.
   assert(node_stack_.size() > 0);
   auto const node_start = nodes_[node_stack_.back()].start;
   auto const node_duration = end - node_start;
   nodes_[node_stack_.back()].cumtime += node_duration;
-  nodes_[node_stack_.back()].selftime += node_duration - edge_duration;
+  nodes_[node_stack_.back()].selftime += node_duration;
   nodes_[node_stack_.back()].calls++;
 
+  // We are done with that node now, we can pop it off the stack.
   node_stack_.pop_back();
 
-  if (node_stack_.size() > 0) {
+  // In case we are not at the root node we need to add the cumtime and calls to the edge
+  // that lead us to the node as well.
+  if (edge_stack_.size() > 0) {
+    auto const edge_start = edges_[edge_stack_.back()].start;
+    auto const edge_duration = end - edge_start;
+    edges_[edge_stack_.back()].cumtime += edge_duration;
+    edges_[edge_stack_.back()].calls++;
+
+    // We are done with that edge now.
+    edge_stack_.pop_back();
+
+    // We will have at least another node on the stack. We need to subtract the time that
+    // we spend in calls from the selftime to correct for overcounting when that node is
+    // popped of later on.
+    assert(node_stack_.size() > 0);
     nodes_[node_stack_.back()].selftime -= edge_duration;
   }
 }
