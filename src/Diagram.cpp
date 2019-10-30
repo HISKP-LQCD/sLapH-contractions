@@ -9,7 +9,7 @@
 Complex resolve_request1(std::vector<TraceRequest> const &trace_requests,
                          BlockIterator const &slice_pair,
                          DiagramParts &q) {
-  TimingScope<1> timing_scope("resolve_request1");
+  TimingScope<3> timing_scope("resolve_request1");
 
   assert(ssize(trace_requests) == 1);
   auto const &trace_request0 = trace_requests.at(0);
@@ -82,6 +82,8 @@ Complex resolve_request3(std::vector<TraceRequest> const &trace_requests,
 Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
                         BlockIterator const &slice_pair,
                         DiagramParts &q) {
+  TimingScope<3> timing_scope("resolve_request");
+
   if (ssize(trace_requests) == 1) {
     return resolve_request1(trace_requests, slice_pair, q);
   } else if (ssize(trace_requests) == 2) {

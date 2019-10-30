@@ -108,4 +108,6 @@ int main(int ac, char *av[]) {
              gd.filename_ending_correlators,
              gd.single_time_slice_combination);
   }
+
+  TimingGraph::instance().finalize();
 }

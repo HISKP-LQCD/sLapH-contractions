@@ -15,6 +15,7 @@ add_library(lcontract
   src/DiagramSpec.cpp
   src/DilutedFactor.cpp
   src/DilutedFactorFactory.cpp
+  #src/DilutedProductFactory.cpp
   src/DilutedTrace.cpp
   src/DilutedTraceFactory.cpp
   src/dilution-iterator.cpp
@@ -34,6 +35,7 @@ add_library(lcontract
   src/RandomVector.cpp
   src/ranlxs.cpp
   src/StopWatch.cpp
+  src/timings.cpp
 
   )
 

@@ -4,6 +4,7 @@
 #include "global_data_build_IO_names.hpp"
 #include "global_data_input_handling.hpp"
 #include "init_lookup_tables.hpp"
+#include "timings.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -53,6 +54,8 @@ boost::program_options::typed_value<T> *make_value(T *store_to) {
 }
 
 void read_parameters(GlobalData &gd, int ac, char *av[]) {
+  TimingScope<1> timing_scope("read_parameters");
+
   std::string input_file;
   std::string output_file;
 
