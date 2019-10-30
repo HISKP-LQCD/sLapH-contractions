@@ -17,6 +17,7 @@
 #include "CartesianProduct.hpp"
 #include "DiagramSpec.hpp"
 #include "typedefs.hpp"
+#include "timings.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -239,6 +240,8 @@ static std::string const build_hdf5_dataset_name(std::string const &corr_type,
 void build_VdaggerV_lookup(std::vector<QuantumNumbers> const &qn_vec,
                            std::vector<VdaggerVQuantumNumbers> &vdaggerv_lookup,
                            std::vector<std::pair<ssize_t, bool>> &vdv_indices_row) {
+  TimingScope<1> timing_scope("build_VdaggerV_lookup");
+
   for (auto const &qn : qn_vec) {
     auto const it =
         std::find_if(vdaggerv_lookup.cbegin(),
@@ -362,6 +365,8 @@ static void build_Quarkline_lookup_one_qn(
     std::vector<std::pair<ssize_t, ssize_t>> const &rnd_vec_ids,
     std::vector<DilutedFactorIndex> &Ql_lookup,
     std::vector<ssize_t> &Ql_lookup_ids) {
+  TimingScope<1> timing_scope("build_Quarkline_lookup_one_qn");
+
   auto const qn = quantum_numbers[operator_id];
 
   auto const id_vdaggerv = vdv_indices[operator_id].first;
@@ -478,6 +483,8 @@ Factories make_trace_request_factories(DiagramSpec const &spec) {
  *  @bug In build_Q1_lookup the order of quarks given is consistently switched.
  */
 void init_lookup_tables(GlobalData &gd) {
+  TimingScope<1> timing_scope("init_lookup_tables");
+
   pt::ptree tree;
   pt::read_json(gd.path_correlator_list, tree);
 
