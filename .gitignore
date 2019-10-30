@@ -18,3 +18,4 @@ tests/Testing/Temporary
 sLapH-contractions.creator.user
 make-coffee-build.sh
 timings-thread-*.xml
+tests/integration-L4/timings.js
