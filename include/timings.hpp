@@ -114,17 +114,20 @@ struct TimingNode {
 
 class TimingGraph {
  public:
-  TimingGraph() {
-    // TimingNode root("root");
-    // nodes_.push_back(root);
-  }
+   static TimingGraph &instance() {
+     static TimingGraph instance;
+     return instance;
+   }
+
 
   void push(std::string const &function, std::string const &info = "");
   void pop();
   void serialize(std::ostream &ofs);
-
+  void finalize();
 
  private:
+  TimingGraph() {};
+
   std::vector<TimingEdge> edges_;
   std::vector<TimingNode> nodes_;
 

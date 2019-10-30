@@ -6,7 +6,7 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 
     auto const &it = find_if(parent->edges.begin(),
                              parent->edges.end(),
-                             [function, info](TimingEdge * const edge) {
+                             [function, info](TimingEdge *const edge) {
                                return edge->destination->function == function &&
                                       edge->destination->info == info;
                              });
@@ -57,4 +57,52 @@ void TimingGraph::pop() {
 }
 
 void TimingGraph::serialize(std::ostream &ofs) {
+  ofs << "{\n";
+
+  ofs << "  \"nodes\": [";
+
+  bool first = true;
+  for (auto const node : nodes_) {
+    if (!first) {
+      ofs << ",";
+    }
+    ofs << "\n    {"
+        << "\"cumtime\": " << node.cumtime << ", "
+        << "\"selftime\": " << node.selftime << ", "
+        << "\"calls\": " << node.calls << ", "
+        << "\"function\": \"" << node.function << "\", "
+        << "\"info\": \"" << node.info << "\"}";
+
+    first = false;
+  }
+  ofs << "\n  ],\n";
+
+  ofs << "  \"edges\": [";
+  first = true;
+  for (auto const edge : edges_) {
+    if (!first) {
+      ofs << ",";
+    }
+    ofs << "\n    {"
+        << "\"source\": {\"function\": \"" << edge.source->function << "\", \"info\": \""
+        << edge.source->info << "\"}, "
+        << "\"destination\": {\"function\": \"" << edge.destination->function
+        << "\", \"info\": \"" << edge.destination->info << "\"}, "
+        << "\"cumtime\": " << edge.cumtime << ", "
+        << "\"calls\": " << edge.calls << "}";
+
+    first = false;
+  }
+  ofs << "\n  ]\n";
+
+  ofs << "}\n";
+}
+
+void TimingGraph::finalize() {
+  while (node_stack_.size() > 0) {
+    pop();
+  }
+
+  std::ofstream ofs("timings.js");
+  serialize(ofs);
 }
