@@ -11,76 +11,6 @@
 
 constexpr int timing_level = SLAPH_TIMING_LEVEL;
 
-class TimingsStreamSingleton {
- public:
-  TimingsStreamSingleton() {
-    if (timing_level > 0) {
-      for (int i = 0; i < omp_get_max_threads(); ++i) {
-        std::ostringstream oss;
-        oss << "timings-thread-" << i << ".xml";
-        streams_.emplace_back(oss.str());
-      }
-
-      for (auto &stream : streams_) {
-        stream << std::setprecision(std::numeric_limits<double>::max_digits10);
-        stream << "<timings>\n";
-      }
-    }
-  }
-
-  ~TimingsStreamSingleton() {
-    if (timing_level > 0) {
-      for (auto &stream : streams_) {
-        stream << "</timings>\n";
-      }
-    }
-  }
-
-  static TimingsStreamSingleton &instance() {
-    static TimingsStreamSingleton instance;
-    return instance;
-  }
-
-  std::ofstream *get() {
-    if (timing_level > 0) {
-      int const tid = omp_get_thread_num();
-      return &streams_.at(tid);
-    } else {
-      return nullptr;
-    }
-  }
-
- private:
-  std::vector<std::ofstream> streams_;
-};
-
-template <int level>
-class TimingScope {
- public:
-  TimingScope(std::string const &function, std::string const &info = "") {
-    if (level <= timing_level) {
-      start_ = omp_get_wtime();
-      stream_ = TimingsStreamSingleton::instance().get();
-      std::string f = function;
-      f = boost::replace_all_copy(f, "<", "&lt;");
-      f = boost::replace_all_copy(f, ">", "&gt;");
-      (*stream_) << "<call function='" << f << "' info='" << info << "'>\n";
-    }
-  }
-
-  ~TimingScope() {
-    if (level <= timing_level) {
-      auto const end = omp_get_wtime();
-      auto const duration = end - start_;
-      (*stream_) << "<total time='" << duration << "' />\n</call>\n";
-    }
-  }
-
- private:
-  double start_;
-  std::ofstream *stream_ = nullptr;
-};
-
 struct TimingNode;
 struct TimingEdge;
 
@@ -114,11 +44,10 @@ struct TimingNode {
 
 class TimingGraph {
  public:
-   static TimingGraph &instance() {
-     static TimingGraph instance;
-     return instance;
-   }
-
+  static TimingGraph &instance() {
+    static TimingGraph instance;
+    return instance;
+  }
 
   void push(std::string const &function, std::string const &info = "");
   void pop();
@@ -126,11 +55,31 @@ class TimingGraph {
   void finalize();
 
  private:
-  TimingGraph() {};
+  TimingGraph(){};
+
+  TimingGraph(TimingGraph const &) = delete;
 
   std::vector<TimingEdge> edges_;
   std::vector<TimingNode> nodes_;
 
   std::vector<TimingEdge *> edge_stack_;
   std::vector<TimingNode *> node_stack_;
+};
+
+template <int level>
+class TimingScope {
+ public:
+  TimingScope(std::string const &function, std::string const &info = "") {
+#pragma omp master
+    if (level <= timing_level) {
+      TimingGraph::instance().push(function, info);
+    }
+  }
+
+  ~TimingScope() {
+#pragma omp master
+    if (level <= timing_level) {
+      TimingGraph::instance().pop();
+    }
+  }
 };

@@ -1,8 +1,15 @@
 #include "timings.hpp"
 
+#include <iostream>
+
 void TimingGraph::push(std::string const &function, std::string const &info) {
+  std::cout << "push " << function << " " << info << std::endl;
+
   if (node_stack_.size() > 0) {
-    auto const &parent = node_stack_.back();
+    TimingNode *const parent = node_stack_.back();
+
+    assert(&nodes_.front() <= parent);
+    assert(parent <= &nodes_.back() );
 
     auto const &it = find_if(parent->edges.begin(),
                              parent->edges.end(),
@@ -16,6 +23,8 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
         new_info = info;
       } else if (info.size() == 0) {
         new_info = parent->info;
+      } else if (parent->info == info) {
+        new_info = info;
       } else {
         new_info = parent->info + " " + info;
       }
@@ -23,8 +32,13 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
       nodes_.emplace_back(function, new_info);
       node_stack_.push_back(&nodes_.back());
 
-      edges_.emplace_back(parent, &nodes_.back());
+      edges_.emplace_back(parent, node_stack_.back());
       edge_stack_.push_back(&edges_.back());
+
+      assert(&nodes_.front() <= edge_stack_.back()->source);
+      assert(edge_stack_.back()->source <= &nodes_.back() );
+      assert(&nodes_.front() <= edge_stack_.back()->destination);
+      assert(edge_stack_.back()->destination <= &nodes_.back() );
     } else {
       TimingEdge *current_edge = *it;
       TimingNode *current_node = current_edge->destination;
@@ -35,17 +49,30 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
       current_node->start = omp_get_wtime();
       current_edge->start = omp_get_wtime();
     }
+  } else {
+    nodes_.emplace_back(function, info);
+    node_stack_.push_back(std::addressof(nodes_.back()));
   }
 }
 
 void TimingGraph::pop() {
+  std::cout << "pop" << std::endl;
+
   auto const end = omp_get_wtime();
 
-  auto const edge_start = edge_stack_.back()->start;
-  auto const edge_duration = end - edge_start;
-  edge_stack_.back()->cumtime += edge_duration;
-  edge_stack_.back()->calls++;
+  serialize(std::cout);
 
+
+  double edge_duration = 0;
+  if (edge_stack_.size() > 0) {
+    auto const edge_start = edge_stack_.back()->start;
+    edge_duration = end - edge_start;
+    edge_stack_.back()->cumtime += edge_duration;
+    edge_stack_.back()->calls++;
+    edge_stack_.pop_back();
+  }
+
+  assert(node_stack_.size() > 0);
   auto const node_start = node_stack_.back()->start;
   auto const node_duration = end - node_start;
   node_stack_.back()->cumtime += node_duration;
@@ -53,7 +80,6 @@ void TimingGraph::pop() {
   node_stack_.back()->calls++;
 
   node_stack_.pop_back();
-  edge_stack_.pop_back();
 }
 
 void TimingGraph::serialize(std::ostream &ofs) {
@@ -62,11 +88,12 @@ void TimingGraph::serialize(std::ostream &ofs) {
   ofs << "  \"nodes\": [";
 
   bool first = true;
-  for (auto const node : nodes_) {
+  for (auto const &node : nodes_) {
     if (!first) {
       ofs << ",";
     }
     ofs << "\n    {"
+        << "\"addr\": " << &node << ", "
         << "\"cumtime\": " << node.cumtime << ", "
         << "\"selftime\": " << node.selftime << ", "
         << "\"calls\": " << node.calls << ", "
@@ -79,14 +106,15 @@ void TimingGraph::serialize(std::ostream &ofs) {
 
   ofs << "  \"edges\": [";
   first = true;
-  for (auto const edge : edges_) {
+  for (auto const &edge : edges_) {
     if (!first) {
       ofs << ",";
     }
     ofs << "\n    {"
-        << "\"source\": {\"function\": \"" << edge.source->function << "\", \"info\": \""
+        << "\"addr\": " << &edge << ", "
+        << "\"source\": {\"addr\": " << edge.source << ", \"function\": \"" << edge.source->function << "\", \"info\": \""
         << edge.source->info << "\"}, "
-        << "\"destination\": {\"function\": \"" << edge.destination->function
+        << "\"destination\": {\"addr\": " << edge.destination << ", \"function\": \"" << edge.destination->function
         << "\", \"info\": \"" << edge.destination->info << "\"}, "
         << "\"cumtime\": " << edge.cumtime << ", "
         << "\"calls\": " << edge.calls << "}";
