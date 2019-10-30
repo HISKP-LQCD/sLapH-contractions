@@ -9,22 +9,24 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
     int const parent_id = node_stack_.size() - 1;
     TimingNode &parent = nodes_[parent_id];
 
-      std::string new_info;
-      if (parent.info.size() == 0) {
-        new_info = info;
-      } else if (info.size() == 0) {
-        new_info = parent.info;
-      } else if (parent.info == info) {
-        new_info = info;
-      } else {
-        new_info = parent.info + " " + info;
-      }
+    std::string new_info;
+    if (parent.info.size() == 0) {
+      new_info = info;
+    } else if (info.size() == 0) {
+      new_info = parent.info;
+    } else if (parent.info == info) {
+      new_info = info;
+    } else {
+      new_info = parent.info + " " + info;
+    }
 
-    auto const &it = find_if(
-        parent.edges.begin(), parent.edges.end(), [this, function, new_info](int const edge) {
-          return nodes_[edges_[edge].destination].function == function &&
-nodes_[edges_[edge].destination].info == new_info;
-        });
+    auto const &it =
+        find_if(parent.edges.begin(),
+                parent.edges.end(),
+                [this, function, new_info](int const edge) {
+                  return nodes_[edges_[edge].destination].function == function &&
+                         nodes_[edges_[edge].destination].info == new_info;
+                });
 
     if (it == parent.edges.end()) {
       nodes_.emplace_back(function, new_info);
@@ -73,6 +75,10 @@ void TimingGraph::pop() {
   nodes_[node_stack_.back()].calls++;
 
   node_stack_.pop_back();
+
+  if (node_stack_.size() > 0) {
+    nodes_[node_stack_.back()].selftime -= edge_duration;
+  }
 }
 
 void TimingGraph::serialize(std::ostream &ofs) {
@@ -81,18 +87,20 @@ void TimingGraph::serialize(std::ostream &ofs) {
   ofs << "  \"nodes\": [";
 
   bool first = true;
+  int id = 0;
   for (auto const &node : nodes_) {
-    if (!first) {
+    if (id > 0) {
       ofs << ",";
     }
     ofs << "\n    {"
+        << "\"id\": " << id << ", "
         << "\"cumtime\": " << node.cumtime << ", "
         << "\"selftime\": " << node.selftime << ", "
         << "\"calls\": " << node.calls << ", "
         << "\"function\": \"" << node.function << "\", "
         << "\"info\": \"" << node.info << "\"}";
 
-    first = false;
+    ++id;
   }
   ofs << "\n  ],\n";
 
@@ -103,10 +111,8 @@ void TimingGraph::serialize(std::ostream &ofs) {
       ofs << ",";
     }
     ofs << "\n    {"
-        << "\"source\": {\"function\": \"" << nodes_[edge.source].function
-        << "\", \"info\": \"" << nodes_[edge.source].info << "\"}, "
-        << "\"destination\": {\"function\": \"" << nodes_[edge.destination].function
-        << "\", \"info\": \"" << nodes_[edge.destination].info << "\"}, "
+        << "\"from_id\": " << edge.source << ", "
+        << "\"to_id\": " << edge.destination << ", "
         << "\"cumtime\": " << edge.cumtime << ", "
         << "\"calls\": " << edge.calls << "}";
 
