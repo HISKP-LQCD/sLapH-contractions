@@ -54,7 +54,7 @@ Complex resolve_request3(std::vector<TraceRequest> const &trace_requests,
                          DiagramParts &q) {
   TimingScope<1> timing_scope("resolve_request3");
 
-  assert(ssize(trace_requests) == 2);
+  assert(ssize(trace_requests) == 3);
   auto const &trace_request0 = trace_requests.at(0);
   auto const &locations0 = trace_request0.locations;
   auto const &x0 = q.trace_factories.at(trace_request0.tr_name)
