@@ -34,9 +34,14 @@ def main():
         f.write(rendered)
     print('Wrote graph.')
 
-    subprocess.run(['dot', 'profile.dot', '-Tpdf', '-o', 'profile.pdf'])
-    subprocess.run(['dot', 'profile.dot', '-Tpng', '-o', 'profile.png'])
-    print('Compiled graph.')
+    for format in ['pdf', 'png']:
+        for engine in ['dot', 'circo', 'twopi', 'neato']:
+            subprocess.run([
+                engine, 'profile.dot',
+                '-T{}'.format(format),
+                '-o', 'profile-{}.{}'.format(engine, format)
+            ])
+            print('Compiled graph with {} to {}.'.format(engine, format))
 
 
 def _parse_args():
