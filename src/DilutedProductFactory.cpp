@@ -34,7 +34,7 @@ void DilutedProductFactoryQ0Q2::build_all() {
 
   requests_.clear();
 
-  //#pragma omp parallel for
+#pragma omp parallel for
   for (int i = 0; i < ssize(unique_requests); ++i) {
     auto const &request = unique_requests[i];
     build(request.first, request.second);

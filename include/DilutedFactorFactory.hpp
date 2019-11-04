@@ -42,9 +42,7 @@ class DilutedFactorFactory {
 
   void request(Key const &time_key) { requests_.insert(time_key); }
 
-  Value const &operator[](Key const &time_key) {
-    return Ql.at(time_key);
-  }
+  Value const &operator[](Key const &time_key) { return Ql.at(time_key); }
 
   void build_all() {
     // The requests have been stored in a set. We need to convert them into a vector such
@@ -61,6 +59,11 @@ class DilutedFactorFactory {
         // Populate the whole map with all the keys that are going to be built next. This
         // way the map does not change any more and concurrent read access is possible.
         Ql[time_key];
+
+        for (int operator_key = 0; operator_key < ssize(quarkline_indices);
+             ++operator_key) {
+          Ql[time_key][{operator_key}];
+        }
       }
     }
 
@@ -68,10 +71,11 @@ class DilutedFactorFactory {
     // requests has to be cleared.
     requests_.clear();
 
-    // Build all the elements. The `build` function will automatically populate the map
-    // `Ql`.
-    for (auto i = 0; i < ssize(unique_requests); ++i) {
-      build(unique_requests[i]);
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
     }
   }
 
