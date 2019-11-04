@@ -16,7 +16,7 @@ class DilutedProductFactoryQ0Q2 {
 
   void request(TimeKey const &time_key, QnKey const &qn_key);
 
-  void DilutedProductFactoryQ0Q2::build_all();
+  void build_all();
 
   std::vector<DilutedFactor> const &get(TimeKey const &time_key, QnKey const &key) {
     return Q0Q2_.at(time_key).at(key);
