@@ -72,6 +72,8 @@ class TimingGraph {
 
   std::vector<int> edge_stack_;
   std::vector<int> node_stack_;
+
+  bool finalized_ = false;
 };
 
 template <int level>

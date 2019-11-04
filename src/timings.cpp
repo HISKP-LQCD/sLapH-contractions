@@ -50,6 +50,10 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 }
 
 void TimingGraph::pop() {
+  if (finalized_) {
+    return;
+  }
+
   auto const end = omp_get_wtime();
 
   // We add the time that we have spent since starting with the current node to its
@@ -136,4 +140,6 @@ void TimingGraph::finalize() {
     std::ofstream ofs("timings.js");
     serialize(ofs);
   }
+
+  finalized_ = true;
 }
