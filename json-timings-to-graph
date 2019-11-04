@@ -35,7 +35,7 @@ def main():
     print('Wrote graph.')
 
     for format in ['pdf', 'png']:
-        for engine in ['dot', 'circo', 'twopi', 'neato']:
+        for engine in ['dot']:
             subprocess.run([
                 engine, 'profile.dot',
                 '-T{}'.format(format),

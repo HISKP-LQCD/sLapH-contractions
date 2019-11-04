@@ -99,6 +99,7 @@ void TimingGraph::serialize(std::ostream &ofs) {
         << "\"cumtime\": " << node.cumtime << ", "
         << "\"selftime\": " << node.selftime << ", "
         << "\"calls\": " << node.calls << ", "
+        << "\"threads\": " << node.threads << ", "
         << "\"function\": \"" << node.function << "\", "
         << "\"info\": \"" << node.info << "\"}";
 
@@ -115,6 +116,7 @@ void TimingGraph::serialize(std::ostream &ofs) {
     ofs << "\n    {"
         << "\"from_id\": " << edge.source << ", "
         << "\"to_id\": " << edge.destination << ", "
+        << "\"threads\": " << edge.threads << ", "
         << "\"cumtime\": " << edge.cumtime << ", "
         << "\"calls\": " << edge.calls << "}";
 
