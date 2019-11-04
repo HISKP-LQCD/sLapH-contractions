@@ -38,8 +38,24 @@ void DilutedProductFactoryQ0Q2::build_all() {
   for (int i = 0; i < ssize(unique_requests); ++i) {
     auto const &request = unique_requests[i];
     build(request.first, request.second);
+    assert(Q0Q2_[request.first][request.second].size() > 0);
   }
+}
 
+template <typename Type, size_t size>
+std::ostream &operator<<(std::ostream &os, std::array<Type, size> const &array) {
+  os << "[";
+  bool first = true;
+  for (auto const &elem : array) {
+    if (!first) {
+      os << ", ";
+    }
+    os << elem;
+    first = false;
+  }
+  os << "]";
+
+  return os;
 }
 
 void DilutedProductFactoryQ0Q2::build(TimeKey const &time_key, QnKey const &key) {
@@ -54,4 +70,10 @@ void DilutedProductFactoryQ0Q2::build(TimeKey const &time_key, QnKey const &key)
   std::copy_n(std::begin(time_key) + nt1, nt2, std::begin(time_key2));
 
   multiply<1, 1>(Q0Q2_[time_key], key, factory_q2_[time_key1], factory_q0_[time_key2]);
+
+  if (Q0Q2_[time_key][key].size() == 0) {
+#pragma omp critical(cerr)
+    std::cerr << "Failed Q0Q2: " << time_key << " " << key << std::endl;
+    abort();
+  }
 }
