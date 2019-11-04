@@ -27,7 +27,7 @@ def main():
     for i, node in enumerate(profile['nodes']):
         profile['nodes'][i]['hue'] = '{:.4f}'.format(250/360 * (1 - math.pow(node['cumtime'] / tottime, 0.5)))
 
-    rendered = template.render(vertices=profile['nodes'], edges=profile['edges'], tottime=tottime)
+    rendered = template.render(vertices=profile['nodes'], edges=profile['edges'], tottime=tottime, rankdir='LR' if options.vertical else 'TB')
     print('Generated graph.')
 
     with open('profile.dot', 'w') as f:
@@ -47,6 +47,7 @@ def main():
 def _parse_args():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('profile')
+    parser.add_argument('--vertical', action='store_true')
     options = parser.parse_args()
 
     return options

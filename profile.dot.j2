@@ -1,4 +1,5 @@
 digraph {
+  rankdir = {{ rankdir }}
   graph [fontname="Noto Sans", overlap=false, splines=true, penwidth=10]
   node [fontname="Noto Sans", shape=box, style=filled, fontcolor=white]
   edge [fontname="Noto Sans"]
@@ -11,3 +12,4 @@ digraph {
   {{ e.from_id }} -> {{ e.to_id }} [label="{{ '%.3g'|format(e.cumtime) }}\n{{ e.calls }}×", color={{ 'red' if e.threads > 1 else 'black' }}];
   {% endfor %}
 }
+
