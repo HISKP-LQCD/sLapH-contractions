@@ -287,6 +287,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   std::cout << gd << std::endl;
 
+#if 0
   // printing information about memory consumption of all relevant parts that are cached
   std::cout << "Memory consumption:" << std::endl;
 
@@ -385,6 +386,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
     std::cout << "\tDiagrams:" << std::endl;
   }
+#endif
 }
 
 #define GLOBAL_DATA_PRINT(x) (std::cout << "    " << #x << ": " << x << "\n")
