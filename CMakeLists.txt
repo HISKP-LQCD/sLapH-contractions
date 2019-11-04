@@ -66,11 +66,10 @@ set(git_host ${hostname})
 message(STATUS "user: ${git_user}")
 message(STATUS "host: ${git_host}")
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/git.hpp.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/git.hpp"
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/git.cpp.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp"
   @ONLY)
-list(APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/include/git.hpp")
-target_include_directories(lcontract PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include")
+target_sources(lcontract PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp")
 
 ###############################################################################
 #                             External Libraries                              #
