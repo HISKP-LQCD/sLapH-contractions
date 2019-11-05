@@ -106,7 +106,9 @@ int main(int ac, char *av[]) {
              gd.quarkline_lookuptable,
              gd.path_output,
              gd.filename_ending_correlators,
-             gd.single_time_slice_combination);
+             gd.single_time_slice_combination,
+             gd.time_slice_divisor,
+             gd.time_slice_remainder);
   }
 
   TimingGraph::instance().finalize();

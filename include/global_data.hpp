@@ -95,6 +95,8 @@ struct GlobalData {
   HypPars hyp_parameters;
 
   int single_time_slice_combination;
+  int time_slice_divisor;
+  int time_slice_remainder;
 };
 
 /**

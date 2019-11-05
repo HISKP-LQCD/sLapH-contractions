@@ -51,4 +51,6 @@ void contract(const ssize_t Lt,
               DilutedFactorIndicesCollection const &quark_lookup,
               std::string const output_path,
               std::string const output_filename,
-              int single_time_slice_combination);
+              int single_time_slice_combination,
+              int time_slice_divisor,
+              int time_slice_remainder);

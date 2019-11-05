@@ -50,7 +50,9 @@ void contract(const ssize_t Lt,
               DilutedFactorIndicesCollection const &quark_lookup,
               std::string const output_path,
               std::string const output_filename,
-              int single_time_slice_combination) {
+              int single_time_slice_combination,
+              int time_slice_divisor,
+              int time_slice_remainder) {
   TimingScope<1> timing_scope("contract");
 
   std::vector<Diagram> diagrams;
@@ -99,6 +101,9 @@ void contract(const ssize_t Lt,
 
         for (auto const slice_pair : block_pair) {
           int const t = get_time_delta(slice_pair, Lt);
+          if (t % time_slice_divisor != time_slice_remainder) {
+            continue;
+          }
 
           diagram.request(t, slice_pair, q);
         }  // End of slice pair loop.
@@ -116,6 +121,9 @@ void contract(const ssize_t Lt,
 
         for (auto const slice_pair : block_pair) {
           int const t = get_time_delta(slice_pair, Lt);
+          if (t % time_slice_divisor != time_slice_remainder) {
+            continue;
+          }
 
           diagram.assemble(t, slice_pair, q);
         }  // End of slice pair loop.

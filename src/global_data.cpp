@@ -90,6 +90,16 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   //////////////////////////////////////////////////////////////////////////////
   // Options for infile ////////////////////////////////////////////////////////
 
+  config.add_options()(
+      "time_slice_divisor",
+      po::value<int>(&gd.time_slice_divisor)->default_value(1),
+      "Use only source time slices which are divisible by this number and remainder.");
+
+  config.add_options()(
+      "time_slice_remainder",
+      po::value<int>(&gd.time_slice_remainder)->default_value(0),
+      "Use only source time slices which are divisible by this number and remainder.");
+
   // parallelisation options
   config.add_options()("nb_eigen_threads",
                        po::value<ssize_t>(&gd.nb_eigen_threads)->default_value(1),
