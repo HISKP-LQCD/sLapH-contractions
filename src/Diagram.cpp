@@ -6,15 +6,15 @@
 #include <omp.h>
 #include <boost/range/adaptor/indexed.hpp>
 
-void request_request(std::vector<TraceRequest> const &trace_requests,
+#include <unordered_set>
+
+void request_request(TraceRequest const &trace_request,
                      BlockIterator const &slice_pair,
                      DiagramParts &q) {
   TimingScope<1> timing_scope("request_request");
 
-  for (auto const &trace_request : trace_requests) {
-    q.trace_factories.at(trace_request.tr_name)
-        ->request(slice_pair, trace_request.locations);
-  }
+  q.trace_factories.at(trace_request.tr_name)
+      ->request(slice_pair, trace_request.locations);
 }
 
 Complex resolve_request(std::vector<TraceRequest> const &trace_requests,
@@ -59,9 +59,17 @@ void Diagram::request_impl(int const t,
                            DiagramParts &q) {
   TimingScope<1> timing_scope("Diagram::request_impl", name());
 
+  std::set<TraceRequest> trace_requests;
+
   for (int i = 0; i != ssize(correlator_requests()); ++i) {
     auto const &request = correlator_requests()[i];
-    request_request(request.trace_requests, slice_pair, q);
+    for (auto const &elem : request.trace_requests) {
+      trace_requests.insert(elem);
+    }
+  }
+
+  for (auto const &elem : trace_requests) {
+    request_request(elem, slice_pair, q);
   }
 }
 
