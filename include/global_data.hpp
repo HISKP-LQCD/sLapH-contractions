@@ -15,15 +15,7 @@ typedef std::map<std::string, std::vector<Indices>> TraceIndicesCollection;
 
 enum class Location { source, sink };
 
-inline bool operator<(std::vector<Location> const &left, std::vector<Location> const &right) {
-  assert(left.size() == right.size());
-  for (int i = 0; i < ssize(left); ++i) {
-    if (left[i] >= right[i]) {
-      return false;
-    }
-  }
-  return true;
-}
+bool operator<(std::vector<Location> const &left, std::vector<Location> const &right);
 
 struct TraceRequest {
   std::string tr_name;

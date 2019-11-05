@@ -435,3 +435,22 @@ std::ostream &operator<<(std::ostream &os, GlobalData const &gd) {
 
   return os;
 }
+
+bool operator<(std::vector<Location> const &left, std::vector<Location> const &right) {
+  if (left.size() == right.size()) {
+    // The two vectors are of the same size. We therefore need to compare element by
+    // element.
+    for (int i = 0; i < ssize(left); ++i) {
+      if (left[i] >= right[i]) {
+        return false;
+      }
+    }
+
+    // There have not been any violations to strict monotony found, therefore it actually
+    // is less than.
+    return true;
+  } else {
+    // We just take the one with the smaller size to the the lesser one.
+    return left.size() < right.size();
+  }
+}
