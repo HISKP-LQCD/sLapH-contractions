@@ -101,7 +101,7 @@ void contract(const ssize_t Lt,
 
         for (auto const slice_pair : block_pair) {
           int const t = get_time_delta(slice_pair, Lt);
-          if (t % time_slice_divisor != time_slice_remainder) {
+          if (slice_pair.source() % time_slice_divisor != time_slice_remainder) {
             continue;
           }
 
@@ -121,7 +121,7 @@ void contract(const ssize_t Lt,
 
         for (auto const slice_pair : block_pair) {
           int const t = get_time_delta(slice_pair, Lt);
-          if (t % time_slice_divisor != time_slice_remainder) {
+          if (slice_pair.source() % time_slice_divisor != time_slice_remainder) {
             continue;
           }
 
