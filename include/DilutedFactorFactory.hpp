@@ -40,20 +40,52 @@ class DilutedFactorFactory {
       ssize_t const nev,
       typename DilutedFactorTypeTraits<qlt>::type const &quarkline_indices);
 
-  Value const &operator[](Key const &key) {
-    if (Ql.count(key) == 0) {
-      build(key);
+  void request(Key const &time_key) { requests_.insert(time_key); }
+
+  Value const &operator[](Key const &time_key) { return Ql.at(time_key); }
+
+  void build_all() {
+    // The requests have been stored in a set. We need to convert them into a vector such
+    // that we can run them concurrently.
+    std::vector<Key> unique_requests;
+    unique_requests.reserve(requests_.size());
+    for (auto const &time_key : requests_) {
+      // The map might already contain some elements that have been requested in an
+      // earlier iteration. Therefore we need to see whether it has already been built
+      // before.
+      if (Ql.count(time_key) == 0) {
+        unique_requests.push_back(time_key);
+
+        // Populate the whole map with all the keys that are going to be built next. This
+        // way the map does not change any more and concurrent read access is possible.
+        Ql[time_key];
+
+        for (int operator_key = 0; operator_key < ssize(quarkline_indices);
+             ++operator_key) {
+          Ql[time_key][{operator_key}];
+        }
+      }
     }
 
-    return Ql.at(key);
+    // We are going to build all the ones that are requested, therefore the list of
+    // requests has to be cleared.
+    requests_.clear();
+
+#pragma omp parallel
+    {
+      for (auto i = 0; i < ssize(unique_requests); ++i) {
+        build(unique_requests[i]);
+      }
+    }
   }
 
   void clear() { Ql.clear(); }
 
+ private:
   void build(Key const &time_key);
 
- private:
   std::map<Key, Value> Ql;
+  std::set<Key> requests_;
 
   Perambulator const &peram;
   RandomVector const &rnd_vec;

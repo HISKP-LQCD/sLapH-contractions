@@ -1,0 +1,15 @@
+digraph {
+  rankdir = {{ rankdir }}
+  graph [fontname="Noto Sans", overlap=false, splines=true, penwidth=10]
+  node [fontname="Noto Sans", shape=box, style=filled, fontcolor=white]
+  edge [fontname="Noto Sans"]
+
+  {% for v in vertices %}
+  {{ v.id }} [label="{{ v.function }}\n{{ v.info }}\n{{ '%.3g'|format(v.cumtime) }}\n({{ '%.3g'|format(v.selftime) }})\n{{ v.calls }}×", fillcolor="{{ v.hue }} 1.0 0.6", color={{ 'red' if v.threads > 1 else 'black' }}];
+  {% endfor %}
+
+  {% for e in edges %}
+  {{ e.from_id }} -> {{ e.to_id }} [label="{{ '%.3g'|format(e.cumtime) }}\n{{ e.calls }}×", color={{ 'red' if e.threads > 1 else 'black' }}];
+  {% endfor %}
+}
+

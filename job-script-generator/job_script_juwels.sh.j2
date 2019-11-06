@@ -1,15 +1,16 @@
 #!/bin/bash
 #SBATCH -J {{ jobname }}
-#SBATCH --time=02:00:00
-#SBATCH --partition=devel
+#SBATCH --time=1-00:00:00
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=24
+#SBATCH --cpus-per-task={{ cpus_per_task }}
+#SBATCH --mem=90000
 {% if email_address != '' %}
 #SBATCH --mail-user={{ email_address }}
 #SBATCH --mail-type=FAIL
 {% endif %}
-#SBATCH --output={{ rundir }}/{{ jobname }}.out
-#SBATCH --error={{ rundir }}/{{ jobname }}.err
+#SBATCH --output={{ rundir }}/{{ jobname }}_%A_%a.out
+#SBATCH --error={{ rundir }}/{{ jobname }}_%A_%a.err
+#SABTCH -A hbn28
 
 set -e
 set -u
@@ -20,12 +21,13 @@ module load HDF5
 module load Boost
 module load Eigen
 
-export OMP_NUM_THREADS={{ cpus_per_task }}
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK-{{ cpus_per_task }}}
 export KMP_AFFINITY=balanced,verbose
 
 cd {{ rundir }}
 
 date
+hostname
 
 {% for config_id in config_ids_for_one_job %}
 srun -N1 -n1 -c$SLURM_CPUS_PER_TASK --exclusive \

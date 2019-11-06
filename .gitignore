@@ -21,3 +21,4 @@ timings-thread-*.xml
 tests/integration-L4/timings.js
 profile.dot
 profile.png
+profile-dot.png

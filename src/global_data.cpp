@@ -90,6 +90,16 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
   //////////////////////////////////////////////////////////////////////////////
   // Options for infile ////////////////////////////////////////////////////////
 
+  config.add_options()(
+      "time_slice_divisor",
+      po::value<int>(&gd.time_slice_divisor)->default_value(1),
+      "Use only source time slices which are divisible by this number and remainder.");
+
+  config.add_options()(
+      "time_slice_remainder",
+      po::value<int>(&gd.time_slice_remainder)->default_value(0),
+      "Use only source time slices which are divisible by this number and remainder.");
+
   // parallelisation options
   config.add_options()("nb_eigen_threads",
                        po::value<ssize_t>(&gd.nb_eigen_threads)->default_value(1),
@@ -287,6 +297,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   std::cout << gd << std::endl;
 
+#if 0
   // printing information about memory consumption of all relevant parts that are cached
   std::cout << "Memory consumption:" << std::endl;
 
@@ -385,6 +396,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
     std::cout << "\tDiagrams:" << std::endl;
   }
+#endif
 }
 
 #define GLOBAL_DATA_PRINT(x) (std::cout << "    " << #x << ": " << x << "\n")
@@ -432,4 +444,23 @@ std::ostream &operator<<(std::ostream &os, GlobalData const &gd) {
   //! @TODO Print more stuff here.
 
   return os;
+}
+
+bool operator<(std::vector<Location> const &left, std::vector<Location> const &right) {
+  if (left.size() == right.size()) {
+    // The two vectors are of the same size. We therefore need to compare element by
+    // element.
+    for (int i = 0; i < ssize(left); ++i) {
+      if (left[i] >= right[i]) {
+        return false;
+      }
+    }
+
+    // There have not been any violations to strict monotony found, therefore it actually
+    // is less than.
+    return true;
+  } else {
+    // We just take the one with the smaller size to the the lesser one.
+    return left.size() < right.size();
+  }
 }

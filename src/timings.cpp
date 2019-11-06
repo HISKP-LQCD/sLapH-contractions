@@ -50,6 +50,10 @@ void TimingGraph::push(std::string const &function, std::string const &info) {
 }
 
 void TimingGraph::pop() {
+  if (finalized_) {
+    return;
+  }
+
   auto const end = omp_get_wtime();
 
   // We add the time that we have spent since starting with the current node to its
@@ -99,6 +103,7 @@ void TimingGraph::serialize(std::ostream &ofs) {
         << "\"cumtime\": " << node.cumtime << ", "
         << "\"selftime\": " << node.selftime << ", "
         << "\"calls\": " << node.calls << ", "
+        << "\"threads\": " << node.threads << ", "
         << "\"function\": \"" << node.function << "\", "
         << "\"info\": \"" << node.info << "\"}";
 
@@ -115,6 +120,7 @@ void TimingGraph::serialize(std::ostream &ofs) {
     ofs << "\n    {"
         << "\"from_id\": " << edge.source << ", "
         << "\"to_id\": " << edge.destination << ", "
+        << "\"threads\": " << edge.threads << ", "
         << "\"cumtime\": " << edge.cumtime << ", "
         << "\"calls\": " << edge.calls << "}";
 
@@ -134,4 +140,6 @@ void TimingGraph::finalize() {
     std::ofstream ofs("timings.js");
     serialize(ofs);
   }
+
+  finalized_ = true;
 }

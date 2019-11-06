@@ -16,7 +16,10 @@ struct TimingEdge;
 
 struct TimingEdge {
   TimingEdge(int const source, int const destination)
-      : source(source), destination(destination), start(omp_get_wtime()) {}
+      : source(source),
+        destination(destination),
+        start(omp_get_wtime()),
+        threads(omp_get_num_threads()) {}
 
   int source;
   int destination;
@@ -25,11 +28,15 @@ struct TimingEdge {
 
   double cumtime = 0;
   int calls = 0;
+  int threads;
 };
 
 struct TimingNode {
   TimingNode(std::string const &function, std::string const &info = "")
-      : start(omp_get_wtime()), function(function), info(info) {}
+      : start(omp_get_wtime()),
+        threads(omp_get_num_threads()),
+        function(function),
+        info(info) {}
 
   std::vector<int> edges;
 
@@ -38,6 +45,7 @@ struct TimingNode {
   double cumtime = 0.0;
   double selftime = 0.0;
   int calls = 0;
+  int threads;
   std::string function;
   std::string info;
 };
@@ -64,6 +72,8 @@ class TimingGraph {
 
   std::vector<int> edge_stack_;
   std::vector<int> node_stack_;
+
+  bool finalized_ = false;
 };
 
 template <int level>

@@ -99,7 +99,32 @@ struct DiagramParts {
             dilution_scheme));
   }
 
+  void build_all() {
+    TimingScope<1> timing_scope("DiagramParts::build_all");
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all Q");
+      q0.build_all();
+      q1.build_all();
+      q2.build_all();
+    }
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all QQ");
+      q0q2.build_all();
+    }
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all tr(Q...)");
+      for (auto &elem : trace_factories) {
+        elem.second->build_all();
+      }
+    }
+  }
+
   void clear() {
+    TimingScope<1> timing_scope("DiagramParts::clear");
+
     q0.clear();
     q1.clear();
     q2.clear();
@@ -146,17 +171,19 @@ class Diagram {
     return correlator_requests_;
   }
 
+  void request(int const t, BlockIterator const &slice_pair, DiagramParts &q);
   void assemble(int const t, BlockIterator const &slice_pair, DiagramParts &q);
 
   void write();
 
   std::string const &name() const { return name_; }
 
-  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
-
   std::vector<CorrelatorRequest> const &correlator_requests_;
 
  private:
+  void request_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+
   std::string const &output_path_;
   std::string const &output_filename_;
 

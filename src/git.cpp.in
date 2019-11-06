@@ -1,4 +1,4 @@
-#pragma once
+#include "git.hpp"
 
 char const *const git_sha1 = "@git_sha1@";
 char const *const git_refspec = "@git_refspec@";

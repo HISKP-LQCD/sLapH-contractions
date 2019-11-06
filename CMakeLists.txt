@@ -15,7 +15,7 @@ add_library(lcontract
   src/DiagramSpec.cpp
   src/DilutedFactor.cpp
   src/DilutedFactorFactory.cpp
-  #src/DilutedProductFactory.cpp
+  src/DilutedProductFactory.cpp
   src/DilutedTrace.cpp
   src/DilutedTraceFactory.cpp
   src/dilution-iterator.cpp
@@ -66,11 +66,10 @@ set(git_host ${hostname})
 message(STATUS "user: ${git_user}")
 message(STATUS "host: ${git_host}")
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/git.hpp.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/git.hpp"
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/git.cpp.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp"
   @ONLY)
-list(APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/include/git.hpp")
-target_include_directories(lcontract PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include")
+target_sources(lcontract PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp")
 
 ###############################################################################
 #                             External Libraries                              #
@@ -155,14 +154,14 @@ else()
   message(STATUS "Using native double precision accumulation")
 endif()
 
-option(SLAPH_CLEAR_QQ_CACHE "Clear the Q2Q0 cache after each trace" ON)
-
-if(SLAPH_CLEAR_QQ_CACHE)
-  add_definitions("-DSLAPH_CLEAR_QQ_CACHE")
-  message(STATUS "Clearing the Q2Q0 cache after each trace. Less memory usage, less speed.")
-else()
-  message(STATUS "Clearing the Q2Q0 cache after each trace. More memory usage, more speed.")
-endif()
+#option(SLAPH_CLEAR_QQ_CACHE "Clear the Q2Q0 cache after each trace" ON)
+#
+#if(SLAPH_CLEAR_QQ_CACHE)
+#  add_definitions("-DSLAPH_CLEAR_QQ_CACHE")
+#  message(STATUS "Clearing the Q2Q0 cache after each trace. Less memory usage, less speed.")
+#else()
+#  message(STATUS "Keeping the Q2Q0 cache after each trace. More memory usage, more speed.")
+#endif()
 
 ###############################################################################
 #                                 Executables                                 #
