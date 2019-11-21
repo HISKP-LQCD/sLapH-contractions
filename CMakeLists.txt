@@ -182,6 +182,10 @@ install(TARGETS contract DESTINATION bin)
 add_executable(test-dilution-iterator main/test-iterator.cpp)
 target_link_libraries(test-dilution-iterator lcontract)
 
+### test-iterator
+add_executable(test-dilution-iterator-stride main/test-iterator-stride.cpp)
+target_link_libraries(test-dilution-iterator-stride lcontract)
+
 ### test-derivative
 add_executable(test-derivative main/test-derivative.cpp)
 target_link_libraries(test-derivative lcontract)
