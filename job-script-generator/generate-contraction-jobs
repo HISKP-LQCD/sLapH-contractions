@@ -86,7 +86,7 @@ def main():
         config_ids_for_one_job = list(range(
             config_base_id,
             config_base_id + options.jobs_per_node * options.conf_step,
-            options.conf_step)
+            options.conf_step))
 
         # Create a job script for the scheduler.
         rendered_jobscript = template_jobscript.render(
