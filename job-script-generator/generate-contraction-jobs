@@ -11,7 +11,6 @@ import shutil
 import sys
 
 import jinja2
-import numpy as np
 
 
 # replaces os.makedirs(..., exist_ok=True) because python2
@@ -84,7 +83,10 @@ def main():
         config_path = os.path.join(options.rundir, 'cnfg{:04d}'.format(config_base_id))
         mkdir_p(config_path)
 
-        config_ids_for_one_job = np.arange(options.jobs_per_node)*options.conf_step + config_base_id 
+        config_ids_for_one_job = list(range(
+            config_base_id,
+            config_base_id + options.jobs_per_node * options.conf_step,
+            options.conf_step)
 
         # Create a job script for the scheduler.
         rendered_jobscript = template_jobscript.render(
