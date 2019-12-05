@@ -96,6 +96,7 @@ def main():
             rundir=os.path.abspath(config_path),
             config_path=os.path.abspath(options.contractinput),
             config_ids_for_one_job=config_ids_for_one_job,
+            account=options.account,
         )
         with open(os.path.join(config_path, jobscriptfile), 'w') as f:
             f.write(rendered_jobscript)
@@ -139,9 +140,12 @@ def _parse_args():
     group_job.add_argument('--exe', required=True, help='Path to the executable. This will be copied into the hierarchy to prevent accidential overwrites.')
     group_job.add_argument('--jobname', default='contraction', help='Name of the submitted job. Default: %(default)s')
     group_job.add_argument('--jobcount', type=int, default='60', help='Maximal number of jobs submitted to the queue. Default: %(default)s')
-    group_job.add_argument('--email', default='', help='Email address to send job notifications to. If this is not given, no emails will be send.')
     group_job.add_argument('--jobs-per-node', type=int, default=1, help='Number of configurations started in a job. Default: %(default)s')
     group_job.add_argument('--cpus-per-task', type=int, default=4, help='Number of cpu cores per task. Default: %(default)s')
+
+    group_accounting = parser.add_argument_group('Accounting', 'Stuff for accounting')
+    group_accounting.add_argument('--email', default='', help='Email address to send job notifications to. If this is not given, no emails will be send.')
+    group_accounting.add_argument('--account', default='hbn28', help='Compute project account used for billing. Default: %(default)s')
     
     options = parser.parse_args()
     return options

@@ -10,7 +10,9 @@
 {% endif %}
 #SBATCH --output={{ rundir }}/{{ jobname }}_%A_%a.out
 #SBATCH --error={{ rundir }}/{{ jobname }}_%A_%a.err
-#SABTCH -A hbn28
+{% if account is not None %}
+#SBATCH -A {{ account }}
+{% endif %}
 
 set -e
 set -u
