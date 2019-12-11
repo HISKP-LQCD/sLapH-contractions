@@ -35,6 +35,17 @@ DiagramSpecs make_diagram_specs() {
   map["C30"] = {Vertices({0, 2}, {1}),
                 TraceSpecs{{{"Q1", 0, 1}, {"Q1", 1, 2}, {"Q1", 2, 0}}}};
 
+  /** Build the doubly disconnected part for the P to gamma gamma 
+   *  @f{align}{
+   *    C = \langle D_\mathtt{Q1}^{-1}(t|t) \Gamma_\mathtt{Op0} \rangle \cdot
+   *        \langle D_\mathtt{Q1}^{-1}(t'|t') \Gamma_\mathtt{Op1} \rangle
+   *        \langle D_\mathtt{Q1}^{-1}(t''|t'') \Gamma_\mathtt{Op2} \rangle
+   *  @f}
+   */
+  map["C30V3"] = {Vertices({0,2}, {1}), 
+                  TraceSpecs{{{"Q1", 0, 0}}, {{"Q1", 1, 1}},{{"Q1", 2, 2}}}};
+
+
   /** Build charged 3pt correlation function
    *  @f{align}{
    *    C = \langle \gamma_5 D_\mathtt{Q0}^{-1}(t|t)^\dagger \gamma_5 \Gamma_\mathtt{Op0}
