@@ -30,7 +30,7 @@ void DilutedTrace1Factory<DilutedFactorType::Q1>::build(Key const &time_key) {
   auto t = time_key[0];
   auto b = dilution_scheme.time_to_block(t);
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value = factor_to_trace(df[{t, b}].at({c_look[0]}));
     Tr[{t}][i] = value;
@@ -67,7 +67,7 @@ void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
   auto b1 = dilution_scheme.time_to_block(t1);
   auto b2 = dilution_scheme.time_to_block(t2);
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(df1[{t1, b2}].at({c_look[0]}), df2[{t2, b1}].at({c_look[1]}));
@@ -107,13 +107,13 @@ void DilutedTrace2Factory<DilutedFactorType::Q0, DilutedFactorType::Q2>::build(
   // later.
 #pragma omp single
   {
-    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
     }
   }
 
 #pragma omp for
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(df1[{t2}].at({c_look[1]}), df2[{b2, t1, b2}].at({c_look[0]}));
@@ -159,12 +159,12 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     multiply<1, 1>(L1, {c_look[0], c_look[1]}, df1[{t1, b2}], df2[{t2, b3}]);
   }
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[0], c_look[1]}], df3[{t3, b1}].at({c_look[2]}));
@@ -212,12 +212,12 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     multiply<1, 1>(L1, {c_look[2], c_look[0]}, df2[{t1}], df3[{b1, t1, b2}]);
   }
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[2], c_look[0]}], df1[{t2, b3}].at({c_look[1]}));
@@ -273,13 +273,13 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
 
   DilutedFactorsMap<2> L1;
   DilutedFactorsMap<2> L2;
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     multiply<1, 1>(L1, {c_look[0], c_look[1]}, df1[{t0, b1}], df2[{t1, b2}]);
     multiply<1, 1>(L2, {c_look[2], c_look[3]}, df3[{t2, b3}], df4[{t3, b0}]);
   }
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[0], c_look[1]}], L2[{c_look[2], c_look[3]}]);
@@ -310,7 +310,7 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
   auto const b0 = dilution_scheme.time_to_block(t0);
   auto const b2 = dilution_scheme.time_to_block(t2);
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     dpf_.request({b0, t1, b2, t2}, {c_look[1], c_look[2]});
     dpf_.request({b2, t3, b0, t0}, {c_look[3], c_look[0]});
@@ -335,13 +335,13 @@ void DilutedTrace4Factory<DilutedFactorType::Q2,
   // later.
 #pragma omp single
   {
-    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
     }
   }
 
 #pragma omp for
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
 
     auto const &l1 = dpf_.get({b0, t1, b2, t2}, {c_look[1], c_look[2]});
@@ -381,7 +381,7 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b4 = dilution_scheme.time_to_block(t4);
 
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
 
     dpf_.request({b0, t1, b2, t2}, {c_look[1], c_look[2]});
@@ -413,13 +413,13 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
   // later.
 #pragma omp single
   {
-    for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
       Tr[time_key][i];
     }
   }
 
 #pragma omp for
-  for (ssize_t i = 0; i != ssize(diagram_index_collection); ++i) {
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     auto const &c_look = diagram_index_collection[i];
 
     auto const &l01 = dpf_.get({b0, t1, b2, t2}, {c_look[1], c_look[2]});
