@@ -1,0 +1,31 @@
+#Lattice parameters:
+Lt = 96
+Lx = 48
+Ly = 48
+Lz = 48
+
+start_config = 2440
+end_config = 2440
+delta_config = 4
+
+handling_vdaggerv = write
+path_vdaggerv = /p/scratch/chbn28/hbn28d/vdaggerv/nf2/cA2.09.48
+
+# eigenvector handling: path not neede right now
+number_of_eigen_vec = 660
+
+nb_evec_read_threads = 8
+nb_vdaggerv_eigen_threads = 24
+
+#maximal length of p
+#it should be the square root 
+#of maximal p^2
+max_momentum = 2
+
+name_eigenvectors = eigenvectors
+
+#path of the eigenvectors
+#in this directory all the NT eigenvectors
+#from configuration numnber CONFNUM should be located
+#in the following format: eigenvectors.CONFNUM.NT CONFNUM 4digit NT 3 digit number
+path_eigenvectors =  /p/scratch/chbn28/hbn28d/eigensystems/nf2/cA2.09.48/
