@@ -25,7 +25,7 @@ nb_vdaggerv_eigen_threads = 16
 
 number_of_eigen_vec = 120
 
-# Momentum cutoff for generating vdaggerv objects (maximal p^2 used in momentum projection)
+# Momentum cutoff for generating vdaggerv objects (|p_max|: square root of maximal p^2 used in momentum projection)
 max_momentum = 2
 
 # basename of the files containing eigenvectors
