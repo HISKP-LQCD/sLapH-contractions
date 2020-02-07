@@ -17,6 +17,9 @@ nb_vdaggerv_eigen_threads = 1
 # eigenvector handling: path not neede right now
 number_of_eigen_vec = 120
 
+#maximal length of p
+#it should be the square root 
+#of maximal p^2
 max_momentum = 2
 
 name_eigenvectors = eigenvectors
