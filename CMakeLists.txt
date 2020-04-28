@@ -1,4 +1,4 @@
-# Copyright © 2017-2018 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2017-2018 Martin Ueding <mu@martin-ueding.de>
 
 # Enforce a version that is actually available on QBiG.
 cmake_minimum_required(VERSION 3.1)

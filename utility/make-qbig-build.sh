@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2017 Martin Ueding <mu@martin-ueding.de>
 # Licensed under The MIT/Expat License
 
 # Sets up a debug and a release build outside of the source code with the paths
