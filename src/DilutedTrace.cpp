@@ -2,6 +2,8 @@
 
 #include "timings.hpp"
 
+#include <iomanip>
+
 Complex inner_product(DilutedTraces const &left_vec, DilutedTraces const &right_vec) {
   TimingScope<4> timing_scope("inner_product(DT, DT)");
 
@@ -64,6 +66,18 @@ Complex inner_product(DilutedTraces const &left_vec,
         if ((left.used_rnd_ids & middle.used_rnd_ids & right.used_rnd_ids) != 0u) {
           continue;
         }
+
+        std::cout
+          << std::setw(std::numeric_limits<double>::max_digits10)
+          << left.used_rnd_ids << "\t"
+          << left.data.real() << "\t"
+          << left.data.imag() << "\t"
+          << middle.used_rnd_ids << "\t"
+          << middle.data.real() << "\t"
+          << middle.data.imag() << "\t"
+          << right.used_rnd_ids << "\t"
+          << right.data.real() << "\t"
+          << right.data.imag() << "\n";
 
         right_sum += right.data;
         ++num_summands;

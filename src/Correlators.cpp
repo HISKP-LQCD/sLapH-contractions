@@ -91,6 +91,7 @@ void contract(const ssize_t Lt,
 
     auto const block_pair = dilution_scheme[b];
 
+
     {
       // Build the diagrams.
       TimingScope<1> timing_scope("contract(): request diagrams");
@@ -124,6 +125,9 @@ void contract(const ssize_t Lt,
           if (slice_pair.source() % time_slice_divisor != time_slice_remainder) {
             continue;
           }
+
+
+          std::cout << slice_pair.source() << "\t" << slice_pair.sink() << std::endl;
 
           diagram.assemble(t, slice_pair, q);
         }  // End of slice pair loop.
