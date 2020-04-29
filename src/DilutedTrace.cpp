@@ -56,6 +56,7 @@ Complex inner_product(DilutedTraces const &left_vec,
   Accumulator<Complex> result;
 
   for (auto const &left : left_vec.traces) {
+    Accumulator<Complex> middle_sum;
     for (auto const &middle : middle_vec.traces) {
       Accumulator<Complex> right_sum;
 
@@ -67,9 +68,9 @@ Complex inner_product(DilutedTraces const &left_vec,
         right_sum += right.data;
         ++num_summands;
       }
-
-      result += left.data * middle.data * right_sum.value();
+      middle_sum += middle.data * right_sum.value();
     }
+    result += left.data * middle_sum.value();
   }
 
   if (num_summands == 0) {
