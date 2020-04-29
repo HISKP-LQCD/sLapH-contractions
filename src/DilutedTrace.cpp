@@ -68,15 +68,20 @@ Complex inner_product(DilutedTraces const &left_vec,
         }
 
         std::cout
-          << std::setw(std::numeric_limits<double>::max_digits10)
           << left.used_rnd_ids << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << left.data.real() << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << left.data.imag() << "\t"
           << middle.used_rnd_ids << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << middle.data.real() << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << middle.data.imag() << "\t"
           << right.used_rnd_ids << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << right.data.real() << "\t"
+          << std::setw(std::numeric_limits<double>::max_digits10)
           << right.data.imag() << "\n";
 
         right_sum += right.data;
