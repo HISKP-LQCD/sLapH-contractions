@@ -62,11 +62,19 @@ Complex inner_product(DilutedTraces const &left_vec,
     for (auto const &middle : middle_vec.traces) {
       Accumulator<Complex> right_sum;
 
+      if ((left.used_rnd_ids & middle.used_rnd_ids) != 0u) {
+        continue;
+      }
+
       for (auto const &right : right_vec.traces) {
-        if ((left.used_rnd_ids & middle.used_rnd_ids & right.used_rnd_ids) != 0u) {
+        if ((left.used_rnd_ids & right.used_rnd_ids) != 0u) {
+          continue;
+        }
+        if ((middle.used_rnd_ids & right.used_rnd_ids) != 0u) {
           continue;
         }
 
+        /*
         std::cout
           << left.used_rnd_ids << "\t"
           << std::setprecision(std::numeric_limits<double>::max_digits10)
@@ -83,6 +91,7 @@ Complex inner_product(DilutedTraces const &left_vec,
           << right.data.real() << "\t"
           << std::setprecision(std::numeric_limits<double>::max_digits10)
           << right.data.imag() << "\n";
+          */
 
         right_sum += right.data;
         ++num_summands;
