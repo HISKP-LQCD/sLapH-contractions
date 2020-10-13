@@ -67,8 +67,18 @@ void DilutedTrace2Factory<DilutedFactorType::Q1, DilutedFactorType::Q1>::build(
   auto b1 = dilution_scheme.time_to_block(t1);
   auto b2 = dilution_scheme.time_to_block(t2);
 
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+
+#pragma omp for
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
-    const auto &c_look = diagram_index_collection[i];
+    auto const &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(df1[{t1, b2}].at({c_look[0]}), df2[{t2, b1}].at({c_look[1]}));
     Tr[{t1, t2}][i] = value;
