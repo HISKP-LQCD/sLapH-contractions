@@ -30,6 +30,16 @@ void DilutedTrace1Factory<DilutedFactorType::Q1>::build(Key const &time_key) {
   auto t = time_key[0];
   auto b = dilution_scheme.time_to_block(t);
 
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+
+#pragma omp for  
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value = factor_to_trace(df[{t, b}].at({c_look[0]}));
@@ -173,12 +183,21 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
     const auto &c_look = diagram_index_collection[i];
     multiply<1, 1>(L1, {c_look[0], c_look[1]}, df1[{t1, b2}], df2[{t2, b3}]);
   }
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
 
+#pragma omp for
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[0], c_look[1]}], df3[{t3, b1}].at({c_look[2]}));
-    Tr[{t1, t2, t3}][i] = value;
+    Tr[time_key][i] = value;
   }
 }
 
@@ -226,12 +245,21 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
     const auto &c_look = diagram_index_collection[i];
     multiply<1, 1>(L1, {c_look[2], c_look[0]}, df2[{t1}], df3[{b1, t1, b2}]);
   }
-
+  
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+#pragma omp for
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[2], c_look[0]}], df1[{t2, b3}].at({c_look[1]}));
-    Tr[{t1, t2, t3}][i] = value;
+    Tr[time_key][i] = value;
   }
 }
 
@@ -288,12 +316,21 @@ void DilutedTrace4Factory<DilutedFactorType::Q1,
     multiply<1, 1>(L1, {c_look[0], c_look[1]}, df1[{t0, b1}], df2[{t1, b2}]);
     multiply<1, 1>(L2, {c_look[2], c_look[3]}, df3[{t2, b3}], df4[{t3, b0}]);
   }
-
+  
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+#pragma omp for
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
     auto const &value =
         factor_to_trace(L1[{c_look[0], c_look[1]}], L2[{c_look[2], c_look[3]}]);
-    Tr[{t0, t1, t2, t3}][i] = value;
+    Tr[time_key][i] = value;
   }
 }
 

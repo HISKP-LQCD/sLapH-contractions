@@ -34,3 +34,36 @@ class DilutedProductFactoryQ0Q2 {
   DilutedFactorFactory<DilutedFactorType::Q0> &factory_q0_;
   DilutedFactorFactory<DilutedFactorType::Q2> &factory_q2_;
 };
+
+
+class DilutedProductFactoryQ1Q1 {
+ public:
+  using TimeKey = std::array<int, 4>;
+  using QnKey = std::array<ssize_t, 2>;
+  using Value = DilutedFactorsMap<2>;
+  using FullKey = std::pair<TimeKey, QnKey>;
+
+  DilutedProductFactoryQ1Q1(DilutedFactorFactory<DilutedFactorType::Q1> &factory_q1a,
+                            DilutedFactorFactory<DilutedFactorType::Q1> &factory_q1b)
+      : factory_q1a_(factory_q1a), factory_q1b_(factory_q1b) {}
+
+  void request(TimeKey const &time_key, QnKey const &qn_key);
+
+  void build_all();
+
+  std::vector<DilutedFactor> const &get(TimeKey const &time_key, QnKey const &key) {
+    return Q1Q1_.at(time_key).at(key);
+  }
+
+  void clear() { Q1Q1_.clear(); }
+
+ private:
+  void build(TimeKey const &time_key, std::array<ssize_t, 2> const &key);
+
+  std::map<TimeKey, Value> Q1Q1_;
+
+  std::set<FullKey> requests_;
+
+  DilutedFactorFactory<DilutedFactorType::Q1> &factory_q1a_;
+  DilutedFactorFactory<DilutedFactorType::Q1> &factory_q1b_;
+};
