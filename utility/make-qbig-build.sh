@@ -23,8 +23,8 @@ for buildtype in release debug; do
         "$sourcedir" \
         -DCMAKE_MODULE_PATH=/usr/share/cmake-3.0/Modules/ \
         -DCMAKE_BUILD_TYPE=$buildtype \
-        -DLIME_INCLUDE_DIRS="$HOME/Code/c-lime/include" \
-        -DLIME_LIBRARIES="-L $HOME/Code/c-lime/lib -llime"
+        -DLIME_INCLUDE_DIRS="$HOME/local/include" \
+        -DLIME_LIBRARIES="-L $HOME/local/lib -llime"
 
     make -j $(nproc)
     popd
