@@ -218,13 +218,13 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
-  auto const b1 = dilution_scheme.time_to_block(t1);
+  //auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b3 = dilution_scheme.time_to_block(t3);
 
   df1.request({t2, b3});
-  df2.request({t1});
-  df3.request({b1, t1, b2});
+  df2.request({t3});
+  df3.request({b3, t1, b2});
 }
 
 template <>
@@ -236,14 +236,14 @@ void DilutedTrace3Factory<DilutedFactorType::Q1,
   auto const t1 = time_key[0];
   auto const t2 = time_key[1];
   auto const t3 = time_key[2];
-  auto const b1 = dilution_scheme.time_to_block(t1);
+  //auto const b1 = dilution_scheme.time_to_block(t1);
   auto const b2 = dilution_scheme.time_to_block(t2);
   auto const b3 = dilution_scheme.time_to_block(t3);
 
   DilutedFactorsMap<2> L1;
   for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
     const auto &c_look = diagram_index_collection[i];
-    multiply<1, 1>(L1, {c_look[2], c_look[0]}, df2[{t1}], df3[{b1, t1, b2}]);
+    multiply<1, 1>(L1, {c_look[2], c_look[0]}, df2[{t3}], df3[{b3, t1, b2}]);
   }
   
   // We populate the whole map such that we can change its elements in a parallel way
