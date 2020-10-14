@@ -136,7 +136,10 @@ DiagramSpecs make_diagram_specs() {
    */
   map["C4cV"] = {Vertices({0, 1}, {2, 3}),
                  TraceSpecs{{{"Q0", 0, 1}, {"Q2", 1, 0}}, {{"Q0", 2, 3}, {"Q2", 3, 2}}}};
-
+  // pi+pi0pi- -> omega
+  map["C40ppp-o"] = {Vertices({0, 2, 3}, {1}),
+                TraceSpecs{{{"Q1", 0, 1}, {"Q0", 1, 2}, {"Q2", 2, 3}, {"Q1",3,0}}}};
+                 
   // TODO: Add a comment.
   map["C6cC"] = {Vertices({0, 2, 4}, {1, 3, 5}),
                  TraceSpecs{{{"Q2", 5, 0},

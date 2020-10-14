@@ -405,6 +405,78 @@ template class DilutedTrace4Factory<DilutedFactorType::Q2,
                                     DilutedFactorType::Q0>;
 
 /*****************************************************************************/
+/*                                 Q1 Q0 Q2 Q1                               */
+/*****************************************************************************/
+
+template <>
+void DilutedTrace4Factory<DilutedFactorType::Q1,
+                          DilutedFactorType::Q0,
+                          DilutedFactorType::Q2,
+                          DilutedFactorType::Q1>::request_impl(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2, Q1>::request_impl");
+
+  auto const t0 = time_key[0];
+  auto const t1 = time_key[1];
+  auto const t2 = time_key[2];
+  auto const t3 = time_key[3];
+  auto const b0 = dilution_scheme.time_to_block(t0);
+  auto const b1 = dilution_scheme.time_to_block(t1);
+  //auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
+
+  df1.request({t0, b1});
+  df2.request({t1});
+  df3.request({b1, t2, b3});
+  df4.request({t3, b0});
+}
+
+template <>
+void DilutedTrace4Factory<DilutedFactorType::Q1,
+                          DilutedFactorType::Q0,
+                          DilutedFactorType::Q2,
+                          DilutedFactorType::Q1>::build(Key const &time_key) {
+  TimingScope<3> timing_scope("DilutedTrace3Factory<Q1, Q0, Q2, Q1>::build");
+
+  auto const t0 = time_key[0];
+  auto const t1 = time_key[1];
+  auto const t2 = time_key[2];
+  auto const t3 = time_key[3];
+  auto const b0 = dilution_scheme.time_to_block(t0);
+  auto const b1 = dilution_scheme.time_to_block(t1);
+  //auto const b2 = dilution_scheme.time_to_block(t2);
+  auto const b3 = dilution_scheme.time_to_block(t3);
+
+  DilutedFactorsMap<2> L1;
+  DilutedFactorsMap<2> L2;
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+    const auto &c_look = diagram_index_collection[i];
+    multiply<1, 1>(L1, {c_look[2], c_look[0]}, df2[{t1}], df3[{b1, t2, b3}]);
+    multiply<1, 1>(L2, {c_look[3], c_look[1]}, df4[{t3, b0}], df1[{t0, b1}]);
+  }
+  
+  // We populate the whole map such that we can change its elements in a parallel way
+  // later.
+#pragma omp single
+  {
+    for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+      Tr[time_key][i];
+    }
+  }
+#pragma omp for
+  for (ssize_t i = 0; i < ssize(diagram_index_collection); ++i) {
+    const auto &c_look = diagram_index_collection[i];
+    auto const &value =
+        factor_to_trace(L1[{c_look[2], c_look[0]}], L2[{c_look[3], c_look[1]}]);
+    Tr[time_key][i] = value;
+  }
+}
+
+template class DilutedTrace4Factory<DilutedFactorType::Q1,
+                                    DilutedFactorType::Q0,
+                                    DilutedFactorType::Q2,
+                                    DilutedFactorType::Q1>;
+                                    
+/*****************************************************************************/
 /*                             Q2 Q0 Q2 Q0 Q2 Q0                             */
 /*****************************************************************************/
 
