@@ -548,7 +548,8 @@ void DilutedTrace6Factory<DilutedFactorType::Q2,
     assert(l01.size() > 0);
     assert(l23.size() > 0);
     assert(l45.size() > 0);
-    Tr[time_key][i] = factor_to_trace(l01 * l23, l45);
+    auto const &value =factor_to_trace(l01 * l23, l45);
+    Tr[time_key][i] = value;
   }
 }
 

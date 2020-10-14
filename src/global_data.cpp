@@ -37,6 +37,7 @@ GlobalData::GlobalData() {
   trace_indices_map["trQ1Q1Q1"];
   trace_indices_map["trQ1Q1Q1Q1"];
   trace_indices_map["trQ2Q0Q2Q0"];
+  trace_indices_map["trQ1Q0Q2Q1"];
   trace_indices_map["trQ2Q0Q2Q0Q2Q0"];
 }
 
