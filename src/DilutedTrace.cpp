@@ -60,11 +60,12 @@ Complex inner_product(DilutedTraces const &left_vec,
   for (auto const &left : left_vec.traces) {
     Accumulator<Complex> middle_sum;
     for (auto const &middle : middle_vec.traces) {
-      Accumulator<Complex> right_sum;
 
       if ((left.used_rnd_ids & middle.used_rnd_ids) != 0u) {
         continue;
       }
+      
+      Accumulator<Complex> right_sum;
 
       for (auto const &right : right_vec.traces) {
         if ((left.used_rnd_ids & right.used_rnd_ids) != 0u) {
