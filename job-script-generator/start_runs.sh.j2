@@ -3,11 +3,13 @@
 for cfg in {% for config in config_ids %}{{ config }} {% endfor %}; do
   echo "submitting conf ${cfg}"
  
-    j=$(printf %04d ${cfg})
-  
-    {% if machine == 'qbig' %}
-    sbatch cnfg${j}/job_script_qbig_slurm.sh
-    {% elif machine == 'jurecabooster' %}
-    sbatch cnfg${j}/job_script_jurecabooster.sh
-    {% endif %}
+  printf -v j %04d "${cfg}"
+
+  {% if machine == 'qbig' %}
+  sbatch cnfg${j}/job_script_qbig_slurm.sh
+  {% elif machine == 'jurecabooster' %}
+  sbatch cnfg${j}/job_script_jurecabooster.sh
+  {% elif machine == 'juwels' %}
+  sbatch cnfg${j}/job_script_juwels.sh
+  {% endif %}
 done

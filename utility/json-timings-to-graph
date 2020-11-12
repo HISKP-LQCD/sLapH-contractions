@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright © 2019 Martin Ueding <dev@martin-ueding.de>
+# Copyright © 2019 Martin Ueding <mu@martin-ueding.de>
 
 import argparse
 import json
@@ -27,21 +27,27 @@ def main():
     for i, node in enumerate(profile['nodes']):
         profile['nodes'][i]['hue'] = '{:.4f}'.format(250/360 * (1 - math.pow(node['cumtime'] / tottime, 0.5)))
 
-    rendered = template.render(vertices=profile['nodes'], edges=profile['edges'], tottime=tottime)
+    rendered = template.render(vertices=profile['nodes'], edges=profile['edges'], tottime=tottime, rankdir='LR' if options.vertical else 'TB')
     print('Generated graph.')
 
     with open('profile.dot', 'w') as f:
         f.write(rendered)
     print('Wrote graph.')
 
-    subprocess.run(['dot', 'profile.dot', '-Tpdf', '-o', 'profile.pdf'])
-    subprocess.run(['dot', 'profile.dot', '-Tpng', '-o', 'profile.png'])
-    print('Compiled graph.')
+    for format in ['pdf', 'png']:
+        for engine in ['dot']:
+            subprocess.run([
+                engine, 'profile.dot',
+                '-T{}'.format(format),
+                '-o', 'profile-{}.{}'.format(engine, format)
+            ])
+            print('Compiled graph with {} to {}.'.format(engine, format))
 
 
 def _parse_args():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('profile')
+    parser.add_argument('--vertical', action='store_true')
     options = parser.parse_args()
 
     return options

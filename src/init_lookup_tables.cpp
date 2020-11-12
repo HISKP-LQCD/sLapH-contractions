@@ -16,9 +16,18 @@
 
 #include "CartesianProduct.hpp"
 #include "DiagramSpec.hpp"
+#include "typedefs.hpp"
 #include "timings.hpp"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/regex.hpp>
+
 #include <iostream>
+
+namespace pt = boost::property_tree;
 
 using Vector = QuantumNumbers::VectorData;
 
@@ -32,8 +41,6 @@ using Vector = QuantumNumbers::VectorData;
  * processed into Operators struct
  * @param[out] quantum_numbers A list of all physical quantum numbers as
  * specified in the QuantumNumbers struct that are possible for @em correlator
- * @param[in] momentum_cutoff Cutoffs for sum of momenta squared, see
- * GlobalData::momentum_cutoff.
  *
  * \p correlator contains multiple operator_numbers. From combinatorics a
  * large number of combinations arise. In general only a subset of them are
@@ -41,13 +48,11 @@ using Vector = QuantumNumbers::VectorData;
  * conservation is enforced and multiple cutoffs introduced.
  */
 void build_quantum_numbers_from_correlator_list(
-    Correlators_2 const &correlator,
+    pt::ptree const &correlator_list,
     Operator_list const &operator_list,
-    std::vector<std::vector<QuantumNumbers>> &quantum_numbers,
-    std::map<int, int> const &momentum_cutoff) {
-  TimingScope<1> timing_scope("build_quantum_numbers_from_correlator_list");
+    std::vector<std::vector<QuantumNumbers>> &quantum_numbers) {
+  /*
 
-  std::vector<Operators> qn_op;
   for (auto const &op_number : correlator.operator_numbers) {
     if (op_number >= ssize(operator_list)) {
       std::ostringstream oss;
@@ -91,6 +96,9 @@ void build_quantum_numbers_from_correlator_list(
   std::vector<QuantumNumbers> qn_sink(vertices.second.size());
   std::vector<QuantumNumbers> qn_all(qn_source.size() + qn_sink.size());
 
+  std::cout << "Sizes of product source and sink are: " <<
+    product_source.size() << ", " << product_sink.size() << std::endl;
+
   // We iterate over all source index combinations.
   for (auto const &indices_source : product_source) {
     // From the given index set we need to extract the operators. This is a bit
@@ -130,11 +138,6 @@ void build_quantum_numbers_from_correlator_list(
       continue;
     }
 
-    // Also discard when we are beyond the momentum cutoff.
-    if (sum_norm_sq > momentum_cutoff.at(p_so.squaredNorm())) {
-      continue;
-    }
-
     // The `C1` diagram is special as it is source-only. We do not need to work
     // with sink operators at all, then. Enforcing momentum conservation is not
     // sensible in this context.
@@ -163,6 +166,7 @@ void build_quantum_numbers_from_correlator_list(
       }
     }
   }
+*/
 }
 
 /** Makes a string object of a displacement vector */
@@ -196,15 +200,13 @@ std::string vector_to_string(const std::vector<std::pair<char, char>> &in) {
  *
  * @todo Why don't we just build the complete path here already?
  */
-static std::string const build_hdf5_dataset_name(
-    std::string const &corr_type,
-    int cnfg,
-    std::string const &outpath,
-    std::vector<std::string> const &quark_types,
-    std::vector<QuantumNumbers> const &qn) {
+static std::string const build_hdf5_dataset_name(std::string const &corr_type,
+                                                 int cnfg,
+                                                 std::string const &outpath,
+                                                 std::string const &quarks_string,
+                                                 std::vector<QuantumNumbers> const &qn) {
   std::string filename = corr_type + "_";
-  for (const auto &qt : quark_types)  // adding quark content
-    filename += qt;
+  filename += quarks_string;
   for (const auto &op : qn) {  // adding quantum numbers
     filename += std::string("_p") + to_string(op.momentum);
     filename += std::string(".d") + to_string(op.displacement);
@@ -235,36 +237,42 @@ static std::string const build_hdf5_dataset_name(
  *                             second tells us if VdaggerV must be daggered to
  *                             get the desired quantum numbers.
  */
-void build_VdaggerV_lookup(
-    std::vector<std::vector<QuantumNumbers>> const &quantum_numbers,
-    std::vector<VdaggerVQuantumNumbers> &vdaggerv_lookup,
-    std::vector<std::vector<std::pair<ssize_t, bool>>> &vdv_indices) {
+void build_VdaggerV_lookup(std::vector<QuantumNumbers> const &qn_vec,
+                           std::vector<VdaggerVQuantumNumbers> &vdaggerv_lookup,
+                           std::vector<std::pair<ssize_t, bool>> &vdv_indices_row) {
   TimingScope<1> timing_scope("build_VdaggerV_lookup");
 
-  for (auto const &qn_vec : quantum_numbers) {
-    std::vector<std::pair<ssize_t, bool>> vdv_indices_row;
-    for (auto const &qn : qn_vec) {
-      auto const it =
-          std::find_if(vdaggerv_lookup.cbegin(),
-                       vdaggerv_lookup.cend(),
-                       [&qn](VdaggerVQuantumNumbers vdv_qn) {
-                         return (vdv_qn.displacement == qn.displacement) &&
-                                (Vector(vdv_qn.momentum.data()) == qn.momentum ||
-                                 Vector(vdv_qn.momentum.data()) == (-1) * qn.momentum);
-                       });
-      if (it == vdaggerv_lookup.end()) {
-        vdaggerv_lookup.emplace_back(
-            VdaggerVQuantumNumbers(ssize(vdaggerv_lookup),
-                                   {qn.momentum[0], qn.momentum[1], qn.momentum[2]},
-                                   qn.displacement));
-        vdv_indices_row.emplace_back(ssize(vdaggerv_lookup) - 1, false);
-      } else {
-        bool const dagger = qn.momentum != Vector(0, 0, 0) &&
-                            Vector(it->momentum.data()) == (-1) * qn.momentum;
-        vdv_indices_row.emplace_back(it - vdaggerv_lookup.cbegin(), dagger);
-      }
+  for (auto const &qn : qn_vec) {
+    auto const it =
+        std::find_if(vdaggerv_lookup.cbegin(),
+                     vdaggerv_lookup.cend(),
+                     [&qn](VdaggerVQuantumNumbers vdv_qn) {
+                       return (vdv_qn.displacement == qn.displacement) &&
+                              (Vector(vdv_qn.momentum.data()) == qn.momentum ||
+                               Vector(vdv_qn.momentum.data()) == (-1) * qn.momentum);
+                     });
+
+    if (it == vdaggerv_lookup.end()) {
+      // For some reason that Martin does not fully understand yet the VdaggerV
+      // objects that are stored for the cA2.09.48 ensemble always have a
+      // negative sign for the first non-zero momentum component. This means
+      // that if we we encounter a momentum which is positive in the first
+      // non-zero component we need to dagger that as well already.
+      bool const ref_dagger =
+          qn.momentum[0] > 0 || (qn.momentum[0] == 0 && qn.momentum[1] > 0) ||
+          (qn.momentum[0] == 0 && qn.momentum[1] == 0 && qn.momentum[2] > 0);
+      auto const momentum = (ref_dagger ? -1 : +1) * qn.momentum;
+
+      vdaggerv_lookup.emplace_back(
+          VdaggerVQuantumNumbers(ssize(vdaggerv_lookup),
+                                 {momentum[0], momentum[1], momentum[2]},
+                                 qn.displacement));
+      vdv_indices_row.emplace_back(ssize(vdaggerv_lookup) - 1, ref_dagger);
+    } else {
+      bool const dagger = qn.momentum != Vector(0, 0, 0) &&
+                          Vector(it->momentum.data()) == (-1) * qn.momentum;
+      vdv_indices_row.emplace_back(it - vdaggerv_lookup.cbegin(), dagger);
     }
-    vdv_indices.emplace_back(vdv_indices_row);
   }
 }
 
@@ -477,57 +485,96 @@ Factories make_trace_request_factories(DiagramSpec const &spec) {
 void init_lookup_tables(GlobalData &gd) {
   TimingScope<1> timing_scope("init_lookup_tables");
 
-  for (auto const &correlator : gd.correlator_list) {
-    // Build an array (quantum_numbers) with all the quantum numbers needed for
-    // this particular correlation function.
-    std::vector<std::vector<QuantumNumbers>> quantum_numbers;
-    build_quantum_numbers_from_correlator_list(
-        correlator, gd.operator_list, quantum_numbers, gd.momentum_cutoff);
+  pt::ptree tree;
+  pt::read_json(gd.path_correlator_list, tree);
 
-    // Build the correlator and dataset names for hdf5 output files
-    std::vector<std::string> quark_types;
-    for (auto const &id : correlator.quark_numbers)
-      quark_types.emplace_back(gd.quarks[id].type);
+  for (auto const &node : tree) {
+    auto const &correlator_name = node.first;
+    auto const &correlator_list = node.second;
 
-    // Build the lookuptable for VdaggerV and return an array of indices
-    // corresponding to @em quantum_numbers computed in step 1. In @em
-    // vdv_indices the first entry is the id of vdv, the second tells us if vdv
-    // must be daggered to get the correct quantum numbers.
-    std::vector<std::vector<std::pair<ssize_t, bool>>> vdv_indices;
-    build_VdaggerV_lookup(
-        quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
-    std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
+    boost::regex const momentum_regex("p(-?\\d)(-?\\d)(-?\\d)\\.d000\\.g(\\d+)");
 
-    auto const &spec = diagram_specs.at(correlator.type);
+    for (auto const &elem : correlator_list) {
+      auto const &corr_string = elem.second.data();
+      std::vector<std::string> parts;
+      boost::split(parts, corr_string, boost::is_any_of("_"));
+      auto const &quarks_string = parts[1];
 
-    size_t ql_size = 0;
-    for (auto const &trace : spec.traces) {
-      ql_size += trace.size();
-    }
-    std::vector<ssize_t> ql_ids(ql_size);
+      std::vector<QuantumNumbers> quantum_numbers;
 
-    for (ssize_t d = 0; d < ssize(quantum_numbers); ++d) {
+      for (int i = 2; i < ssize(parts); ++i) {
+        auto const &part = parts[i];
+        boost::smatch match;
+        boost::regex_match(part, match, momentum_regex);
+
+        bool matched = true;
+        for (int j = 1; j < 4; ++j) {
+          matched &= match[j].matched;
+        }
+
+        if (!matched) {
+          std::cout << "The following correlator string could not be parsed: "
+                    << corr_string << std::endl;
+          exit(1);
+        }
+
+        QuantumNumbers qn = {{boost::lexical_cast<int>(match[4].str())},
+                             {},
+                             {boost::lexical_cast<int>(match[1].str()),
+                              boost::lexical_cast<int>(match[2].str()),
+                              boost::lexical_cast<int>(match[3].str())}};
+
+        quantum_numbers.push_back(qn);
+      }
+
+      Indices quark_numbers(quarks_string.size());
+      for (auto i = 0u; i < quarks_string.size(); ++i) {
+        std::string const &quark_letter = quarks_string.substr(i, 1);
+        auto const it = std::find_if(
+            gd.quarks.begin(), gd.quarks.end(), [quark_letter](quark const &q) {
+              return q.type == quark_letter;
+            });
+        quark_numbers[i] = std::distance(gd.quarks.begin(), it);
+        assert(quark_numbers[i] == it->id && "gd.quarks.id must be consistent");
+      }
+
+      // Build the lookuptable for VdaggerV and return an array of indices
+      // corresponding to @em quantum_numbers computed in step 1. In @em
+      // vdv_indices the first entry is the id of vdv, the second tells us if vdv
+      // must be daggered to get the correct quantum numbers.
+      std::vector<std::pair<ssize_t, bool>> vdv_indices;
+      build_VdaggerV_lookup(
+          quantum_numbers, gd.operator_lookuptable.vdaggerv_lookup, vdv_indices);
+      std::vector<std::pair<ssize_t, ssize_t>> rnd_index;
+
+      auto const &spec = diagram_specs.at(correlator_name);
+
+      size_t ql_size = 0;
+      for (auto const &trace : spec.traces) {
+        ql_size += trace.size();
+      }
+      std::vector<ssize_t> ql_ids(ql_size);
+
       for (auto const &trace_spec : spec.traces) {
         for (auto const &quarkline_spec : trace_spec) {
-          auto const ric_ids =
-              create_rnd_vec_id(gd.quarks,
-                                correlator.quark_numbers[quarkline_spec.q1],
-                                correlator.quark_numbers[quarkline_spec.q2],
-                                quarkline_spec.is_loop());
+          auto const ric_ids = create_rnd_vec_id(gd.quarks,
+                                                 quark_numbers[quarkline_spec.q1],
+                                                 quark_numbers[quarkline_spec.q2],
+                                                 quarkline_spec.is_loop());
           build_Quarkline_lookup_one_qn(quarkline_spec.q2,
-                                        quantum_numbers[d],
-                                        vdv_indices[d],
+                                        quantum_numbers,
+                                        vdv_indices,
                                         ric_ids,
                                         gd.quarkline_lookuptable[quarkline_spec.name],
                                         ql_ids);
         }
       }
 
-      std::string hdf5_dataset_name = build_hdf5_dataset_name(correlator.type,
+      std::string hdf5_dataset_name = build_hdf5_dataset_name(correlator_name,
                                                               gd.start_config,
                                                               gd.path_output,
-                                                              quark_types,
-                                                              quantum_numbers[d]);
+                                                              quarks_string,
+                                                              quantum_numbers);
 
       auto const &trace_request_factories = make_trace_request_factories(spec);
       assert(ssize(trace_request_factories) != 0 &&
@@ -539,7 +586,7 @@ void init_lookup_tables(GlobalData &gd) {
             gd.trace_indices_map[trace_request_factory.name()], ql_ids);
         correlator_request.trace_requests.push_back(trace_request);
       }
-      unique_push_back(gd.correlator_requests_map[correlator.type], correlator_request);
+      unique_push_back(gd.correlator_requests_map[correlator_name], correlator_request);
     }
   }
 

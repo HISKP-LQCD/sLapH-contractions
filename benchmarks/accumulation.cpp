@@ -18,7 +18,7 @@ static std::vector<double> make_numbers() {
   return numbers;
 }
 
-template<typename TestAccumulator>
+template <typename TestAccumulator>
 static void bm_accumulate(benchmark::State &state) {
   auto const &numbers = make_numbers();
 
@@ -27,7 +27,7 @@ static void bm_accumulate(benchmark::State &state) {
     for (auto const number : numbers) {
       acc += number;
     }
-    volatile double value = acc.value();
+    volatile double value __attribute__((unused)) = acc.value();
   }
 }
 

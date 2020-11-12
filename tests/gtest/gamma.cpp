@@ -19,25 +19,13 @@ class GammaTest : public testing::Test {
  public:
   GammaTest() {
     // Gamma matrices as defined in tmLQCD
-    tmlqcd_gamma[0] <<  0,  0,  1,  0,
-                        0,  0,  0,  1,
-                        1,  0,  0,  0,
-                        0,  1,  0,  0;
+    tmlqcd_gamma[0] << 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0;
 
-    tmlqcd_gamma[1] <<  0,  0,  0,  I,
-                        0,  0,  I,  0,
-                        0, -I,  0,  0,
-                       -I,  0,  0,  0;
+    tmlqcd_gamma[1] << 0, 0, 0, I, 0, 0, I, 0, 0, -I, 0, 0, -I, 0, 0, 0;
 
-    tmlqcd_gamma[2] <<  0,  0,  0,  1,
-                        0,  0, -1,  0,
-                        0, -1,  0,  0,
-                        1,  0,  0,  0;
+    tmlqcd_gamma[2] << 0, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 1, 0, 0, 0;
 
-    tmlqcd_gamma[3] <<  0,  0,  I,  0,
-                        0,  0,  0, -I,
-                       -I,  0,  0,  0,
-                        0,  I,  0,  0;
+    tmlqcd_gamma[3] << 0, 0, I, 0, 0, 0, 0, -I, -I, 0, 0, 0, 0, I, 0, 0;
   }
 
  protected:
@@ -45,7 +33,7 @@ class GammaTest : public testing::Test {
 };
 
 TEST_F(GammaTest, checkBasis) {
-  //Check basis matrices
+  // Check basis matrices
   EXPECT_EQ(sparse_to_eigen_dense(gamma_vec[0]), tmlqcd_gamma[0]);
   EXPECT_EQ(sparse_to_eigen_dense(gamma_vec[1]), tmlqcd_gamma[1]);
   EXPECT_EQ(sparse_to_eigen_dense(gamma_vec[2]), tmlqcd_gamma[2]);

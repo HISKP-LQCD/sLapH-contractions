@@ -3,7 +3,7 @@
 #include "ComplexProduct.hpp"
 #include "OperatorsForMesons.hpp"
 #include "global_data.hpp"
-#include "local_timer.hpp"
+#include "timings.hpp"
 #include "typedefs.hpp"
 
 #include <omp.h>
@@ -166,22 +166,24 @@ void multiply(DilutedFactorsMap<n1 + n2> &L,
               std::array<ssize_t, n1 + n2> const &key,
               DilutedFactorsMap<n1> const &factor0,
               DilutedFactorsMap<n2> const &factor1) {
-  LT_ULTRA_FINE_DECLARE;
-  if (L.count(key) == 0) {
-    std::array<ssize_t, n1> key1;
-    std::array<ssize_t, n2> key2;
+  assert(factor0.size() > 0);
+  assert(factor1.size() > 0);
 
-    std::copy_n(std::begin(key) + 0, n1, std::begin(key1));
-    std::copy_n(std::begin(key) + n1, n2, std::begin(key2));
+  TimingScope<5> timing_scope("multiply");
 
-    auto const &f0 = factor0.at(key1);
-    auto const &f1 = factor1.at(key2);
+  // Extract quantum number keys.
+  std::array<ssize_t, n1> key1;
+  std::array<ssize_t, n2> key2;
+  std::copy_n(std::begin(key) + 0, n1, std::begin(key1));
+  std::copy_n(std::begin(key) + n1, n2, std::begin(key2));
 
-    LT_ULTRA_FINE_START;
+  auto const &f0 = factor0.at(key1);
+  auto const &f1 = factor1.at(key2);
+  assert(f0.size() > 0);
+  assert(f1.size() > 0);
 
-    L[key] = f0 * f1;
-
-    LT_ULTRA_FINE_STOP;
-    LT_ULTRA_FINE_PRINT("[DilutedFactor::multiply] multiply");
-  }
+  L[key] = f0 * f1;
+  assert(L[key].size() > 0);
 }
+
+std::ostream &operator<<(std::ostream &os, DilutedFactor const &df);

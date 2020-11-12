@@ -26,12 +26,6 @@
 namespace po = boost::program_options;
 
 GlobalData::GlobalData() {
-  momentum_cutoff[0] = 4;
-  momentum_cutoff[1] = 5;
-  momentum_cutoff[2] = 6;
-  momentum_cutoff[3] = 7;
-  momentum_cutoff[4] = 4;
-
   quarkline_lookuptable["Q0"];
   quarkline_lookuptable["Q1"];
   quarkline_lookuptable["Q2"];
@@ -95,6 +89,16 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   //////////////////////////////////////////////////////////////////////////////
   // Options for infile ////////////////////////////////////////////////////////
+
+  config.add_options()(
+      "time_slice_divisor",
+      po::value<int>(&gd.time_slice_divisor)->default_value(1),
+      "Use only source time slices which are divisible by this number and remainder.");
+
+  config.add_options()(
+      "time_slice_remainder",
+      po::value<int>(&gd.time_slice_remainder)->default_value(0),
+      "Use only source time slices which are divisible by this number and remainder.");
 
   // parallelisation options
   config.add_options()("nb_eigen_threads",
@@ -187,16 +191,6 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
                        " dil type Dirac:number of dil Dirac:\n"
                        " path of the perambulators for these quarks");
 
-  // operator list options
-  config.add_options()("operator_lists.operator_list",
-                       make_value(&operator_list_configs),
-                       "operator input is rather complicated - see documentation!!");
-
-  // correlator list options
-  config.add_options()("correlator_lists.correlator_list",
-                       make_value(&correlator_list_configs),
-                       "correlator input is rather complicated - see documentation!!");
-
   // configuration options
   config.add_options()("start_config",
                        po::value<int>(&gd.start_config)->default_value(-1),
@@ -208,9 +202,9 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
                        po::value<int>(&gd.delta_config)->default_value(1),
                        "Stepsize between two configurations");
 
-  config.add_options()("momentum_cutoff_0",
-                       po::value<int>(&gd.momentum_cutoff[0])->default_value(4),
-                       "Cutoff for |p₁|² + |p₂|² when |P|² = 0");
+  config.add_options()("path_correlator_list",
+                       po::value<std::string>(&gd.path_correlator_list),
+                       "Path to file with the desired correlator names");
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -303,6 +297,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
   std::cout << gd << std::endl;
 
+#if 0
   // printing information about memory consumption of all relevant parts that are cached
   std::cout << "Memory consumption:" << std::endl;
 
@@ -401,6 +396,7 @@ void read_parameters(GlobalData &gd, int ac, char *av[]) {
 
     std::cout << "\tDiagrams:" << std::endl;
   }
+#endif
 }
 
 #define GLOBAL_DATA_PRINT(x) (std::cout << "    " << #x << ": " << x << "\n")
@@ -443,11 +439,28 @@ std::ostream &operator<<(std::ostream &os, GlobalData const &gd) {
   GLOBAL_DATA_PRINT(gd.path_config);
   GLOBAL_DATA_PRINT(gd.handling_vdaggerv);
   GLOBAL_DATA_PRINT(gd.path_vdaggerv);
-
-  std::cout << "  Momentum Cutoff: ";
-  std::cout << gd.momentum_cutoff << "\n";
+  GLOBAL_DATA_PRINT(gd.path_correlator_list);
 
   //! @TODO Print more stuff here.
 
   return os;
+}
+
+bool operator<(std::vector<Location> const &left, std::vector<Location> const &right) {
+  if (left.size() == right.size()) {
+    // The two vectors are of the same size. We therefore need to compare element by
+    // element.
+    for (int i = 0; i < ssize(left); ++i) {
+      if (left[i] >= right[i]) {
+        return false;
+      }
+    }
+
+    // There have not been any violations to strict monotony found, therefore it actually
+    // is less than.
+    return true;
+  } else {
+    // We just take the one with the smaller size to the the lesser one.
+    return left.size() < right.size();
+  }
 }

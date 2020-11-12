@@ -5,18 +5,40 @@ set -u
 
 tmp="$(mktemp)"
 
+good=( )
+bad=( )
+
 for path in correlators-reference/*.h5; do
     basename="${path##*/}"
 
-    echo "$basename"
+    echo "Checking $basename …"
 
     target="$path"
     actual="correlators/$basename"
 
     if ! h5diff -r -d 1e-12 "$target" "$actual" &> "$tmp"; then
       cat "$tmp"
-      exit 1
+      bad+=( "$basename" )
+    else
+      good+=( "$basename" )
     fi
 done
 
-rm -f "$tmp"
+rm -f -- "$tmp"
+
+echo -e "\nSummary\n"
+if [[ -n "${good-}" ]]; then
+  echo -e "No differences found in:\n"
+  for path in "${good[@]}"; do
+    echo "  - $path"
+  done
+fi
+
+if [[ -n "${bad-}" ]]; then
+  echo -e "\nDifferences found in:\n"
+  for path in "${bad[@]}"; do
+    echo "  - $path"
+  done
+
+  exit 1
+fi

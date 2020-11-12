@@ -16,11 +16,26 @@ std::vector<DilutedFactor> operator*(std::vector<DilutedFactor> const &left_vec,
     auto const inner_rnd_id = left.ric.second;
 
     for (auto const &right : right_vec) {
-      // We want to make the inner and outer indices differ. The inner indices need to
-      // match because the product would not make sense otherwise.
+      // The inner indices need to match because the product would not make
+      // sense otherwise.
       bool const is_allowed =
           inner_rnd_id == right.ric.first && left.ric.first != right.ric.second;
       if (!is_allowed) {
+        continue;
+      }
+
+      if (left.ric.first == left.ric.second) {
+        continue;
+      }
+
+      if (right.ric.first == right.ric.second) {
+        continue;
+      }
+
+      if (((1u << left.ric.first) & right.used_rnd_ids) != 0) {
+        continue;
+      }
+      if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
         continue;
       }
 
@@ -111,4 +126,38 @@ Complex trace(std::vector<DilutedFactor> const &left_vec,
   }
 
   return result.value() / static_cast<double>(num_summands);
+}
+
+std::ostream &operator<<(std::ostream &os, DilutedFactor const &df) {
+  os << "DilutedFactor{{";
+  auto const &m = df.data;
+  for (int row = 0; row < m.rows(); ++row) {
+    if (row != 0) {
+      os << "; ";
+    }
+    for (int col = 0; col < m.cols(); ++col) {
+      if (col != 0) {
+        os << ", ";
+      }
+      os << m(row, col);
+    }
+  }
+  os << "}, {" << static_cast<int>(df.ric.first) << ", "
+     << static_cast<int>(df.ric.second) << "}, {";
+  auto used = df.used_rnd_ids;
+  int base = 0;
+  bool output = false;
+  while (used != 0) {
+    if (used % 2 == 1) {
+      if (output) {
+        os << ", ";
+      }
+      os << base;
+      output = true;
+    }
+    used /= 2;
+    ++base;
+  }
+  os << "}}";
+  return os;
 }

@@ -2,6 +2,8 @@
 
 #include "timings.hpp"
 
+#include <iomanip>
+
 Complex inner_product(DilutedTraces const &left_vec, DilutedTraces const &right_vec) {
   TimingScope<4> timing_scope("inner_product(DT, DT)");
 
@@ -56,20 +58,48 @@ Complex inner_product(DilutedTraces const &left_vec,
   Accumulator<Complex> result;
 
   for (auto const &left : left_vec.traces) {
+    Accumulator<Complex> middle_sum;
     for (auto const &middle : middle_vec.traces) {
+
+      if ((left.used_rnd_ids & middle.used_rnd_ids) != 0u) {
+        continue;
+      }
+      
       Accumulator<Complex> right_sum;
 
       for (auto const &right : right_vec.traces) {
-        if ((left.used_rnd_ids & middle.used_rnd_ids & right.used_rnd_ids) != 0u) {
+        if ((left.used_rnd_ids & right.used_rnd_ids) != 0u) {
           continue;
         }
+        if ((middle.used_rnd_ids & right.used_rnd_ids) != 0u) {
+          continue;
+        }
+
+        /*
+        std::cout
+          << left.used_rnd_ids << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << left.data.real() << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << left.data.imag() << "\t"
+          << middle.used_rnd_ids << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << middle.data.real() << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << middle.data.imag() << "\t"
+          << right.used_rnd_ids << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << right.data.real() << "\t"
+          << std::setprecision(std::numeric_limits<double>::max_digits10)
+          << right.data.imag() << "\n";
+          */
 
         right_sum += right.data;
         ++num_summands;
       }
-
-      result += left.data * middle.data * right_sum.value();
+      middle_sum += middle.data * right_sum.value();
     }
+    result += left.data * middle_sum.value();
   }
 
   if (num_summands == 0) {
@@ -111,6 +141,15 @@ std::vector<DilutedTrace> factor_to_trace(std::vector<DilutedFactor> const &left
       if ((left.used_rnd_ids & right.used_rnd_ids) != 0u) {
         continue;
       }
+
+      /*
+      if (((1u << left.ric.first) & right.used_rnd_ids) != 0) {
+        continue;
+      }
+      if (((1u << right.ric.second) & left.used_rnd_ids) != 0) {
+        continue;
+      }
+      */
 
       // We want to keep track of the indices that have been contracted away. These are
       // all the ones from the left factor, all the ones from the right factor and the one

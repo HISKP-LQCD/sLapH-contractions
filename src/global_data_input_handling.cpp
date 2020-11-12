@@ -173,68 +173,6 @@ void quark_input_data_handling(const std::vector<std::string> quark_configs,
   }
 }
 
-/** Creates operator_list from operator_list configs
- *
- *  @param          operator_list_configs Operators as read from the infile
- *                                        @todo rename to operator_string
- *  @param[in,out]  operator_list         Operators munged into a Operator
- *                                        struct.
- *
- *  The work of splitting up the strings and extracting the information is
- *  handled by gdu::make_operator_list
- */
-void operator_input_data_handling(const std::vector<std::string> operator_strings,
-                                  Operator_list &operator_list) {
-  try {
-    // Transform each configured operator into an Operator_list via
-    // make_operator_list()
-    for (auto operator_string : operator_strings)
-      operator_list.push_back(make_operator_list(operator_string));
-    // TODO write a check for correctness of input
-  } catch (std::exception &e) {
-    std::cout << "operator_input_data_handling: " << e.what() << "\n";
-    exit(1);
-  }
-}
-
-/** Creates correlator_list from correlator_string configs
- *
- *  @param          correlator_string @parblock
- *    Correlators as read from the infile
- *
- *    correlator_list = @em type : @em quark : @em operator : ... : [@em GEVP] :
- *                      [@em P]
- *    where the following abbreviationswhere used
- *    - @em type {C1,C2c,C20,C20V,C3c,C30,C4cD,C4cV,C4cC,C4cB,C40D,C40V,C40C,C40B} :
- *                              Identifier for the Wick diagram to be
- *                              calculated. @see { LapH::Correlators }
- *    - @em quark {"Q%d"} :     Specifies which of the quarks from the infile
- *                              to use
- *    - @em operator {"Op%d"} : Specifies which of the operators from the
- *                              infile to use
- *    - @em GEVP                @todo is that even supported?
- *    - @em P                   @todo is that even supported?
- *
- *    The number of quarks and operators to be specified depends on the diagram
- *    chosen.
- *  @endparblock
- *  @param[in,out]  correlator_list   Correlators munged into a Correlators
- *                                    struct.
- */
-void correlator_input_data_handling(const std::vector<std::string> &correlator_strings,
-                                    Correlator_list &correlator_list) {
-  try {
-    // Transform each configured correlator into an Correlator_list via
-    // make_correlator()
-    for (auto correlator_string : correlator_strings) {
-      correlator_list.push_back(make_correlator(correlator_string));
-    }
-  } catch (std::exception &e) {
-    std::cout << "correlator_input_data_handling: " << e.what() << "\n";
-    exit(1);
-  }
-}
-
 }  // end of unnamed namespace
 
 /**
@@ -270,6 +208,4 @@ void input_handling(GlobalData &gd,
 
   // Munging of quarks, operators und correlators
   quark_input_data_handling(quark_configs, gd.quarks);
-  operator_input_data_handling(operator_list_configs, gd.operator_list);
-  correlator_input_data_handling(correlator_list_configs, gd.correlator_list);
 }

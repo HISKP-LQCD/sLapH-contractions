@@ -2,12 +2,13 @@
 
 #include "Correlators.hpp"
 #include "DilutedFactorFactory.hpp"
+#include "DilutedProductFactory.hpp"
 #include "DilutedTraceFactory.hpp"
 #include "h5-wrapper.hpp"
 
 #include <omp.h>
 
-#include <mutex>
+#include <atomic>
 
 struct DiagramParts {
   DiagramParts(RandomVector const &random_vector,
@@ -40,7 +41,8 @@ struct DiagramParts {
            dilT,
            dilE,
            nev,
-           dil_fac_lookup.at("Q2")) {
+           dil_fac_lookup.at("Q2")),
+        q0q2(q0, q2) {
     trace_factories["trQ1"] = std::unique_ptr<AbstractDilutedTraceFactory>(
         new DilutedTrace1Factory<DilutedFactorType::Q1>(
             q1, trace_indices_map.at("trQ1"), dilution_scheme));
@@ -70,29 +72,63 @@ struct DiagramParts {
                                  DilutedFactorType::Q1,
                                  DilutedFactorType::Q1,
                                  DilutedFactorType::Q1>(
-            q1, q1, q1, q1, trace_indices_map.at("trQ1Q1Q1Q1"), dilution_scheme));
+            q1, q1, q1, q1, q0q2, trace_indices_map.at("trQ1Q1Q1Q1"), dilution_scheme));
 
     trace_factories["trQ2Q0Q2Q0"] = std::unique_ptr<AbstractDilutedTraceFactory>(
         new DilutedTrace4Factory<DilutedFactorType::Q2,
                                  DilutedFactorType::Q0,
                                  DilutedFactorType::Q2,
                                  DilutedFactorType::Q0>(
-            q2, q0, q2, q0, trace_indices_map.at("trQ2Q0Q2Q0"), dilution_scheme));
+            q2, q0, q2, q0, q0q2, trace_indices_map.at("trQ2Q0Q2Q0"), dilution_scheme));
 
-    trace_factories["trQ2Q0Q2Q0Q2Q0"] = std::unique_ptr<
-        AbstractDilutedTraceFactory>(new DilutedTrace6Factory<DilutedFactorType::Q2,
-                                                              DilutedFactorType::Q0,
-                                                              DilutedFactorType::Q2,
-                                                              DilutedFactorType::Q0,
-                                                              DilutedFactorType::Q2,
-                                                              DilutedFactorType::Q0>(
-        q2, q0, q2, q0, q2, q0, trace_indices_map.at("trQ2Q0Q2Q0Q2Q0"), dilution_scheme));
+    trace_factories["trQ2Q0Q2Q0Q2Q0"] = std::unique_ptr<AbstractDilutedTraceFactory>(
+        new DilutedTrace6Factory<DilutedFactorType::Q2,
+                                 DilutedFactorType::Q0,
+                                 DilutedFactorType::Q2,
+                                 DilutedFactorType::Q0,
+                                 DilutedFactorType::Q2,
+                                 DilutedFactorType::Q0>(
+            q2,
+            q0,
+            q2,
+            q0,
+            q2,
+            q0,
+            q0q2,
+            trace_indices_map.at("trQ2Q0Q2Q0Q2Q0"),
+            dilution_scheme));
+  }
+
+  void build_all() {
+    TimingScope<1> timing_scope("DiagramParts::build_all");
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all Q");
+      q0.build_all();
+      q1.build_all();
+      q2.build_all();
+    }
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all QQ");
+      q0q2.build_all();
+    }
+
+    {
+      TimingScope<1> timing_scope("DiagramParts::build_all tr(Q...)");
+      for (auto &elem : trace_factories) {
+        elem.second->build_all();
+      }
+    }
   }
 
   void clear() {
+    TimingScope<1> timing_scope("DiagramParts::clear");
+
     q0.clear();
     q1.clear();
     q2.clear();
+    q0q2.clear();
 
     for (auto const &elem : trace_factories) {
       elem.second->clear();
@@ -103,12 +139,14 @@ struct DiagramParts {
   DilutedFactorFactory<DilutedFactorType::Q1> q1;
   DilutedFactorFactory<DilutedFactorType::Q2> q2;
 
+  DilutedProductFactoryQ0Q2 q0q2;
+
   std::map<std::string, std::unique_ptr<AbstractDilutedTraceFactory>> trace_factories;
 };
 
 class Diagram {
  public:
-  using AccumulatorVector = std::vector<Accumulator<Complex>>;
+  using AccumulatorVector = std::vector<AtomicAccumulator>;
 
   Diagram(std::vector<CorrelatorRequest> const &correlator_requests,
           std::string const &output_path,
@@ -119,33 +157,33 @@ class Diagram {
         output_path_(output_path),
         output_filename_(output_filename),
         Lt_(Lt),
-        correlator_(
-            Lt, AccumulatorVector(correlator_requests.size(), Accumulator<Complex>{})),
-        c_(omp_get_max_threads(),
-           AccumulatorVector(correlator_requests.size(), Accumulator<Complex>{})),
-        mutexes_(Lt),
+        correlator_(Lt),
         name_(name) {
     assert(output_path_ != "");
     assert(output_filename_ != "");
+
+    for (auto &elem : correlator_) {
+      elem = AccumulatorVector(correlator_requests.size());
+    }
   }
 
   std::vector<CorrelatorRequest> const &correlator_requests() const {
     return correlator_requests_;
   }
 
+  void request(int const t, BlockIterator const &slice_pair, DiagramParts &q);
   void assemble(int const t, BlockIterator const &slice_pair, DiagramParts &q);
 
   void write();
 
   std::string const &name() const { return name_; }
 
-  void assemble_impl(AccumulatorVector &c,
-                     BlockIterator const &slice_pair,
-                     DiagramParts &q);
-
   std::vector<CorrelatorRequest> const &correlator_requests_;
 
  private:
+  void request_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+  void assemble_impl(int const t, BlockIterator const &slice_pair, DiagramParts &q);
+
   std::string const &output_path_;
   std::string const &output_filename_;
 
@@ -153,11 +191,6 @@ class Diagram {
 
   /** OpenMP-shared correlators, indices are (1) time and (2) correlator id. */
   std::vector<AccumulatorVector> correlator_;
-
-  /** OpenMP-shared correlators, indices are (1) thread id and (2) correlator id. */
-  std::vector<AccumulatorVector> c_;
-
-  std::vector<std::mutex> mutexes_;
 
   std::string name_;
 };
